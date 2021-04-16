@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "projeto-modulo6": {
+      "hosting": {
+        "app": [
+          "projeto-modulo6"
+        ]
+      }
+    }
+  }
+}
