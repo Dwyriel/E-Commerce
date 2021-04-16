@@ -163,7 +163,7 @@ export class ItemClassification {
         { title: "Serviços", category: Categories.Services },
     ];
 
-    private static subCats: SubCategories[] = [].concat.apply([], [
+    private static subCats: SubCategory[] = [].concat.apply([], [
         ItemClassification.eletronics,
         ItemClassification.software,
         ItemClassification.cloths,
@@ -177,14 +177,24 @@ export class ItemClassification {
         ItemClassification.services,
     ]);
 
+    /**Retrives all subcategories
+     * @returns All the existing subcategories
+     */
     public static SubCategories() {
         return this.subCats;
     }
 
+    /**Retrives all categories
+     * @returns All the existing categories
+     */
     public static Categories() {
         return this.cats;
     }
 
+    /**Retrives all subcategories inside a category
+     * @param category the category which the subcategories will be retrieved from.
+     * @returns All subcategories child to the expecified category
+     */
     public static getSubCatFrom(category: Categories): SubCategory[] {
         switch (category) {
             case Categories.Eletronics:
@@ -212,5 +222,20 @@ export class ItemClassification {
             default:
                 return null;
         }
+    }
+
+    /**Retrives a subcategory with the specified value
+     * @param value the number that represents the subcategory
+     * @returns the category with the specified value
+     */
+    public static getSubCatFromValue(value: Number){
+        var subcat: SubCategory;
+        this.subCats.some(subCats =>{ 
+            if(subCats.value == value){
+                subcat = subCats;
+                return true;
+            }
+        });
+        return subcat;
     }
 }
