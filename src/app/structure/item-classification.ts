@@ -1,10 +1,8 @@
 import { SubCategories, Categories, SubCategory, Category } from './categories'
 
 export class ItemClassification {
-    public static getType(value: Number) {
 
-    }
-    private eletronics: SubCategory[] = [
+    private static eletronics: SubCategory[] = [
         { title: "Computador", category: Categories.Eletronics, subCategory: SubCategories.Computador, value: 0 },
         { title: "Notebook", category: Categories.Eletronics, subCategory: SubCategories.Notebook, value: 1 },
         { title: "Hardware", category: Categories.Eletronics, subCategory: SubCategories.Hardware, value: 2 },
@@ -18,17 +16,17 @@ export class ItemClassification {
         { title: "Roteador", category: Categories.Eletronics, subCategory: SubCategories.Roteador, value: 10 },
         { title: "Cabos", category: Categories.Eletronics, subCategory: SubCategories.Cabos, value: 11 },
         { title: "Componentes", category: Categories.Eletronics, subCategory: SubCategories.Componentes, value: 12 },
-        { title: "Outros", category: Categories.Eletronics, subCategory: SubCategories.Outros_Eletronicos, value: 13 },
+        { title: "Outros", category: Categories.Eletronics, subCategory: SubCategories.Outros_Eletronicos, value: 13 }
     ];
 
-    private software: SubCategory[] = [
+    private static software: SubCategory[] = [
         { title: "Produção", category: Categories.Software, subCategory: SubCategories.Producao, value: 14 },
         { title: "Jogos", category: Categories.Software, subCategory: SubCategories.Jogos, value: 15 },
         { title: "Sistema Operacional", category: Categories.Software, subCategory: SubCategories.Sistema_Operacional, value: 16 },
         { title: "Outros", category: Categories.Software, subCategory: SubCategories.Outros_Software, value: 17 },
     ];
 
-    private cloths: SubCategory[] = [
+    private static cloths: SubCategory[] = [
         { title: "Moda Masculina", category: Categories.Cloths, subCategory: SubCategories.Moda_Masculina, value: 18 },
         { title: "Moda Feminina", category: Categories.Cloths, subCategory: SubCategories.Moda_Feminina, value: 19 },
         { title: "Infantil Masculino", category: Categories.Cloths, subCategory: SubCategories.Infantil_Masculino, value: 20 },
@@ -52,7 +50,7 @@ export class ItemClassification {
         { title: "Outros", category: Categories.Cloths, subCategory: SubCategories.Outros_Roupas, value: 38 },
     ];
 
-    private selfCare: SubCategory[] = [
+    private static selfCare: SubCategory[] = [
         { title: "Perfume", category: Categories.Self_Care, subCategory: SubCategories.Perfume, value: 39 },
         { title: "Barbeador", category: Categories.Self_Care, subCategory: SubCategories.Barbeador, value: 40 },
         { title: "Creme para Pele", category: Categories.Self_Care, subCategory: SubCategories.Creme_para_Pele, value: 41 },
@@ -64,7 +62,7 @@ export class ItemClassification {
         { title: "Outros", category: Categories.Self_Care, subCategory: SubCategories.Outros_Cuidados_Pessoais, value: 47 },
     ];
 
-    private homeAppliances: SubCategory[] = [
+    private static homeAppliances: SubCategory[] = [
         { title: "Home Theater", category: Categories.Home_Appliances, subCategory: SubCategories.Home_Theater, value: 48 },
         { title: "DVD", category: Categories.Home_Appliances, subCategory: SubCategories.DVD, value: 49 },
         { title: "Televisão", category: Categories.Home_Appliances, subCategory: SubCategories.Televisao, value: 50 },
@@ -78,7 +76,7 @@ export class ItemClassification {
         { title: "Outros", category: Categories.Home_Appliances, subCategory: SubCategories.Outros_Eletrodomesticos, value: 58 },
     ];
 
-    private furniture: SubCategory[] = [
+    private static furniture: SubCategory[] = [
         { title: "Escritorio", category: Categories.Furniture, subCategory: SubCategories.Escritorio, value: 59 },
         { title: "Banheiro", category: Categories.Furniture, subCategory: SubCategories.Banheiro, value: 60 },
         { title: "Sala", category: Categories.Furniture, subCategory: SubCategories.Sala, value: 61 },
@@ -91,7 +89,7 @@ export class ItemClassification {
         { title: "Outros", category: Categories.Furniture, subCategory: SubCategories.Outros_Moveis, value: 68 },
     ];
 
-    private hobbies: SubCategory[] = [
+    private static hobbies: SubCategory[] = [
         { title: "Esporte", category: Categories.Hobbies, subCategory: SubCategories.Esporte, value: 69 },
         { title: "Musica", category: Categories.Hobbies, subCategory: SubCategories.Musica, value: 70 },
         { title: "Filme", category: Categories.Hobbies, subCategory: SubCategories.Filme, value: 71 },
@@ -104,7 +102,7 @@ export class ItemClassification {
         { title: "Outros", category: Categories.Hobbies, subCategory: SubCategories.Outros_Hobbies, value: 78 },
     ];
 
-    private construction: SubCategory[] = [
+    private static construction: SubCategory[] = [
         { title: "Acessorio de Construção", category: Categories.Construction, subCategory: SubCategories.Acessorios_de_Construcao, value: 79 },
         { title: "Tinta", category: Categories.Construction, subCategory: SubCategories.Tinta, value: 80 },
         { title: "Maquina de Construção", category: Categories.Construction, subCategory: SubCategories.Maquina_de_Contrucao, value: 81 },
@@ -116,7 +114,7 @@ export class ItemClassification {
         { title: "Outros", category: Categories.Construction, subCategory: SubCategories.Outros_Construcao, value: 87 },
     ];
 
-    private health: SubCategory[] = [
+    private static health: SubCategory[] = [
         { title: "Mascara", category: Categories.Health, subCategory: SubCategories.Mascara, value: 88 },
         { title: "Farmacia", category: Categories.Health, subCategory: SubCategories.Farmacia, value: 89 },
         { title: "Termometro", category: Categories.Health, subCategory: SubCategories.Termometro, value: 90 },
@@ -125,16 +123,16 @@ export class ItemClassification {
         { title: "Ortopedia", category: Categories.Health, subCategory: SubCategories.Ortopedia, value: 93 },
         { title: "Equipamento Medico", category: Categories.Health, subCategory: SubCategories.Equipamento_Medico, value: 94 },
         { title: "Suplemento Alimentar", category: Categories.Health, subCategory: SubCategories.Suplemento_Alimentar, value: 95 },
-        { title: "Outros", category: Categories.Health, subCategory: SubCategories.Outros_Saude, value:  96},
+        { title: "Outros", category: Categories.Health, subCategory: SubCategories.Outros_Saude, value: 96 },
     ];
 
-    private others : SubCategory[] = [
+    private static others: SubCategory[] = [
         { title: "Gift Card", category: Categories.Others, subCategory: SubCategories.Gift_Card, value: 97 },
         { title: "Criptomoeda", category: Categories.Others, subCategory: SubCategories.Criptomoeda, value: 98 },
         { title: "Outros", category: Categories.Others, subCategory: SubCategories.Outros, value: 99 },
     ];
 
-    private services : SubCategory[] = [
+    private static services: SubCategory[] = [
         { title: "", category: Categories.Services, subCategory: SubCategories.Academia, value: 100 },
         { title: "", category: Categories.Services, subCategory: SubCategories.Educacao, value: 101 },
         { title: "", category: Categories.Services, subCategory: SubCategories.Festa_e_Evento, value: 102 },
@@ -151,7 +149,7 @@ export class ItemClassification {
         { title: "", category: Categories.Services, subCategory: SubCategories.Outros_Servicos, value: 113 },
     ];
 
-    private cats: Category[] = [
+    private static cats: Category[] = [
         { title: "Eletrônico", category: Categories.Eletronics },
         { title: "Software", category: Categories.Software },
         { title: "Roupas", category: Categories.Cloths },
@@ -165,18 +163,54 @@ export class ItemClassification {
         { title: "Serviços", category: Categories.Services },
     ];
 
-    private subCats: SubCategories[] = [].concat.apply([], [
-        this.eletronics,
-        this.software,
-        this.cloths,
-        this.selfCare,
-        this.homeAppliances,
-        this.furniture,
-        this.hobbies,
-        this.construction,
-        this.health,
-        this.others,
-        this.services,
+    private static subCats: SubCategories[] = [].concat.apply([], [
+        ItemClassification.eletronics,
+        ItemClassification.software,
+        ItemClassification.cloths,
+        ItemClassification.selfCare,
+        ItemClassification.homeAppliances,
+        ItemClassification.furniture,
+        ItemClassification.hobbies,
+        ItemClassification.construction,
+        ItemClassification.health,
+        ItemClassification.others,
+        ItemClassification.services,
     ]);
 
+    public static SubCategories() {
+        return this.subCats;
+    }
+
+    public static Categories() {
+        return this.cats;
+    }
+
+    public static getSubCatFrom(category: Categories): SubCategory[] {
+        switch (category) {
+            case Categories.Eletronics:
+                return this.eletronics;
+            case Categories.Software:
+                return this.software;
+            case Categories.Cloths:
+                return this.cloths;
+            case Categories.Self_Care:
+                return this.selfCare;
+            case Categories.Home_Appliances:
+                return this.homeAppliances;
+            case Categories.Furniture:
+                return this.furniture;
+            case Categories.Hobbies:
+                return this.hobbies;
+            case Categories.Construction:
+                return this.construction;
+            case Categories.Health:
+                return this.health;
+            case Categories.Others:
+                return this.others;
+            case Categories.Services:
+                return this.services;
+            default:
+                return null;
+        }
+    }
 }
