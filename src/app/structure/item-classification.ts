@@ -133,20 +133,20 @@ export class ItemClassification {
     ];
 
     private static services: SubCategory[] = [
-        { title: "", category: Categories.Services, subCategory: SubCategories.Academia, value: 100 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Educacao, value: 101 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Festa_e_Evento, value: 102 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Internet, value: 103 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Saude, value: 104 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Transporte, value: 105 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Suporte_Tecnico, value: 106 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Viagem, value: 107 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Vestimento, value: 108 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Impressao, value: 109 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Gastronomia, value: 110 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Estetica_e_Design, value: 111 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Outros_Profissionais, value: 112 },
-        { title: "", category: Categories.Services, subCategory: SubCategories.Outros_Servicos, value: 113 },
+        { title: "Academia", category: Categories.Services, subCategory: SubCategories.Academia, value: 100 },
+        { title: "Educação", category: Categories.Services, subCategory: SubCategories.Educacao, value: 101 },
+        { title: "Festa e Evento", category: Categories.Services, subCategory: SubCategories.Festa_e_Evento, value: 102 },
+        { title: "Internet", category: Categories.Services, subCategory: SubCategories.Internet, value: 103 },
+        { title: "Saúde", category: Categories.Services, subCategory: SubCategories.Saude, value: 104 },
+        { title: "Transporte", category: Categories.Services, subCategory: SubCategories.Transporte, value: 105 },
+        { title: "Suporte Técnico", category: Categories.Services, subCategory: SubCategories.Suporte_Tecnico, value: 106 },
+        { title: "Viagem", category: Categories.Services, subCategory: SubCategories.Viagem, value: 107 },
+        { title: "Vestimento", category: Categories.Services, subCategory: SubCategories.Vestimento, value: 108 },
+        { title: "Impressão", category: Categories.Services, subCategory: SubCategories.Impressao, value: 109 },
+        { title: "Gastronomia", category: Categories.Services, subCategory: SubCategories.Gastronomia, value: 110 },
+        { title: "Estetica e Design", category: Categories.Services, subCategory: SubCategories.Estetica_e_Design, value: 111 },
+        { title: "Outros Profissionais", category: Categories.Services, subCategory: SubCategories.Outros_Profissionais, value: 112 },
+        { title: "Outros Serviços", category: Categories.Services, subCategory: SubCategories.Outros_Servicos, value: 113 },
     ];
 
     private static cats: Category[] = [
@@ -177,25 +177,25 @@ export class ItemClassification {
         ItemClassification.services,
     ]);
 
-    /**Retrives all subcategories
-     * @returns All the existing subcategories
+    /**Retrives all subcategories.
+     * @returns All the existing subcategories.
      */
     public static SubCategories() {
         return this.subCats;
     }
 
-    /**Retrives all categories
-     * @returns All the existing categories
+    /**Retrives all categories.
+     * @returns All the existing categories.
      */
     public static Categories() {
         return this.cats;
     }
 
-    /**Retrives all subcategories inside a category
+    /**Retrives all subcategories inside a category.
      * @param category the category which the subcategories will be retrieved from.
-     * @returns All subcategories child to the expecified category
+     * @returns All subcategories child to the expecified category.
      */
-    public static getSubCatFrom(category: Categories): SubCategory[] {
+    public static GetSubCatFrom(category: Categories): SubCategory[] {
         switch (category) {
             case Categories.Eletronics:
                 return this.eletronics;
@@ -224,18 +224,33 @@ export class ItemClassification {
         }
     }
 
-    /**Retrives a subcategory with the specified value
-     * @param value the number that represents the subcategory
-     * @returns the category with the specified value
+    /**Retrives a subcategory with the specified value.
+     * @param value the number that represents the subcategory.
+     * @returns the category with the specified value.
      */
-    public static getSubCatFromValue(value: Number){
+    public static GetSubCatFromValue(value: Number) {
         var subcat: SubCategory;
-        this.subCats.some(subCats =>{ 
-            if(subCats.value == value){
-                subcat = subCats;
+        this.subCats.some(item => {
+            if (item.value == value) {
+                subcat = item;
                 return true;
             }
         });
         return subcat;
+    }
+
+    /**Verifies if the array SubCategory constains any object with the specified value.
+     * @param value the number that represents the subcategory.
+     * @returns a boolean based on the result of the verification.
+     */
+    public static SubCatsContains(value: Number): boolean {
+        var bool: boolean = false;
+        this.subCats.some(item => {
+            if (item.value == value) {
+                bool = true;
+                return true;
+            }
+        });
+        return bool;
     }
 }
