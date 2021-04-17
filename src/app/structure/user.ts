@@ -8,6 +8,8 @@ export class User {
     photo: string;
     userType: UserType;
     active: boolean = true;
+    avgRating: number;
+    ratings: number[];
     cart: { productID: string, amount: number }[] = [];
 }
 
