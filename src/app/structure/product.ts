@@ -14,7 +14,7 @@ export class Product {
     verified: boolean = false;
 
     /**
-     * Uses the atribute subCatValue to retrieve and fill the atribute subCategory.
+     * Uses the attribute subCatValue to retrieve and fill the attribute subCategory.
      */
     public fillSubCategory() {
         if (!this.subCatValue) {
