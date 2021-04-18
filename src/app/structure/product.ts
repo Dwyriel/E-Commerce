@@ -34,12 +34,12 @@ export class Product {
     /**
      * Calculates and attributes the percentage of good/bad reviews to avgReview.
      */
-     public calculateAvgRating(){
+    public calculateAvgRating() {
         const totalRatings: number = this.reviews.length;
         var positiveRatings: number = 0;
         this.reviews.forEach(rating => {
-            positiveRatings = (rating.recommend) ? ++positiveRatings : positiveRatings; 
+            positiveRatings = (rating.recommend) ? ++positiveRatings : positiveRatings;
         });
-        this.avgReview = (positiveRatings / totalRatings)*100;
+        this.avgReview = (positiveRatings / totalRatings) * 100;
     }
 }
