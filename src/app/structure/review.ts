@@ -9,5 +9,6 @@ export class Review {
     product: Product;
     title: string;
     text: string;
+    recommend: boolean;
     date: Date;
 }
