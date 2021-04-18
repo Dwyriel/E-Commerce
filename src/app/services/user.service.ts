@@ -45,6 +45,7 @@ export class UserService {
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data() }))
     ));
   }
+  
   /**
    * Retrieves the user with the specified id.
    * @param id the user's id.
@@ -63,19 +64,27 @@ export class UserService {
     return await this.fireDatabase.collection(this.collection).doc(user.id).update({
       name: user.name,
       email: user.email,
-      userType: user.userType
+      tel: user.tel,
     });
   }
 
-  /** Updates the userType on the specified user
+  /** Updates the userType on the specified user.
    * @param id the user's id.
-   * @param userType the new type that will be atributed to the user.
+   * @param userType the new type that will be attributed to the user.
    */
   async UpdateType(id: string, userType: UserType) {
     return await this.fireDatabase.collection(this.collection).doc(id).update({ userType: userType });
   }
 
-  /** Updates the photo on the specified user
+  /** Changes the active attribute on the specified user.
+   * @param id the user's id.
+   * @param active the new active value that will be attributed to the user.
+   */
+  async UpdateActive(id: string, active: boolean) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({ active: active });
+  }
+
+  /** Updates the photo on the specified user.
    * @param id the user's id.
    * @param photo the user's new photo.
    */

@@ -29,6 +29,7 @@ export class ReviewService {
   /**
    * Retrieves all the reviews of one product.
    * @param id the id of the product.
+   * @returns an observable containing all the product's review.
    */
   GetAllFromProduct(id: string) {
     return this.fireDatabase.collection<Review>(this.collection, ref => ref.where('productID', '==', id).orderBy('date')).snapshotChanges().pipe(map(
