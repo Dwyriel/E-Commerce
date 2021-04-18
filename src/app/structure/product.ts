@@ -1,5 +1,6 @@
 import { SubCategory } from './categories'
 import { ItemClassification } from './item-classification'
+import { Review } from './review';
 
 export class Product {
     id: string;
@@ -11,10 +12,12 @@ export class Product {
     gallery: string[] = [];
     subCatValue: number;
     subCategory: SubCategory;
+    avgReview: number;
+    reviews: Review[];
     verified: boolean = false;
 
     /**
-     * Uses the atribute subCatValue to retrieve and fill the atribute subCategory.
+     * Uses the attribute subCatValue to retrieve and fill the attribute subCategory.
      */
     public fillSubCategory() {
         if (!this.subCatValue) {
@@ -26,5 +29,17 @@ export class Product {
             return;
         }
         this.subCategory = ItemClassification.GetSubCatFromValue(this.subCatValue);
+    }
+
+    /**
+     * Calculates and attributes the percentage of good/bad reviews to avgReview.
+     */
+     public calculateAvgRating(){
+        const totalRatings: number = this.reviews.length;
+        var positiveRatings: number = 0;
+        this.reviews.forEach(rating => {
+            positiveRatings = (rating.recommend) ? ++positiveRatings : positiveRatings; 
+        });
+        this.avgReview = (positiveRatings / totalRatings)*100;
     }
 }
