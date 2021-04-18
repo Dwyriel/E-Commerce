@@ -45,7 +45,7 @@ export class UserService {
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data() }))
     ));
   }
-  
+
   /**
    * Retrieves the user with the specified id.
    * @param id the user's id.
