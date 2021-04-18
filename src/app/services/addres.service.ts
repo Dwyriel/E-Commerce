@@ -1,20 +1,21 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { Address } from "../structure/address";
 
 @Injectable({
   providedIn: 'root'
 })
-export class AddresService {
-  private colAddress: string = "Addresses";
+export class AddresService {//address is intentionally misspelled, otherwise there would be an internal error within typescript's own classes
+  private collection: string = "Addresses";
 
-  constructor(private fireDB: AngularFirestore) { }
+  constructor(private fireDatabase: AngularFirestore) { }
 
   /**
    * Creates a new address entry on the database.
    * @param address the address that will be saved on the database.
    */
   Add(address: Address) {
-    return this.fireDB.collection(this.colAddress).add({
+    return this.fireDatabase.collection(this.collection).add({
       state: address.state,
       city: address.city,
       cep: address.cep,
@@ -28,7 +29,7 @@ export class AddresService {
    * @param id the id that should be used to retrieve the address.
    */
   Get(id: string) {
-    return this.fireDB.collection(this.colAddress).doc<Address>(id).valueChanges();
+    return this.fireDatabase.collection(this.collection).doc<Address>(id).valueChanges();
   }
 
   /**
@@ -37,7 +38,7 @@ export class AddresService {
    * @param id the id of the entry that should be changed.
    */
   Update(address: Address, id: string) {
-    return this.fireDB.collection(this.colAddress).doc(id).update(address);
+    return this.fireDatabase.collection(this.collection).doc(id).update(address);
   }
 
   /**
@@ -45,6 +46,6 @@ export class AddresService {
    * @param id the id of the entry that will be deleted.
    */
   Delete(id: string) {
-    return this.fireDB.collection(this.colAddress).doc(id).delete();
+    return this.fireDatabase.collection(this.collection).doc(id).delete();
   }
 }

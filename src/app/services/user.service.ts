@@ -83,6 +83,22 @@ export class UserService {
     return await this.fireDatabase.collection(this.collection).doc(id).update({ photo: photo });
   }
 
+  /** Adds or updates the user's address.
+   * @param id the user's id.
+   * @param address the address's id on the database.
+   */
+  async UpdateAddress(id: string, address: string) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({ address: address });
+  }
+
+  /** Adds or updates the user's cart.
+   * @param id the user's id.
+   * @param cart the object that represents the cart.
+   */
+  async UpdateCart(id: string, cart: { productID: string, amount: number }[]) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({ cart: [...cart] });
+  }
+
   /** WARNING: DANGEROUS. 
    * deletes the user's information on the database. should be used with a lot of caution. 
    * @param id the user's id.
