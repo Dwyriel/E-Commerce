@@ -1,4 +1,4 @@
-import { Address } from "node:cluster";
+import { Address } from "./address";
 
 export class User {
     id: string;
