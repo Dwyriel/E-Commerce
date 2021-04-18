@@ -1,9 +1,9 @@
-export class Category{
+export class Category {
     title: string;
     category: Categories
 }
 
-export class SubCategory{
+export class SubCategory {
     title: string;
     category: Categories;
     subCategory: SubCategories;

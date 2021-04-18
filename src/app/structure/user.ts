@@ -1,4 +1,5 @@
 import { Address } from "./address";
+import { Rating } from "./rating";
 
 export class User {
     id: string;
@@ -12,19 +13,19 @@ export class User {
     userType: UserType;
     active: boolean = true;
     avgRating: number;
-    ratings: boolean[];
+    ratings: Rating[];
     cart: { productID: string, amount: number }[] = [];
 
     /**
      * Calculates and attributes the percentage of good/bad ratings to avgRating.
      */
-    calculateAvgRating(){
+    calculateAvgRating() {
         const totalRatings: number = this.ratings.length;
         var positiveRatings: number = 0;
         this.ratings.forEach(rating => {
-            positiveRatings = (rating) ? ++positiveRatings : positiveRatings; 
+            positiveRatings = (rating.recommend) ? ++positiveRatings : positiveRatings;
         });
-        this.avgRating = (positiveRatings / totalRatings)*100;
+        this.avgRating = (positiveRatings / totalRatings) * 100;
     }
 }
 
