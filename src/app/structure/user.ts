@@ -1,10 +1,13 @@
+import { Address } from "node:cluster";
+
 export class User {
     id: string;
     name: string;
     password: string;
     email: string;
     tel: string;
-    address: string;
+    addressId: string;
+    address: Address
     photo: string;
     userType: UserType;
     active: boolean = true;
