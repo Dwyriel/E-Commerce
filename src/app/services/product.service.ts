@@ -57,6 +57,14 @@ export class ProductService {
     return this.fireDatabase.collection(this.collection).doc(id).update(product);
   }
 
+  /** Changes the verified attribute on the specified product.
+   * @param id the product's id.
+   * @param verified the new verified value that will be attributed to the product.
+   */
+  async UpdateVerified(id: string, verified: boolean) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({ verified: verified });
+  }
+
   /**
    * Deletes the product from the database.
    * @param id the id of the product that will be deleted.
