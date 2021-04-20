@@ -9,9 +9,13 @@ import { AppInfoService } from 'src/app/services/app-info.service';
 export class HeaderComponent implements OnInit {
   @Input("title") public title: string = "";
   @Input("segment") public segment: number;
-  public shouldShow: boolean = (AppInfoService.isMobile) ? true : false;
+  public shouldShow: boolean = true;
 
-  constructor() { }
+  constructor() {
+    AppInfoService.GetIsMobile().subscribre(info => {
+      this.shouldShow = info.isMobile;
+    });
+  }
 
   ngOnInit() { }
 
