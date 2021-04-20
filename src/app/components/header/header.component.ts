@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AppInfoService } from 'src/app/services/app-info.service';
 
 @Component({
@@ -10,13 +11,22 @@ export class HeaderComponent implements OnInit {
   @Input("title") public title: string = "";
   @Input("segment") public segment: number;
   public shouldShow: boolean = true;
+  private subscription: Subscription;
 
   constructor() {
-    AppInfoService.GetIsMobile().subscribre(info => {
-      this.shouldShow = info.isMobile;
+  }
+
+  ngOnInit() {
+    if (this.subscription && !this.subscription.closed)
+      this.subscription.unsubscribe();
+    this.subscription = AppInfoService.GetAppInfo().subscribe(info => {
+      this.shouldShow = info.appWidth <= AppInfoService.maxMobileWidth;
     });
   }
 
-  ngOnInit() { }
+  ngOnDestroy() {
+    if (this.subscription && !this.subscription.closed)
+      this.subscription.unsubscribe();
+  }
 
 }
