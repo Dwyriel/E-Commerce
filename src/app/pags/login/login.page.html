@@ -1,15 +1,8 @@
-<ion-header [translucent]="true"> 
-  <ion-toolbar *ngIf="991 >= width">
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header title="Login" segment=0></app-header>
 
 <ion-content [fullscreen]="true">
   <app-header title="Login" segment=1></app-header>
-  <div [ngClass]="{'webrowser':width > 991}">
+  <div [ngClass]="{'webrowser':!checkScreen}">
     <form (ngSubmit)="OnFormSubmit(form)" #form="ngForm">
       <ion-item>
         <ion-label position="floating">Email <ion-text color="danger" *ngIf="!emailValidation.Email(formEmail.value) && formEmail.dirty">

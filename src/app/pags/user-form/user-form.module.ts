@@ -8,12 +8,15 @@ import { UserFormPageRoutingModule } from './user-form-routing.module';
 
 import { UserFormPage } from './user-form.page';
 
+import { ComponentModule } from '../../components/component.module';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    UserFormPageRoutingModule
+    UserFormPageRoutingModule,
+    ComponentModule
   ],
   declarations: [UserFormPage]
 })

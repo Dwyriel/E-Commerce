@@ -1,12 +1,9 @@
-<ion-header>
-  <ion-toolbar *ngIf="991 >= width">
-    <ion-title>Formulário de cadastro.</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header title="Formulário de cadastro" segment=0></app-header>
 
 <ion-content>
-  <div [ngClass]="{'webrowser':width > 991}">
-    <h3 *ngIf="width > 991">Formulário de cadastro.</h3>
+  <app-header title="Formulário de cadastro" segment=1></app-header>
+  <div [ngClass]="{'webrowser':!checkScreen}">
+    <h3 *ngIf="!checkScreen">Formulário de cadastro.</h3>
   <form (ngSubmit)="OnFormSubmit(form)" #form="ngForm">
     <ion-item>
       <ion-label position="floating">Nome </ion-label>

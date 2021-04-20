@@ -10,6 +10,8 @@ import { AlertService } from 'src/app/services/alert.service';
 import { ValidationService } from 'src/app/services/validation.service';
 import { UserService } from 'src/app/services/user.service';
 
+import { AppInfoService } from '../../services/app-info.service'
+
 
 @Component({
   selector: 'app-user-form',
@@ -34,6 +36,10 @@ export class UserFormPage implements OnInit {
   public ddd: string;
   public number: string;
   public telefone: string;
+
+  //device
+  public checkScreen: boolean;
+  private subscription3: Subscription;
 
   constructor(
     private platform: Platform,
@@ -83,6 +89,13 @@ export class UserFormPage implements OnInit {
       this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(data => { this.user = data; this.user.id = ans.uid;});
       this.logged = true;
       await this.alertService.dismissLoading(this.loadingAlert)
+    });
+  }
+  GetPlataformInfo() {
+    if (this.subscription3 && !this.subscription3.closed)
+      this.subscription3.unsubscribe();
+    this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
+      this.checkScreen = info.appWidth <= AppInfoService.maxMobileWidth;
     });
   }
   

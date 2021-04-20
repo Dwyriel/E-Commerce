@@ -24,7 +24,7 @@ export class AppComponent {
   private subscription1: Subscription;
 
   //device
-  public test: boolean;
+  public checkScreen: boolean;
   private subscription2: Subscription;
   private subscription3: Subscription;
 
@@ -73,7 +73,7 @@ export class AppComponent {
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
     this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.test = info.appWidth <= AppInfoService.maxMobileWidth;
+      this.checkScreen = info.appWidth <= AppInfoService.maxMobileWidth;
     });
   }
 

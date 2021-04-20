@@ -7,6 +7,7 @@ import { ValidationService } from 'src/app/services/validation.service';
 import { UserService } from 'src/app/services/user.service';
 
 import { Platform } from '@ionic/angular';
+import { AppInfoService } from '../../services/app-info.service'
 
 @Component({
   selector: 'app-login',
@@ -14,11 +15,16 @@ import { Platform } from '@ionic/angular';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-
+  
   public email: string = "";
   public password: string = "";
   private subscription1: Subscription;
-  public width: number;
+
+  //device
+  public checkScreen: boolean;
+  private subscription3: Subscription;
+
+  
   constructor(
     private platform: Platform,
     private userService: UserService, 
@@ -29,7 +35,7 @@ export class LoginPage implements OnInit {
     }
   
   ngOnInit() {
-    this.getScreenDimations();
+    this.GetPlataformInfo();
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     this.subscription1 = this.userService.auth.user.subscribe(ans => {
@@ -41,6 +47,8 @@ export class LoginPage implements OnInit {
   ionViewWillLeave() {
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
+    if (this.subscription3 && !this.subscription3.closed)
+      this.subscription3.unsubscribe();
   }
 
   async OnFormSubmit(form: NgForm) {
@@ -59,8 +67,12 @@ export class LoginPage implements OnInit {
         this.alertService.presentAlert("Error", "Email ou Senha invalidos");
       });
   }
-  getScreenDimations() {
-    this.width = this.platform.width();
+  GetPlataformInfo() {
+    if (this.subscription3 && !this.subscription3.closed)
+      this.subscription3.unsubscribe();
+    this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
+      this.checkScreen = info.appWidth <= AppInfoService.maxMobileWidth;
+    });
   }
   RecoveryPass(email : string){
     this.userService.auth.sendPasswordResetEmail(

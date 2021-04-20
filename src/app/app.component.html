@@ -1,5 +1,5 @@
 <ion-app>
-  <ion-split-pane contentId="main-content" *ngIf="test">
+  <ion-split-pane contentId="main-content" *ngIf="checkScreen">
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
         <ion-list id="normal-user-list">
@@ -61,7 +61,7 @@
   </ion-split-pane>
   
 
-  <div contentId="main-content" *ngIf="!test">   
+  <div contentId="main-content" *ngIf="!checkScreen">   
       <ion-grid>
         <ion-row>
           <ion-col *ngIf="!firebaseAns">
