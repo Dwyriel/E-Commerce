@@ -20,12 +20,13 @@ export class AppComponent {
   // verification log user
   public user: User = null;
   private loadingAlert: string;
-  public firebaseAns: boolean; 
+  public firebaseAns: boolean;
   private subscription1: Subscription;
 
   //device
   public test: boolean;
-  private subscription: Subscription;
+  private subscription2: Subscription;
+  private subscription3: Subscription;
 
   // change pages for categories
   public appPages = [
@@ -34,47 +35,64 @@ export class AppComponent {
     { title: 'About', url: '/about', icon: 'help-circle' },
   ];
 
-  
+
   constructor(
     private platform: Platform,
-    private userService: UserService, 
-    private alertService: AlertService, 
+    private userService: UserService,
+    private alertService: AlertService,
     private router: Router
-    ) { 
+  ) {
 
-    }
+  }
 
-    private Observable: Observable<Event>;
+  private Observable: Observable<Event>;
   async ngOnInit() {
     await this.verifyUser();
-    this.Observable = fromEvent(window, 'resize');
-    this.subscription = this.Observable.subscribe(event => {
-      this.getScreenDimations();
-    });
+    this.GetPlataformInfo();
   }
 
   ngOnDestroy() {
-    if (this.subscription && !this.subscription.closed)
-      this.subscription.unsubscribe();
+    if (this.subscription1 && !this.subscription1.closed)
+      this.subscription1.unsubscribe();
+    if (this.subscription2 && !this.subscription2.closed)
+      this.subscription2.unsubscribe();
+    if (this.subscription3 && !this.subscription3.closed)
+      this.subscription3.unsubscribe();
   }
- async getScreenDimations(){
-    if (this.subscription && !this.subscription.closed)
-      this.subscription.unsubscribe();
-    AppInfoService.PushAppInfo({
-       appWidth: this.platform.width(), 
-       appHeight: this.platform.height(), 
-       isDesktop: this.platform.is('desktop')});
-    this.subscription = AppInfoService.GetAppInfo().subscribe(info => {
+
+  GetPlataformInfo() {//does not need to be async yet
+    /**the method below needs to be executed once before, either here, on ngInit or the constructor to get the first values, 
+     * because {@link subscription2} doesn't go inside the code until the the {@link window} is resized */
+    this.getScreenDimations();
+    if (this.subscription2 && !this.subscription2.closed)
+      this.subscription2.unsubscribe();
+    this.Observable = fromEvent(window, 'resize');
+    this.subscription2 = this.Observable.subscribe(event => {
+      this.getScreenDimations();
+    });
+    if (this.subscription3 && !this.subscription3.closed)
+      this.subscription3.unsubscribe();
+    this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
       this.test = info.appWidth <= AppInfoService.maxMobileWidth;
     });
-   
   }
+
+  getScreenDimations() {
+    AppInfoService.PushAppInfo({
+      appWidth: this.platform.width(),
+      appHeight: this.platform.height(),
+      isDesktop: this.platform.is('desktop')
+    });
+  }
+
   async verifyUser() {
     this.userService.auth.user.subscribe(
       async ans => {
         if (ans) {
-        this.firebaseAns = true;
-        this.subscription1 = (await this.userService.Get(ans.uid)).subscribe(ans => this.user = ans);
+          this.firebaseAns = true;
+          if (this.subscription1 && !this.subscription1.closed)
+            this.subscription1.unsubscribe();
+          this.subscription1 = (await this.userService.Get(ans.uid)).subscribe(ans => this.user = ans);
           return;
         }
         this.firebaseAns = false;
@@ -85,6 +103,7 @@ export class AppComponent {
         console.log(err);
       });
   }
+
   async logout() {
     await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans });
     await this.userService.auth.signOut().then(async () => {
