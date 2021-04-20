@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { AppInfoService } from 'src/app/services/app-info.service';
 
 @Component({
   selector: 'app-header',
@@ -8,7 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
 export class HeaderComponent implements OnInit {
   @Input("title") public title: string = "";
   @Input("segment") public segment: number;
-  @Input("shouldShow") public shouldShow: boolean;
+  public shouldShow: boolean = (AppInfoService.isMobile) ? true : false;
 
   constructor() { }
 
