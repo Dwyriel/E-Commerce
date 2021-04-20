@@ -9,6 +9,7 @@ export class AppInfoService {
 
   private static appInfo = new BehaviorSubject<{ appWidth: number, appHeight: number, isDesktop: boolean }>({ appWidth: null, appHeight: null, isDesktop: null });
   private static userInfo = new BehaviorSubject<User>(new User());
+  public static maxMobileWidth: number = 880;
 
   /**
    * Puts and pushes new information into appInfo to all listeners.
