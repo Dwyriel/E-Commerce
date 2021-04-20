@@ -9,7 +9,7 @@ export class AppInfoService {
 
   private static appInfo = new BehaviorSubject<{ appWidth: number, appHeight: number, isDesktop: boolean }>({ appWidth: null, appHeight: null, isDesktop: null });
   private static userInfo = new BehaviorSubject<User>(new User());
-
+  private static isMobile = new BehaviorSubject<boolean>(true);
   /**
    * Puts and pushes new information into appInfo to all listeners.
    * @param object the new information for appInfo.
@@ -39,6 +39,22 @@ export class AppInfoService {
    * @returns an observable for the userInfo.
    */
   static GetUserInfo() {
+    return AppInfoService.userInfo.asObservable();
+  }
+
+  /**
+  *  Puts and pushes new value into isMobile to all listeners.
+  * @param value the new value for isMobile.
+  */
+  static PushIsMobile(value: boolean) {
+    AppInfoService.isMobile.next(value);
+  }
+
+  /**
+  * Retrives the isMobile's observable.
+  * @returns an observable for the userInfo.
+  */
+  static GetIsMobile() {
     return AppInfoService.userInfo.asObservable();
   }
 
