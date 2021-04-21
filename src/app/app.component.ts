@@ -8,7 +8,6 @@ import { User } from './structure/user';
 import { AlertService } from './services/alert.service';
 import { UserService } from './services/user.service';
 import { AppInfoService } from './services/app-info.service'
-import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-root',
@@ -21,18 +20,21 @@ export class AppComponent {
   public user: User = null;
   private loadingAlert: string;
   public firebaseAns: boolean;
-  private subscription1: Subscription;
 
   //device
   public checkScreen: boolean;
+
+  //subscriptions
+  private subscription1: Subscription;
   private subscription2: Subscription;
   private subscription3: Subscription;
+  private subscription4: Subscription;
 
   // change pages for categories
   public appPages = [
     { title: 'Home', url: '/home', icon: 'home' },
-    { title: 'Articles', url: '/Error', icon: 'newspaper' },
-    { title: 'About', url: '/about', icon: 'help-circle' },
+    { title: 'Login', url: '/login', icon: 'newspaper' },
+    { title: 'Form', url: '/account', icon: 'help-circle' },
   ];
 
 
@@ -40,7 +42,7 @@ export class AppComponent {
     private platform: Platform,
     private userService: UserService,
     private alertService: AlertService,
-    private router: Router
+    private router: Router//could probably remove this
   ) {
 
   }
@@ -58,21 +60,23 @@ export class AppComponent {
       this.subscription2.unsubscribe();
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
+    if (this.subscription4 && !this.subscription4.closed)
+      this.subscription4.unsubscribe();
   }
 
   GetPlataformInfo() {//does not need to be async yet
-    /**the method below needs to be executed once before, either here, on ngInit or the constructor to get the first values, 
-     * because {@link subscription2} doesn't go inside the code until the the {@link window} is resized */
+    /**the method below needs to be executed once before, either here, in ngInit or in the constructor to get the first values, 
+     * because {@link subscription3} doesn't go inside the code until the the {@link window} is resized */
     this.getScreenDimations();
-    if (this.subscription2 && !this.subscription2.closed)
-      this.subscription2.unsubscribe();
-    this.Observable = fromEvent(window, 'resize');
-    this.subscription2 = this.Observable.subscribe(event => {
-      this.getScreenDimations();
-    });
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
-    this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
+    this.Observable = fromEvent(window, 'resize');
+    this.subscription3 = this.Observable.subscribe(event => {
+      this.getScreenDimations();
+    });
+    if (this.subscription4 && !this.subscription4.closed)
+      this.subscription4.unsubscribe();
+    this.subscription4 = AppInfoService.GetAppInfo().subscribe(info => {
       this.checkScreen = info.appWidth <= AppInfoService.maxMobileWidth;
     });
   }
@@ -86,20 +90,28 @@ export class AppComponent {
   }
 
   async verifyUser() {
-    this.userService.auth.user.subscribe(
+    if (this.subscription1 && !this.subscription1.closed)
+      this.subscription1.unsubscribe();
+    this.subscription1 = this.userService.auth.user.subscribe(
       async ans => {
         if (ans) {
           this.firebaseAns = true;
-          if (this.subscription1 && !this.subscription1.closed)
-            this.subscription1.unsubscribe();
-          this.subscription1 = (await this.userService.Get(ans.uid)).subscribe(ans => this.user = ans);
+          if (this.subscription2 && !this.subscription2.closed)
+            this.subscription2.unsubscribe();
+          this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(ans2 => {
+            this.user = ans2;
+            this.user.id = ans.uid;
+            AppInfoService.PushUserInfo(this.user);
+          });
           return;
         }
         this.firebaseAns = false;
         this.user = null;
+        AppInfoService.PushUserInfo(this.user);
       },
       err => {
         this.user = null;
+        AppInfoService.PushUserInfo(this.user);
         console.log(err);
       });
   }
@@ -107,10 +119,11 @@ export class AppComponent {
   async logout() {
     await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans });
     await this.userService.auth.signOut().then(async () => {
-      await this.alertService.dismissLoading(this.loadingAlert);
       this.user = null;
-      if (this.subscription1 && !this.subscription1.closed)
-        this.subscription1.unsubscribe();
+      AppInfoService.PushUserInfo(this.user);
+      if (this.subscription2 && !this.subscription2.closed)
+        this.subscription2.unsubscribe();
+      await this.alertService.dismissLoading(this.loadingAlert);
     });
   }
 

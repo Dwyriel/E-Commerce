@@ -4,57 +4,57 @@
   <app-header title="Formulário de cadastro" segment=1></app-header>
   <div [ngClass]="{'webrowser':!checkScreen}">
     <h3 *ngIf="!checkScreen">Formulário de cadastro.</h3>
-  <form (ngSubmit)="OnFormSubmit(form)" #form="ngForm">
-    <ion-item>
-      <ion-label position="floating">Nome </ion-label>
-      <ion-input type="text" name="user-name" [(ngModel)]=user.name required pattern="[a-zA-Z ]*"></ion-input>
-    </ion-item>
-    <div *ngIf="!logged">
+    <form (ngSubmit)="OnFormSubmit(form)" #form="ngForm">
       <ion-item>
-      <ion-label position="floating">Email <ion-text color="danger" *ngIf="email.dirty && !Validation.Email(email.value)">
-          <b>Email invalido</b> </ion-text>
-      </ion-label>
-      <ion-input type="email" name="user-email" [(ngModel)]=user.email #email="ngModel" required></ion-input>
-    </ion-item>
-    <ion-row>
-      <ion-col size="4">
-        <ion-item>
-          <ion-label position="floating" >DDD<ion-text color="danger" *ngIf="dddvalid.dirty && !Validation.Ddd(dddvalid.value)">
-            <b> invalido</b></ion-text> 
-          </ion-label>
-          <ion-input type="text" name="ddd" [(ngModel)]=ddd maxlength="2"  #dddvalid="ngModel" required></ion-input>
-        </ion-item>
-      </ion-col>
-      <ion-col>
-        <ion-item>
-          <ion-label position="floating">Telefone <ion-text color="danger" *ngIf="tel.dirty && !Validation.Tel(tel.value)">
-              <b>Telefone invalido</b> </ion-text>
-          </ion-label>
-          <ion-input type="text" name="number" [(ngModel)]=number #tel="ngModel" minlength="8" maxlength="9" required></ion-input>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-      <ion-item>
-        <ion-label position="floating">Senha <ion-text color="danger" *ngIf="password.invalid && password.dirty"><b>Senha curta</b> </ion-text>
-        </ion-label>
-        <ion-input type="password" name="user-password" [(ngModel)]=user.password #password="ngModel" minlength="{{minlength}}"
-          required></ion-input>
+        <ion-label position="floating">Nome </ion-label>
+        <ion-input type="text" name="user-name" [(ngModel)]=user.name required pattern="[a-zA-Z ]*"></ion-input>
       </ion-item>
-      <ion-item>
-        <ion-label position="floating">Confirmar Senha <ion-text color="danger"
-            *ngIf="confirmation.value != password.value && confirmation.dirty"><b>Senhas não conferem</b> </ion-text>
+      <div *ngIf="!logged">
+        <ion-item>
+        <ion-label position="floating">Email <ion-text color="danger" *ngIf="email.dirty && !Validation.Email(email.value)">
+            <b>Email invalido</b> </ion-text>
         </ion-label>
-        <ion-input type="password" name="confirm" [(ngModel)]=confirm #confirmation="ngModel" minlength="{{minlength}}" required>
-        </ion-input>
+        <ion-input type="email" name="user-email" [(ngModel)]=user.email #email="ngModel" required></ion-input>
       </ion-item>
-      <ion-button class="ion-margin" expand="block" size="default"
-        [disabled]="form.invalid || (confirmation.value != password.value) || !Validation.Email(email.value) || !Validation.Tel(tel.value) || !Validation.Ddd(dddvalid.value)" type="submit">Cadastrar</ion-button>
-    </div>
-    <div *ngIf="logged">
-      <ion-button class="ion-margin" expand="block" size="default" [disabled]="form.invalid" type="submit">Atualizar</ion-button>
-    </div>
-    <ion-button *ngIf="!logged" class="ion-margin" expand="block" size="default" type="reset" routerLink="/login">Cancelar</ion-button>
-    <ion-button *ngIf="logged" class="ion-margin" expand="block" size="default" type="reset" routerLink="/">Cancelar</ion-button>
-  </form>
-</div>
+      <ion-row>
+        <ion-col size="4">
+          <ion-item>
+            <ion-label position="floating" >DDD<ion-text color="danger" *ngIf="dddvalid.dirty && !Validation.Ddd(dddvalid.value)">
+              <b> invalido</b></ion-text> 
+            </ion-label>
+            <ion-input type="text" name="ddd" [(ngModel)]=ddd maxlength="2"  #dddvalid="ngModel" required></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">Telefone <ion-text color="danger" *ngIf="tel.dirty && !Validation.Tel(tel.value)">
+                <b>Telefone invalido</b> </ion-text>
+            </ion-label>
+            <ion-input type="text" name="number" [(ngModel)]=number #tel="ngModel" minlength="8" maxlength="9" required></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+        <ion-item>
+          <ion-label position="floating">Senha <ion-text color="danger" *ngIf="password.invalid && password.dirty"><b>Senha curta</b> </ion-text>
+          </ion-label>
+          <ion-input type="password" name="user-password" [(ngModel)]=user.password #password="ngModel" minlength="{{minlength}}"
+            required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Confirmar Senha <ion-text color="danger"
+              *ngIf="confirmation.value != password.value && confirmation.dirty"><b>Senhas não conferem</b> </ion-text>
+          </ion-label>
+          <ion-input type="password" name="confirm" [(ngModel)]=confirm #confirmation="ngModel" minlength="{{minlength}}" required>
+          </ion-input>
+        </ion-item>
+        <ion-button class="ion-margin" expand="block" size="default"
+          [disabled]="form.invalid || (confirmation.value != password.value) || !Validation.Email(email.value) || !Validation.Tel(tel.value) || !Validation.Ddd(dddvalid.value)" type="submit">Cadastrar</ion-button>
+      </div>
+      <div *ngIf="logged">
+        <ion-button class="ion-margin" expand="block" size="default" [disabled]="form.invalid" type="submit">Atualizar</ion-button>
+      </div>
+      <ion-button *ngIf="!logged" class="ion-margin" expand="block" size="default" type="reset" routerLink="/login">Cancelar</ion-button>
+      <ion-button *ngIf="logged" class="ion-margin" expand="block" size="default" type="reset" routerLink="/">Cancelar</ion-button>
+    </form>
+  </div>
 </ion-content>

@@ -5,7 +5,7 @@
   <div [ngClass]="{'webrowser':!checkScreen}">
     <form (ngSubmit)="OnFormSubmit(form)" #form="ngForm">
       <ion-item>
-        <ion-label position="floating">Email <ion-text color="danger" *ngIf="!emailValidation.Email(formEmail.value) && formEmail.dirty">
+        <ion-label position="floating">Email <ion-text color="danger" *ngIf="!validationService.Email(formEmail.value) && formEmail.dirty">
             <b>Email invalid</b> </ion-text>
         </ion-label>
         <ion-input type="email" name="user-email" [(ngModel)]=email #formEmail="ngModel" required></ion-input>
@@ -15,11 +15,11 @@
         <ion-input type="password" name="user-ps" [(ngModel)]=password required></ion-input>
       </ion-item>
   
-      <ion-button expand="block" size="default" [disabled]="form.invalid || !emailValidation.Email(formEmail.value)" class="ion-margin" type="submit">
+      <ion-button expand="block" size="default" [disabled]="form.invalid || !validationService.Email(formEmail.value)" class="ion-margin" type="submit">
         Entrar </ion-button>
       <ion-button expand="block" size="default" type="reset" class="ion-margin" routerLink="/">Cancelar</ion-button>
     </form>
-    <ion-button expand="block" size="small" [disabled]="!emailValidation.Email(formEmail.value)" class="ion-margin" (click)="RecoveryPass(email)">
+    <ion-button expand="block" size="small" [disabled]="!validationService.Email(formEmail.value)" class="ion-margin" (click)="RecoveryPass(email)">
       esqueceu a senha? </ion-button>
     <p style="text-align: center;"><a routerLink="/account">Novo aqui? Registre-se</a></p>
   </div>

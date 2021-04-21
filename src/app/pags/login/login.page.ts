@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { EmailValidator, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { ValidationService } from 'src/app/services/validation.service';
 import { UserService } from 'src/app/services/user.service';
-
-import { Platform } from '@ionic/angular';
-import { AppInfoService } from '../../services/app-info.service'
+import { AppInfoService } from '../../services/app-info.service';
 
 @Component({
   selector: 'app-login',
@@ -15,30 +13,31 @@ import { AppInfoService } from '../../services/app-info.service'
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-  
+
   public email: string = "";
   public password: string = "";
-  private subscription1: Subscription;
 
   //device
   public checkScreen: boolean;
-  private subscription3: Subscription;
 
-  
+  //Subscriptions
+  private subscription1: Subscription;
+  private subscription2: Subscription;
+
   constructor(
-    private platform: Platform,
-    private userService: UserService, 
-    private router: Router, 
-    public emailValidation: ValidationService, 
-    private alertService: AlertService) { 
-  
-    }
-  
-  ngOnInit() {
+    private userService: UserService,
+    private router: Router,
+    public validationService: ValidationService,
+    private alertService: AlertService) {
+  }
+
+  ngOnInit() { }
+
+  ionViewWillEnter() {
     this.GetPlataformInfo();
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-    this.subscription1 = this.userService.auth.user.subscribe(ans => {
+    this.subscription1 = AppInfoService.GetUserInfo().subscribe(ans => {
       if (ans)
         this.router.navigate(["/"]);
     });
@@ -47,48 +46,53 @@ export class LoginPage implements OnInit {
   ionViewWillLeave() {
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-    if (this.subscription3 && !this.subscription3.closed)
-      this.subscription3.unsubscribe();
+    if (this.subscription2 && !this.subscription2.closed)
+      this.subscription2.unsubscribe();
   }
 
   async OnFormSubmit(form: NgForm) {
     var loadingId: string;
     await this.alertService.presentLoading().then(ans => loadingId = ans);
     await this.userService.auth.signInWithEmailAndPassword(this.email, this.password).then(
-      ans => {
-        this.alertService.dismissLoading(loadingId);
+      async ans => {
+        await this.alertService.dismissLoading(loadingId);
         form.reset();
-        setTimeout(() => this.router.navigate(["/"]), 300);
+        await this.router.navigate(["/"]);
       },
-      err => {
-        this.alertService.dismissLoading(loadingId);
+      async err => {
+        await this.alertService.dismissLoading(loadingId);
         this.password = "";
         console.log("Error: ", err);
-        this.alertService.presentAlert("Error", "Email ou Senha invalidos");
+        await this.alertService.presentAlert("Error", "Email ou Senha invalidos");
       });
   }
+
   GetPlataformInfo() {
-    if (this.subscription3 && !this.subscription3.closed)
-      this.subscription3.unsubscribe();
-    this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
+    if (this.subscription2 && !this.subscription2.closed)
+      this.subscription2.unsubscribe();
+    this.subscription2 = AppInfoService.GetAppInfo().subscribe(info => {
       this.checkScreen = info.appWidth <= AppInfoService.maxMobileWidth;
+      this.setLoginDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
     });
   }
-  RecoveryPass(email : string){
+
+  RecoveryPass(email: string) {
     this.userService.auth.sendPasswordResetEmail(
       email,
-      {url: 'http://localhost:8100'}
-      
+      { url: 'http://localhost:8100' }
     ).then(
-      ()=>{
-        this.alertService.presentAlert("Sucesso", "E-mail de recuperação enviado para sua caixa de mensagens");
-        this.router.navigate(["/"]);
+      async () => {
+        await this.alertService.presentAlert("Sucesso", "E-mail de recuperação enviado para sua caixa de mensagens");
+        await this.router.navigate(["/"]);
       },
-      err=>{
-        this.alertService.presentAlert("Sucesso", "E-mail de recuperação enviado para sua caixa de mensagens");
-        this.router.navigate(["/"]);
+      async err => {
+        await this.alertService.presentAlert("Sucesso", "E-mail de recuperação enviado para sua caixa de mensagens");
+        await this.router.navigate(["/"]);
       }
     );
-      
-    }
+  }
+
+  setLoginDivWidth(value: string) {
+    document.body.style.setProperty('--maxWidth', value);
+  }
 }

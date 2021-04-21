@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Form, NgForm } from '@angular/forms';;
-
-import { Platform } from '@ionic/angular';
+import { NgForm } from '@angular/forms';;
 import { Router } from '@angular/router';
-import { AngularDelegate } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { User, UserType } from 'src/app/structure/user';
 import { AlertService } from 'src/app/services/alert.service';
@@ -20,18 +17,15 @@ import { AppInfoService } from '../../services/app-info.service'
 })
 export class UserFormPage implements OnInit {
 
-  public width: number;
   public logged: boolean = false;
   public user: User = new User;
   public title: string = "Dados da Conta";
   public minlength: number = 6;
-  
+
   private loadingAlert: string;
-  private subscription1: Subscription;
-  private subscription2: Subscription;
 
   public confirm = ""; // confirm password ?!
-  
+
   // telefone
   public ddd: string;
   public number: string;
@@ -39,23 +33,23 @@ export class UserFormPage implements OnInit {
 
   //device
   public checkScreen: boolean;
-  private subscription3: Subscription;
+
+  //subscriptions
+  private subscription1: Subscription;
+  private subscription2: Subscription;
 
   constructor(
-    private platform: Platform,
-    private userService: UserService, 
-    public Validation: ValidationService, 
-    private alertService: AlertService, 
+    private userService: UserService,
+    public Validation: ValidationService,
+    private alertService: AlertService,
     private router: Router
-    ) { 
-      this.getScreenDimations();
-    }
+  ) { }
 
-  ngOnInit() {
-    this.getScreenDimations();
-  }
+  ngOnInit() { }
+
   ionViewWillEnter() {
     this.checkIfLogged();
+    this.GetPlataformInfo();
   }
 
   ionViewWillLeave() {
@@ -74,7 +68,8 @@ export class UserFormPage implements OnInit {
     await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans; });
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-    this.subscription1 = this.userService.auth.user.subscribe(async ans => {//will always return an ans, even if not logged in, but ans will be null
+
+    this.subscription1 = AppInfoService.GetUserInfo().subscribe(async ans => {
       if (!ans) {
         this.logged = false;
         this.user = new User();
@@ -84,68 +79,62 @@ export class UserFormPage implements OnInit {
         await this.alertService.dismissLoading(this.loadingAlert)
         return;
       }
-      if (this.subscription2 && !this.subscription2.closed)
-        this.subscription2.unsubscribe();
-      this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(data => { this.user = data; this.user.id = ans.uid;});
+      this.user = ans;
       this.logged = true;
       await this.alertService.dismissLoading(this.loadingAlert)
     });
   }
+
   GetPlataformInfo() {
-    if (this.subscription3 && !this.subscription3.closed)
-      this.subscription3.unsubscribe();
-    this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
+    if (this.subscription2 && !this.subscription2.closed)
+      this.subscription2.unsubscribe();
+    this.subscription2 = AppInfoService.GetAppInfo().subscribe(info => {
       this.checkScreen = info.appWidth <= AppInfoService.maxMobileWidth;
+      this.setFormDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"))
     });
   }
-  
+
   async OnFormSubmit(form: NgForm) {
     if (form.valid) {
       await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans; });
 
-      this.TelFone(this.ddd, this.telefone);
-      this.user.tel = this.telefone;
+      this.user.tel = this.ddd + this.telefone;//easier no? :)
 
       if (!this.logged)
         await this.userService.AddUser(this.user).then(
-          ans => {
+          async ans => {
             form.reset;
-            this.successfulSubmit("Parabens", "Registro efetuado com sucesso.", "");
-          }, err => {
-            this.failedSubmit("Ocorreu um erro", "Seu registro não pôde ser efetuado.", err)
+            await this.successfulSubmit("Parabens", "Registro efetuado com sucesso.", "");
+          }, async err => {
+            await this.failedSubmit("Ocorreu um erro", "Seu registro não pôde ser efetuado.", err)
           });
       else {
         this.userService.Update(this.user).then(
-          ans =>{
+          async ans => {
             form.reset();
-            this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/");
-          }, err => {
-            this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado.", err);
+            await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/");
+          }, async err => {
+            await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado.", err);
           });
       }
     }
   }
 
-  successfulSubmit(title: string, description: string, navigateTo: string) {
+  async successfulSubmit(title: string, description: string, navigateTo: string) {
     this.user = new User();
     this.logged = false;
-    this.alertService.presentAlert(title, description);
-    setTimeout(() => this.alertService.dismissLoading(this.loadingAlert), 200);
-    setTimeout(() => this.router.navigate([navigateTo]), 300);
+    await this.alertService.presentAlert(title, description);
+    await this.alertService.dismissLoading(this.loadingAlert);
+    await this.router.navigate([navigateTo]);
   }
 
-  failedSubmit(title: string, description: string, err) {
+  async failedSubmit(title: string, description: string, err) {
     console.log(err);
-    this.alertService.presentAlert(title, description);
-    setTimeout(() => this.alertService.dismissLoading(this.loadingAlert), 200);
+    await this.alertService.presentAlert(title, description);
+    await this.alertService.dismissLoading(this.loadingAlert);
   }
 
-  async TelFone(ddd:string, tel:string){
-    this.telefone = ddd + tel;
-    return this.telefone;
-  }
-
-  getScreenDimations() {
-    this.width = this.platform.width();
+  setFormDivWidth(value: string) {
+    document.body.style.setProperty('--maxWidth', value);
   }
 }
