@@ -17,20 +17,20 @@
         <ion-input type="email" name="user-email" [(ngModel)]=user.email #email="ngModel" required></ion-input>
       </ion-item>
       <ion-row style="margin: -5px">
-        <ion-col size="4" style="margin-right: -5px">
+        <ion-col size="3.5">
           <ion-item>
-            <ion-label position="floating" >DDD<ion-text color="danger" *ngIf="dddvalid.dirty && !Validation.Ddd(dddvalid.value)">
-              <b> invalido</b></ion-text> 
-            </ion-label>
-            <ion-input type="text" name="ddd" [(ngModel)]=ddd maxlength="2"  #dddvalid="ngModel" required></ion-input>
+            <ion-label position="floating" >DDD</ion-label>
+            <ion-input type="tel" name="ddd" [(ngModel)]=ddd maxlength="2"  #dddvalid="ngModel" required></ion-input>
           </ion-item>
         </ion-col>
-        <ion-col style="margin-left: -5px">
+        <ion-col size="8.5">
           <ion-item>
-            <ion-label position="floating">Telefone <ion-text color="danger" *ngIf="tel.dirty && !Validation.Tel(tel.value)">
-                <b>Telefone invalido</b> </ion-text>
+            <ion-label position="floating">Telefone
+              <ion-text color="danger" *ngIf="dddvalid.dirty && !Validation.Ddd(dddvalid.value)  && !(tel.dirty && !Validation.Tel(tel.value))"><b>DDD invalido</b></ion-text> 
+              <ion-text color="danger" *ngIf="tel.dirty && !Validation.Tel(tel.value) && !(dddvalid.dirty && !Validation.Ddd(dddvalid.value))"><b>Telefone invalido</b></ion-text>
+              <ion-text  color="danger" *ngIf="tel.dirty && !Validation.Tel(tel.value) && dddvalid.dirty && !Validation.Ddd(dddvalid.value)"><b style="font-size: .75rem;"> DDD e Telefone invalido</b></ion-text>
             </ion-label>
-            <ion-input type="text" name="number" [(ngModel)]=number #tel="ngModel" minlength="8" maxlength="9" required></ion-input>
+            <ion-input type="tel" name="number" [(ngModel)]=number #tel="ngModel" minlength="8" maxlength="9" required></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>

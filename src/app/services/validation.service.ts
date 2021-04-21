@@ -40,7 +40,7 @@ export class ValidationService {
   }
   // Recommended new tests
   Tel(tel: string){
-    var val: RegExp = /[0-9]/;
+    var val: RegExp = /[0-9]{8,9}/;
     return val.test(tel);
   }
 
