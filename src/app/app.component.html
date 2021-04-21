@@ -1,3 +1,97 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-split-pane contentId="main-content" *ngIf="checkScreen">
+    <ion-menu contentId="main-content" type="overlay">
+      <ion-content>
+        <ion-list id="normal-user-list">
+          <ion-menu-toggle *ngIf="firebaseAns" auto-hide="false">
+            <ion-item routerLink="/profile">
+              <img id="userimage" *ngIf="user && !user.photo" src="../assets/perfil.png">
+              <img id="userimage" *ngIf="user && user.photo" [src]="user.photo">
+              <ion-list-header *ngIf="user">{{ user.name }}</ion-list-header>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle *ngIf="!firebaseAns" auto-hide="false">
+            <ion-item routerLink="/login">
+              <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
+              <ion-list-header>Log In</ion-list-header>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false" *ngFor="let page of appPages; let i = index">
+            <ion-item routerDirection="root" [routerLink]="[page.url]" lines="none" detail="false"
+              routerLinkActive="selected">
+              <ion-icon slot="start" [ios]="page.icon + '-outline'" [md]="page.icon + '-sharp'"></ion-icon>
+              <ion-label>{{ page.title }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+        <ion-list *ngIf="firebaseAns && user && (user.userType == 0 || user.userType == 1)" id="ultra-user-list">
+          <div>
+            <ion-menu-toggle auto-hide="false" *ngFor="let page of editorAppPages; let i = index">
+              <ion-item routerDirection="root" [routerLink]="[page.url]" lines="none" detail="false"
+                routerLinkActive="selected">
+                <ion-icon slot="start" [ios]="page.icon + '-outline'" [md]="page.icon + '-sharp'"></ion-icon>
+                <ion-label>{{ page.title }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </div>
+          <div *ngIf="firebaseAns && user && user.userType == 0">
+            <ion-menu-toggle auto-hide="false" *ngFor="let page of adminAppPages; let i = index">
+              <ion-item routerDirection="root" [routerLink]="[page.url]" lines="none" detail="false"
+                routerLinkActive="selected">
+                <ion-icon slot="start" [ios]="page.icon + '-outline'" [md]="page.icon + '-sharp'"></ion-icon>
+                <ion-label>{{ page.title }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </div>
+        </ion-list>
+        
+        <ion-fab *ngIf="firebaseAns" vertical="bottom" horizontal="center" id="logout">
+          <ion-item (click)="logout()">
+            <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
+            <ion-label>Logout</ion-label>
+          </ion-item>
+        </ion-fab>
+      </ion-content>
+    </ion-menu>
+    
+     
+    
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+    
+  </ion-split-pane>
+  
+
+  <div contentId="main-content" *ngIf="!checkScreen">   
+      <ion-grid>
+        <ion-row>
+          <ion-col *ngIf="!firebaseAns">
+            <ion-item routerLink="/login" lines="none">
+              <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>
+              <ion-label>Log In</ion-label>
+            </ion-item>
+          </ion-col>
+          <ion-col *ngIf="firebaseAns">
+            <ion-item (click)="logout()">
+              <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
+              <ion-label>Logout</ion-label>
+            </ion-item>
+          </ion-col>
+          <ng-container *ngFor="let page of appPages; let i = index">
+          <ion-col>
+            <ion-item routerDirection="root" [routerLink]="[page.url]" lines="none" detail="false"
+            routerLinkActive="selected">
+            <ion-icon slot="start" [ios]="page.icon + '-outline'" [md]="page.icon + '-sharp'"></ion-icon>
+            <ion-label>{{ page.title }}</ion-label>
+            </ion-item>
+          </ion-col>
+        </ng-container>
+       
+          <!-- <ion-col>
+            <ion-searchbar placeholder="Pesquisar"></ion-searchbar>
+          </ion-col> -->
+        </ion-row>
+      </ion-grid>
+       <ion-router-outlet id="main-content"></ion-router-outlet>
+    </div>
+    
 </ion-app>

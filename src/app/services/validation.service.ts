@@ -38,6 +38,27 @@ export class ValidationService {
   Custom(text: string, val: RegExp) {
     return val.test(text);
   }
+  // Recommended new tests
+  Tel(tel: string){
+    var val: RegExp = /[0-9]{8,9}/;
+    return val.test(tel);
+  }
+
+  /* (all ddd from Brazil) check ddd in two-digit groups
+  * ?: agroup
+  * after form groups of two digits, generate check options:
+  * 2[12478] for Rio de Janeiro and Espírito Santo,
+  * 3[1234578] for Minas Gerais,
+  * 5[1345] para Rio Grande do Sul,
+  * 7[134579] for Bahia and Sergipe,
+  * [14689][1-9] for rest of Brazil.
+  * ^\((?:[14689][1-9]|2[12478]|3[1234578]|5[1345]|7[134579])\) (?:[2-8]|9[1-9])[0-9]{3}\-[0-9]{4}$ - (with parentheses, spaces and hyphens required)
+  * ^\(?(?:[14689][1-9]|2[12478]|3[1234578]|5[1345]|7[134579])\)? ?(?:[2-8]|9[1-9])[0-9]{3}\-?[0-9]{4}$ - (not required)
+  */
+  Ddd(ddd: string){
+    var val: RegExp = /(?:[14689][1-9]|2[12478]|3[1234578]|5[1345]|7[134579])/;
+    return val.test(ddd);
+  }
 
   /** Potential RegExp for usage:
    * (\(\d{2}\))(\d{4,5}\-\d{4})  -  telefone com ddd
