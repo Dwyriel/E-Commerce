@@ -16,8 +16,8 @@
         </ion-label>
         <ion-input type="email" name="user-email" [(ngModel)]=user.email #email="ngModel" required></ion-input>
       </ion-item>
-      <ion-row>
-        <ion-col size="4">
+      <ion-row style="margin: -5px">
+        <ion-col size="4" style="margin-right: -5px">
           <ion-item>
             <ion-label position="floating" >DDD<ion-text color="danger" *ngIf="dddvalid.dirty && !Validation.Ddd(dddvalid.value)">
               <b> invalido</b></ion-text> 
@@ -25,7 +25,7 @@
             <ion-input type="text" name="ddd" [(ngModel)]=ddd maxlength="2"  #dddvalid="ngModel" required></ion-input>
           </ion-item>
         </ion-col>
-        <ion-col>
+        <ion-col style="margin-left: -5px">
           <ion-item>
             <ion-label position="floating">Telefone <ion-text color="danger" *ngIf="tel.dirty && !Validation.Tel(tel.value)">
                 <b>Telefone invalido</b> </ion-text>
