@@ -8,6 +8,7 @@ import { ValidationService } from 'src/app/services/validation.service';
 import { UserService } from 'src/app/services/user.service';
 
 import { AppInfoService } from '../../services/app-info.service'
+import { NavController } from '@ionic/angular';
 
 
 @Component({
@@ -18,7 +19,8 @@ import { AppInfoService } from '../../services/app-info.service'
 export class UserFormPage implements OnInit {
 
   public logged: boolean = false;
-  public user: User = new User;
+  public toBeSentUser: User = new User();
+  public loggedUser: User = new User();
   public title: string = "Dados da Conta";
   public minlength: number = 6;
 
@@ -42,7 +44,8 @@ export class UserFormPage implements OnInit {
     private userService: UserService,
     public Validation: ValidationService,
     private alertService: AlertService,
-    private router: Router
+    private router: Router,
+    public navCtrl: NavController
   ) { }
 
   ngOnInit() { }
@@ -53,7 +56,7 @@ export class UserFormPage implements OnInit {
   }
 
   ionViewWillLeave() {
-    this.user = new User();
+    this.toBeSentUser = new User();
     this.logged = false;
     this.confirm = null;
     this.ddd = null;
@@ -64,6 +67,7 @@ export class UserFormPage implements OnInit {
     if (this.subscription2 && !this.subscription2.closed)
       this.subscription2.unsubscribe();
   }
+
   async checkIfLogged() {
     await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans; });
     if (this.subscription1 && !this.subscription1.closed)
@@ -72,14 +76,17 @@ export class UserFormPage implements OnInit {
     this.subscription1 = AppInfoService.GetUserInfo().subscribe(async ans => {
       if (!ans) {
         this.logged = false;
-        this.user = new User();
+        this.toBeSentUser = new User();
         this.confirm = null;
-        this.user.userType = UserType.User;
+        this.toBeSentUser.userType = UserType.User;
         this.title = "Novo Usuário";
         await this.alertService.dismissLoading(this.loadingAlert)
         return;
       }
-      this.user = ans;
+      this.loggedUser = this.CreateNewUser(ans);
+      this.toBeSentUser = this.CreateNewUser(ans);
+      this.ddd = ans.tel.substring(0, 2);
+      this.number = ans.tel.substring(2);
       this.logged = true;
       await this.alertService.dismissLoading(this.loadingAlert)
     });
@@ -95,33 +102,44 @@ export class UserFormPage implements OnInit {
   }
 
   async OnFormSubmit(form: NgForm) {
+    this.toBeSentUser.tel = this.ddd + this.number;
+    console.log(this.toBeSentUser.password);
+    console.log(this.loggedUser.password);
     if (form.valid) {
       await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans; });
-
-      this.user.tel = this.ddd + this.telefone;//easier no? :)
-
+      this.toBeSentUser.tel = this.ddd + this.number;//easier no? :)
       if (!this.logged)
-        await this.userService.AddUser(this.user).then(
-          async ans => {
+        await this.userService.AddUser(this.toBeSentUser).then(
+          async () => {
             form.reset;
             await this.successfulSubmit("Parabens", "Registro efetuado com sucesso.", "");
           }, async err => {
             await this.failedSubmit("Ocorreu um erro", "Seu registro não pôde ser efetuado.", err)
           });
       else {
-        this.userService.Update(this.user).then(
-          async ans => {
-            form.reset();
-            await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/");
-          }, async err => {
-            await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado.", err);
+        this.userService.auth.signInWithEmailAndPassword(this.loggedUser.email, this.loggedUser.password).then(async ans => {
+          await (await this.userService.auth.currentUser).updateEmail(this.toBeSentUser.email).then(async () => {
+            await (await this.userService.auth.currentUser).updatePassword(this.toBeSentUser.password).then(async () => {
+              this.userService.Update(this.toBeSentUser).then(
+                async () => {
+                  form.reset();
+                  await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/");//send to profile?
+                }, async err => {
+                  await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado.", err);
+                });
+            });
           });
+        }, async err => {
+          await this.alertService.dismissLoading(this.loadingAlert);
+          this.loggedUser.password = "";
+          await this.alertService.presentAlert("Error", "Senha Antiga não corresponde com a conta.");
+        });
       }
     }
   }
 
   async successfulSubmit(title: string, description: string, navigateTo: string) {
-    this.user = new User();
+    this.toBeSentUser = new User();
     this.logged = false;
     await this.alertService.presentAlert(title, description);
     await this.alertService.dismissLoading(this.loadingAlert);
@@ -136,5 +154,19 @@ export class UserFormPage implements OnInit {
 
   setFormDivWidth(value: string) {
     document.body.style.setProperty('--maxWidth', value);
+  }
+
+  GoBack() {
+    this.navCtrl.back()
+    this.navCtrl.pop();//not sure if this is the best way, but it does completely wipe out the page instance from the router, meaning it will be reinitiated every time.
+  }
+
+  CreateNewUser(user: User) {
+    var newUser: User = new User();
+    newUser.email = user.email;
+    newUser.name = user.name;
+    newUser.tel = user.tel;
+    newUser.id = user.id
+    return newUser;
   }
 }

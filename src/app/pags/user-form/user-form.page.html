@@ -7,23 +7,22 @@
     <form (ngSubmit)="OnFormSubmit(form)" #form="ngForm">
       <ion-item>
         <ion-label position="floating">Nome </ion-label>
-        <ion-input type="text" name="user-name" [(ngModel)]=user.name required pattern="[a-zA-Z ]*"></ion-input>
+        <ion-input type="text" name="user-name" [(ngModel)]=toBeSentUser.name required pattern="[a-zA-Z ]*"></ion-input>
       </ion-item>
-      <div *ngIf="!logged">
-        <ion-item>
+      <ion-item>
         <ion-label position="floating">Email <ion-text color="danger" *ngIf="email.dirty && !Validation.Email(email.value)">
             <b>Email invalido</b> </ion-text>
         </ion-label>
-        <ion-input type="email" name="user-email" [(ngModel)]=user.email #email="ngModel" required></ion-input>
+        <ion-input type="email" name="user-email" [(ngModel)]=toBeSentUser.email #email="ngModel" required></ion-input>
       </ion-item>
       <ion-row style="margin: -5px">
-        <ion-col size="3.5">
+        <ion-col size="3.5" style="margin-right: -5px;">
           <ion-item>
             <ion-label position="floating" >DDD</ion-label>
             <ion-input type="tel" name="ddd" [(ngModel)]=ddd maxlength="2"  #dddvalid="ngModel" required></ion-input>
           </ion-item>
         </ion-col>
-        <ion-col size="8.5">
+        <ion-col  style="margin-left: -5px;">
           <ion-item>
             <ion-label position="floating">Telefone
               <ion-text color="danger" *ngIf="dddvalid.dirty && !Validation.Ddd(dddvalid.value)  && !(tel.dirty && !Validation.Tel(tel.value))"><b>DDD invalido</b></ion-text> 
@@ -34,27 +33,31 @@
           </ion-item>
         </ion-col>
       </ion-row>
-        <ion-item>
-          <ion-label position="floating">Senha <ion-text color="danger" *ngIf="password.invalid && password.dirty"><b>Senha curta</b> </ion-text>
-          </ion-label>
-          <ion-input type="password" name="user-password" [(ngModel)]=user.password #password="ngModel" minlength="{{minlength}}"
-            required></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Confirmar Senha <ion-text color="danger"
-              *ngIf="confirmation.value != password.value && confirmation.dirty"><b>Senhas não conferem</b> </ion-text>
-          </ion-label>
-          <ion-input type="password" name="confirm" [(ngModel)]=confirm #confirmation="ngModel" minlength="{{minlength}}" required>
-          </ion-input>
-        </ion-item>
-        <ion-button class="ion-margin" expand="block" size="default"
-          [disabled]="form.invalid || (confirmation.value != password.value) || !Validation.Email(email.value) || !Validation.Tel(tel.value) || !Validation.Ddd(dddvalid.value)" type="submit">Cadastrar</ion-button>
-      </div>
-      <div *ngIf="logged">
-        <ion-button class="ion-margin" expand="block" size="default" [disabled]="form.invalid" type="submit">Atualizar</ion-button>
-      </div>
-      <ion-button *ngIf="!logged" class="ion-margin" expand="block" size="default" type="reset" routerLink="/login">Cancelar</ion-button>
-      <ion-button *ngIf="logged" class="ion-margin" expand="block" size="default" type="reset" routerLink="/">Cancelar</ion-button>
+      <ion-item *ngIf="logged">
+        <ion-label position="floating">Senha Antiga <ion-text color="danger" *ngIf="oldPassword.invalid && oldPassword.dirty"><b>Senha curta</b> </ion-text>
+        </ion-label>
+        <ion-input type="password" name="user-oldPassword" [(ngModel)]=loggedUser.password #oldPassword="ngModel" minlength="{{minlength}}"
+          required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating"><span *ngIf="logged">Nova </span>Senha <ion-text color="danger" *ngIf="password.invalid && password.dirty"><b>Senha curta</b> </ion-text>
+        </ion-label>
+        <ion-input type="password" name="user-password" [(ngModel)]=toBeSentUser.password #password="ngModel" minlength="{{minlength}}"
+          required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Confirmar Senha <ion-text color="danger"
+            *ngIf="confirmation.value != password.value && confirmation.dirty"><b>Senhas não conferem</b> </ion-text>
+        </ion-label>
+        <ion-input type="password" name="confirm" [(ngModel)]=confirm #confirmation="ngModel" minlength="{{minlength}}" required>
+        </ion-input>
+      </ion-item>
+      <ion-button class="ion-margin" expand="block" size="default"
+        [disabled]="form.invalid || (confirmation.value != password.value) || !Validation.Email(email.value) || !Validation.Tel(tel.value) || !Validation.Ddd(dddvalid.value)" type="submit">
+        <span *ngIf="!logged">Cadastrar</span>
+        <span *ngIf="logged">Atualizar</span>
+      </ion-button>
+      <ion-button class="ion-margin" expand="block" size="default" type="reset" (click)="GoBack()">Cancelar</ion-button>
     </form>
   </div>
 </ion-content>
