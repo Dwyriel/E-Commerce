@@ -6,6 +6,7 @@ import { AlertService } from 'src/app/services/alert.service';
 import { ValidationService } from 'src/app/services/validation.service';
 import { UserService } from 'src/app/services/user.service';
 import { AppInfoService } from '../../services/app-info.service';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +29,9 @@ export class LoginPage implements OnInit {
     private userService: UserService,
     private router: Router,
     public validationService: ValidationService,
-    private alertService: AlertService) {
+    private alertService: AlertService,
+    public navCtrl: NavController
+    ) {
   }
 
   ngOnInit() { }
@@ -62,7 +65,6 @@ export class LoginPage implements OnInit {
       async err => {
         await this.alertService.dismissLoading(loadingId);
         this.password = "";
-        console.log("Error: ", err);
         await this.alertService.presentAlert("Error", "Email ou Senha invalidos");
       });
   }
@@ -94,5 +96,9 @@ export class LoginPage implements OnInit {
 
   setLoginDivWidth(value: string) {
     document.body.style.setProperty('--maxWidth', value);
+  }
+
+  GoBack() {
+    this.navCtrl.back()
   }
 }
