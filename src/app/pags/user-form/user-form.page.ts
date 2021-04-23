@@ -26,7 +26,8 @@ export class UserFormPage implements OnInit {
 
   private loadingAlert: string;
 
-  public confirm = ""; // confirm password ?!
+  public pword: string = "";
+  public confirm: string = ""; // confirm password ?!
 
   // telefone
   public ddd: string;
@@ -58,7 +59,8 @@ export class UserFormPage implements OnInit {
   ionViewWillLeave() {
     this.toBeSentUser = new User();
     this.logged = false;
-    this.confirm = null;
+    this.confirm = "";
+    this.pword = "";
     this.ddd = null;
     this.number = null;
     this.telefone = null;
@@ -72,23 +74,23 @@ export class UserFormPage implements OnInit {
     await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans; });
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-
     this.subscription1 = AppInfoService.GetUserInfo().subscribe(async ans => {
       if (!ans) {
         this.logged = false;
         this.toBeSentUser = new User();
-        this.confirm = null;
         this.toBeSentUser.userType = UserType.User;
         this.title = "Novo Usuário";
         await this.alertService.dismissLoading(this.loadingAlert)
-        return;
       }
-      this.loggedUser = this.CreateNewUser(ans);
-      this.toBeSentUser = this.CreateNewUser(ans);
-      this.ddd = ans.tel.substring(0, 2);
-      this.number = ans.tel.substring(2);
-      this.logged = true;
-      await this.alertService.dismissLoading(this.loadingAlert)
+      if (ans) {
+        this.loggedUser = this.CreateNewUser(ans);
+        this.toBeSentUser = this.CreateNewUser(ans);
+        this.ddd = ans.tel.substring(0, 2);
+        this.number = ans.tel.substring(2);
+        this.logged = true;
+        await this.alertService.dismissLoading(this.loadingAlert)
+      }
+      this.subscription1.unsubscribe();
     });
   }
 
@@ -103,8 +105,6 @@ export class UserFormPage implements OnInit {
 
   async OnFormSubmit(form: NgForm) {
     this.toBeSentUser.tel = this.ddd + this.number;
-    console.log(this.toBeSentUser.password);
-    console.log(this.loggedUser.password);
     if (form.valid) {
       await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans; });
       this.toBeSentUser.tel = this.ddd + this.number;//easier no? :)
@@ -114,18 +114,18 @@ export class UserFormPage implements OnInit {
             form.reset;
             await this.successfulSubmit("Parabens", "Registro efetuado com sucesso.", "");
           }, async err => {
-            await this.failedSubmit("Ocorreu um erro", "Seu registro não pôde ser efetuado.", err)
+            await this.failedSubmit("Ocorreu um erro", "Seu registro não pôde ser efetuado.");
           });
       else {
-        this.userService.auth.signInWithEmailAndPassword(this.loggedUser.email, this.loggedUser.password).then(async ans => {
-          await (await this.userService.auth.currentUser).updateEmail(this.toBeSentUser.email).then(async () => {
-            await (await this.userService.auth.currentUser).updatePassword(this.toBeSentUser.password).then(async () => {
+        await this.userService.auth.signInWithEmailAndPassword(this.loggedUser.email, this.loggedUser.password).then(async ans => {
+          await (await this.userService.auth.currentUser).updatePassword(this.pword).then(async () => {
+            await (await this.userService.auth.currentUser).updateEmail(this.toBeSentUser.email).then(async () => {
               this.userService.Update(this.toBeSentUser).then(
                 async () => {
                   form.reset();
                   await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/");//send to profile?
                 }, async err => {
-                  await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado.", err);
+                  await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado.");
                 });
             });
           });
@@ -140,16 +140,16 @@ export class UserFormPage implements OnInit {
 
   async successfulSubmit(title: string, description: string, navigateTo: string) {
     this.toBeSentUser = new User();
+    this.loggedUser = new User();
     this.logged = false;
-    await this.alertService.presentAlert(title, description);
     await this.alertService.dismissLoading(this.loadingAlert);
+    await this.alertService.presentAlert(title, description);
     await this.router.navigate([navigateTo]);
   }
 
-  async failedSubmit(title: string, description: string, err) {
-    console.log(err);
-    await this.alertService.presentAlert(title, description);
+  async failedSubmit(title: string, description: string) {
     await this.alertService.dismissLoading(this.loadingAlert);
+    await this.alertService.presentAlert(title, description);
   }
 
   setFormDivWidth(value: string) {
