@@ -8,7 +8,7 @@ import { User } from '../structure/user';
 export class AppInfoService {
 
   private static appInfo = new BehaviorSubject<{ appWidth: number, appHeight: number, isDesktop: boolean }>({ appWidth: null, appHeight: null, isDesktop: null });
-  private static userInfo = new BehaviorSubject<User>(new User());
+  private static userInfo = new BehaviorSubject<User>(null);
   public static maxMobileWidth: number = 880;
 
   /**
