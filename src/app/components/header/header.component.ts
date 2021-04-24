@@ -10,7 +10,7 @@ import { AppInfoService } from 'src/app/services/app-info.service';
 export class HeaderComponent implements OnInit {
   @Input("title") public title: string = "";
   @Input("segment") public segment: number;
-  public shouldShow: boolean = true;
+  public isMobile: boolean = true;
   private subscription: Subscription;
 
   constructor() {
@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit {
     if (this.subscription && !this.subscription.closed)
       this.subscription.unsubscribe();
     this.subscription = AppInfoService.GetAppInfo().subscribe(info => {
-      this.shouldShow = info.appWidth <= AppInfoService.maxMobileWidth;
+      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
     });
   }
 

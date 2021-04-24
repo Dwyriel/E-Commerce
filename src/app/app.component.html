@@ -1,5 +1,5 @@
 <ion-app>
-  <ion-split-pane contentId="main-content" *ngIf="checkScreen">
+  <ion-split-pane contentId="main-content" *ngIf="isMobile">
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
         <ion-list id="normal-user-list">
@@ -54,7 +54,7 @@
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
-  <div contentId="main-content" *ngIf="!checkScreen">
+  <div contentId="main-content" *ngIf="!isMobile">
     <ion-grid>
       <ion-row>
         <ion-col *ngIf="!firebaseAns">
