@@ -22,7 +22,7 @@ export class AppComponent {
   public firebaseAns: boolean;
 
   //device
-  public checkScreen: boolean;
+  public isMobile: boolean;
 
   //subscriptions
   private subscription1: Subscription;
@@ -77,7 +77,7 @@ export class AppComponent {
     if (this.subscription4 && !this.subscription4.closed)
       this.subscription4.unsubscribe();
     this.subscription4 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.checkScreen = info.appWidth <= AppInfoService.maxMobileWidth;
+      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
     });
   }
 
