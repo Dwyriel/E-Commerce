@@ -18,12 +18,15 @@ const routes: Routes = [
   {
     path: 'account',
     loadChildren: () => import('./pags/user-form/user-form.module').then(m => m.UserFormPageModule)
-  },  {
+  },
+  {
     path: 'profile',
     loadChildren: () => import('./pags/profile/profile.module').then( m => m.ProfilePageModule)
   },
-
-
+  {
+    path: 'profile/:id',
+    loadChildren: () => import('./pags/profile/profile.module').then( m => m.ProfilePageModule)
+  },
 ];
 
 @NgModule({
