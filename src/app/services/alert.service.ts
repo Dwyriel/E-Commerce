@@ -43,7 +43,7 @@ export class AlertService {
    * @param text the text shown in the middle of the alert message
    * @returns a boolean value based on the button the user pressed. true for ok, false for cancel. 
    */
-  async confirmationAlert(title: string, description: string) {
+  async confirmationAlert(title: string, description: string): Promise<boolean> {
     const alert = await this.alertController.create({
       header: title,
       message: description,
@@ -109,6 +109,7 @@ export class AlertService {
   /**Creates and presents a toast. 
    * @param text the text of the toast.
    * @param duration the amount of time in ms the toast will be shown to the user, default is 2000ms. 
+   * @returns the created toast's id.
    */
   async ShowToast(text: string, duration?: number) {
     const toast = await this.toastController.create({

@@ -31,7 +31,7 @@ export class ReviewService {
    * @param id the id of the product.
    * @returns an observable containing all the product's review.
    */
-  GetAllFromProduct(id: string) {
+  async GetAllFromProduct(id: string) {
     return this.fireDatabase.collection<Review>(this.collection, ref => ref.where('productID', '==', id).orderBy('date')).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
   }
@@ -42,7 +42,7 @@ export class ReviewService {
    */
   async deleteReviewsFrom(id: string) {
     var reviews: Review[];
-    var subscription = this.GetAllFromProduct(id).subscribe(async ans => {
+    var subscription = (await this.GetAllFromProduct(id)).subscribe(async ans => {
       reviews = ans;
       const batch = this.fireDatabase.firestore.batch();
       reviews.forEach(value => {
