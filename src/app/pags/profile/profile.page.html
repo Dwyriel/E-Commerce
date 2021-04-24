@@ -2,5 +2,44 @@
 
 <ion-content [fullscreen]="true">
   <app-header [title]="title" segment=1></app-header>
-  
+  <ion-list>
+    <ion-item>
+      <img [src]="user.photo" *ngIf="user.photo && id && user.id != id">
+      <img [src]="user.photo" (click)="alterPhoto()" *ngIf="user.photo && (user.id == id || !id)">
+      <img src="assets/perfil.png" *ngIf="!user.photo && id && user.id != id">
+      <img src="assets/perfil.png" (click)="alterPhoto()" *ngIf="!user.photo && (user.id == id || !id)">
+    </ion-item>
+    <ion-item>
+      <ion-label>Name</ion-label>
+      <ion-text>{{user.name}}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>E-mail</ion-label>
+      <ion-text>{{user.email}}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Tel</ion-label>
+      <ion-text>{{telephone}}</ion-text>
+    </ion-item>
+  </ion-list>
+  <ion-item-group *ngIf="user.addressId">
+    <ion-item>
+      <ion-label>State: {{user.address.state}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>City: {{user.address.city}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>CEP: {{user.address.cep}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Address: {{user.address.street}}, {{user.address.number}}</ion-label>
+    </ion-item>
+  </ion-item-group>
+  <!-- \/ rework \/ -->
+  <ion-button *ngIf="!user.address && (user.id == id || !id)" type="button" color="primary" expand="block" routerLink="/tabs/addressForm" class="ion-margin">Add address</ion-button>
+  <ion-button *ngIf="user.address && (user.id == id || !id)" type="button" color="primary" expand="block" routerLink="/tabs/addressForm/{{user.address}}" class="ion-margin">Update address</ion-button>
+  <!-- /\ rework /\ -->
+  <ion-button *ngIf="!id || id == user.id" type="button" color="primary" expand="block" routerLink="/account" class="ion-margin">Edit</ion-button>
+  <ion-button *ngIf="!id || id == user.id" type="button" color="secondary" expand="block" (click)="logout()" class="ion-margin">Logout</ion-button>
 </ion-content>
