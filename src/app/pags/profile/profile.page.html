@@ -23,18 +23,22 @@
         <ion-text>{{telephone}}</ion-text>
       </ion-item>
     </ion-list>
-    <ion-item-group *ngIf="user.addressId">
+    <ion-item-group *ngIf="user.addressId && user.address">
       <ion-item>
-        <ion-label>State: {{user.address.state}}</ion-label>
+        <ion-label>State:</ion-label>
+        <ion-text>{{user.address.state}}</ion-text>
       </ion-item>
       <ion-item>
-        <ion-label>City: {{user.address.city}}</ion-label>
+        <ion-label>City:</ion-label>
+        <ion-text>{{user.address.city}}</ion-text>
       </ion-item>
       <ion-item>
-        <ion-label>CEP: {{user.address.cep}}</ion-label>
+        <ion-label>CEP: </ion-label>
+        <ion-text>{{user.address.cep}}</ion-text>
       </ion-item>
       <ion-item>
-        <ion-label>Address: {{user.address.street}}, {{user.address.number}}</ion-label>
+        <ion-label>Address:</ion-label>
+        <ion-text>{{user.address.street}}, {{user.address.number}}</ion-text>
       </ion-item>
     </ion-item-group>
     <div *ngIf="showButtons">
