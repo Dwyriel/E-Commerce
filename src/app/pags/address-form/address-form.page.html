@@ -1,0 +1,36 @@
+<app-header [title]="title" segment=0></app-header>
+
+<ion-content [fullscreen]="true">
+  <app-header [title]="title" segment=1></app-header>
+  <div [ngClass]="{'webrowser':!isMobile}">
+  <form (ngSubmit)="OnClick(form)" #form="ngForm" >
+    <ion-item>
+      <ion-label position="stacked">Estado</ion-label>
+      <ion-input type="text" name="state" [(ngModel)]=address.state required pattern="[a-zA-Z ]*"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Cidade</ion-label>
+      <ion-input type="text" name="city" [(ngModel)]=address.city required pattern="[a-zA-Z ]*"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">CEP</ion-label>
+      <ion-input type="text" name="cep" [(ngModel)]=address.cep required pattern="[0-9]{8}"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Rua</ion-label>
+      <ion-input type="text" name="street" [(ngModel)]=address.street required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Numero</ion-label>
+      <ion-input type="text" name="number" [(ngModel)]=address.number required></ion-input>
+    </ion-item>
+    <div *ngIf="!idAddress">
+      <ion-button class="ion-margin" expand="block" size="default" [disabled]="form.invalid" type="submit">Cadastrar Endereço</ion-button>
+    </div>
+    <div *ngIf="idAddress">
+      <ion-button class="ion-margin" expand="block" size="default" [disabled]="form.invalid" type="submit">Atualizar Endereço</ion-button>
+    </div>
+    <ion-button class="ion-margin" expand="block" size="default" type="reset" routerLink="/profile">Cancelar</ion-button>
+  </form>
+</div>
+</ion-content>
