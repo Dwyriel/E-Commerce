@@ -27,6 +27,10 @@ const routes: Routes = [
     path: 'profile/:id',
     loadChildren: () => import('./pags/profile/profile.module').then( m => m.ProfilePageModule)
   },
+  {
+    path: 'addressForm',
+    loadChildren: () => import('./pags/address-form/address-form.module').then( m => m.AddressFormPageModule)
+  },
 ];
 
 @NgModule({

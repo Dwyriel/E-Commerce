@@ -97,7 +97,7 @@ export class UserService {
    * @param address the address's id on the database.
    */
   async UpdateAddress(id: string, address: string) {
-    return await this.fireDatabase.collection(this.collection).doc(id).update({ address: address });
+    return await this.fireDatabase.collection(this.collection).doc(id).update({ addressId: address });
   }
 
   /** Adds or updates the user's cart.

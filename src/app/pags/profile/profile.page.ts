@@ -95,9 +95,9 @@ export class ProfilePage implements OnInit {
           this.user = ans;
           this.title = `Perfil de ${ans.name}`;
           this.telephone = this.GetUITel(ans.tel);
+          if (ans.addressId)
+            this.subscription4 = (await this.addressService.Get(ans.addressId)).subscribe(ans2 => this.user.address = ans2);
         }
-        if (ans.addressId)
-          this.subscription4 = (await this.addressService.Get(ans.addressId)).subscribe(ans2 => this.user.address = ans2);
         await this.alertService.dismissLoading(this.loadingPopupID);
       }
       if (!this.id && !ans) {

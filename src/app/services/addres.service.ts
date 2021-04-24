@@ -38,7 +38,7 @@ export class AddresService {//address is intentionally misspelled, otherwise the
    * @param id the id of the entry that should be changed.
    */
   async Update(address: Address, id: string) {
-    return this.fireDatabase.collection(this.collection).doc(id).update(address);
+    return this.fireDatabase.collection(this.collection).doc(id).update({ address });
   }
 
   /**

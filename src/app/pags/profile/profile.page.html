@@ -23,25 +23,29 @@
         <ion-text>{{telephone}}</ion-text>
       </ion-item>
     </ion-list>
-    <ion-item-group *ngIf="user.addressId">
+    <ion-item-group *ngIf="user.addressId && user.address">
       <ion-item>
-        <ion-label>State: {{user.address.state}}</ion-label>
+        <ion-label>State:</ion-label>
+        <ion-text>{{user.address.state}}</ion-text>
       </ion-item>
       <ion-item>
-        <ion-label>City: {{user.address.city}}</ion-label>
+        <ion-label>City:</ion-label>
+        <ion-text>{{user.address.city}}</ion-text>
       </ion-item>
       <ion-item>
-        <ion-label>CEP: {{user.address.cep}}</ion-label>
+        <ion-label>CEP: </ion-label>
+        <ion-text>{{user.address.cep}}</ion-text>
       </ion-item>
       <ion-item>
-        <ion-label>Address: {{user.address.street}}, {{user.address.number}}</ion-label>
+        <ion-label>Address:</ion-label>
+        <ion-text>{{user.address.street}}, {{user.address.number}}</ion-text>
       </ion-item>
     </ion-item-group>
     <div *ngIf="showButtons">
-      <!-- \/ rework \/ -->
-      <ion-button *ngIf="!user.address && (!id || (loggedUser && id == loggedUser.id))" type="button" color="primary" expand="block" routerLink="/tabs/addressForm" class="ion-margin">Add address</ion-button>
-      <ion-button *ngIf="user.address && (!id || (loggedUser && id == loggedUser.id))" type="button" color="primary" expand="block" routerLink="/tabs/addressForm/{{user.address}}" class="ion-margin">Update address</ion-button>
-      <!-- /\ rework /\ -->
+      <ion-button  type="button" color="primary" expand="block" routerLink="/addressForm" class="ion-margin">
+        <span *ngIf="!user.address && (!id || (loggedUser && id == loggedUser.id))">Add address</span>
+        <span *ngIf="user.address && (!id || (loggedUser && id == loggedUser.id))">Update address</span>
+      </ion-button>
       <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="primary" expand="block" routerLink="/account" class="ion-margin">Edit</ion-button>
       <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="secondary" expand="block" (click)="logout()" class="ion-margin">Logout</ion-button>
     </div>
