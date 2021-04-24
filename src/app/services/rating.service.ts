@@ -30,7 +30,7 @@ export class RatingService {
    * @param id the id of the user.
    * @returns an observable containing all the user's rating.
    */
-  GetAllFromUser(id: string) {
+  async GetAllFromUser(id: string) {
     return this.fireDatabase.collection<Rating>(this.collection, ref => ref.where('ratedUserId', '==', id)).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
   }
@@ -41,7 +41,7 @@ export class RatingService {
    */
   async deleteRatingsFrom(id: string) {
     var ratings: Rating[];
-    var subscription = this.GetAllFromUser(id).subscribe(async ans => {
+    var subscription = (await this.GetAllFromUser(id)).subscribe(async ans => {
       ratings = ans;
       const batch = this.fireDatabase.firestore.batch();
       ratings.forEach(value => {

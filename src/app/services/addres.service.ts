@@ -14,7 +14,7 @@ export class AddresService {//address is intentionally misspelled, otherwise the
    * Creates a new address entry on the database.
    * @param address the address that will be saved on the database.
    */
-  Add(address: Address) {
+  async Add(address: Address) {
     return this.fireDatabase.collection(this.collection).add({
       state: address.state,
       city: address.city,
@@ -28,7 +28,7 @@ export class AddresService {//address is intentionally misspelled, otherwise the
    * Retrieves the address using the id provided.
    * @param id the id that should be used to retrieve the address.
    */
-  Get(id: string) {
+  async Get(id: string) {
     return this.fireDatabase.collection(this.collection).doc<Address>(id).valueChanges();
   }
 
@@ -37,7 +37,7 @@ export class AddresService {//address is intentionally misspelled, otherwise the
    * @param address the object constaining the new address information.
    * @param id the id of the entry that should be changed.
    */
-  Update(address: Address, id: string) {
+  async Update(address: Address, id: string) {
     return this.fireDatabase.collection(this.collection).doc(id).update(address);
   }
 
@@ -45,7 +45,7 @@ export class AddresService {//address is intentionally misspelled, otherwise the
    * Deletes the address entry corresponding to the provided id.
    * @param id the id of the entry that will be deleted.
    */
-  Delete(id: string) {
+  async Delete(id: string) {
     return this.fireDatabase.collection(this.collection).doc(id).delete();
   }
 }

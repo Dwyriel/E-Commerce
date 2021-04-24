@@ -17,7 +17,7 @@ export class PurchasesService {
    */
   async Add(purchases: Purchases) {
     return await this.fireDatabase.collection(this.collection).add({
-      userId: purchases.recommend,
+      userId: purchases.userId,
       itens: [...purchases.itens],
       date: new Date().getTime(),
     });
@@ -37,7 +37,7 @@ export class PurchasesService {
    * @param id the id of the user.
    * @returns an observable containing all the user's purchases.
    */
-  GetAllFromUser(id: string) {
+  async GetAllFromUser(id: string) {
     return this.fireDatabase.collection<Purchases>(this.collection, ref => ref.where('userId', '==', id).orderBy('date')).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
   }
@@ -48,7 +48,7 @@ export class PurchasesService {
    */
   async deletepurchasesFrom(id: string) {
     var purchases: Purchases[];
-    var subscription = this.GetAllFromUser(id).subscribe(async ans => {
+    var subscription = (await this.GetAllFromUser(id)).subscribe(async ans => {
       purchases = ans;
       const batch = this.fireDatabase.firestore.batch();
       purchases.forEach(value => {
