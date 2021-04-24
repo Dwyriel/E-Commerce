@@ -42,10 +42,10 @@
       </ion-item>
     </ion-item-group>
     <div *ngIf="showButtons">
-      <!-- \/ rework \/ -->
-      <ion-button *ngIf="!user.address && (!id || (loggedUser && id == loggedUser.id))" type="button" color="primary" expand="block" routerLink="/addressForm" class="ion-margin">Add address</ion-button>
-      <ion-button *ngIf="user.address && (!id || (loggedUser && id == loggedUser.id))" type="button" color="primary" expand="block" routerLink="/addressForm/{{user.address}}" class="ion-margin">Update address</ion-button>
-      <!-- /\ rework /\ -->
+      <ion-button  type="button" color="primary" expand="block" routerLink="/addressForm" class="ion-margin">
+        <span *ngIf="!user.address && (!id || (loggedUser && id == loggedUser.id))">Add address</span>
+        <span *ngIf="user.address && (!id || (loggedUser && id == loggedUser.id))">Update address</span>
+      </ion-button>
       <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="primary" expand="block" routerLink="/account" class="ion-margin">Edit</ion-button>
       <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="secondary" expand="block" (click)="logout()" class="ion-margin">Logout</ion-button>
     </div>

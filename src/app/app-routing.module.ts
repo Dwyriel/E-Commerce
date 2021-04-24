@@ -31,11 +31,6 @@ const routes: Routes = [
     path: 'addressForm',
     loadChildren: () => import('./pags/address-form/address-form.module').then( m => m.AddressFormPageModule)
   },
-  {
-    path: 'addressForm/:id',
-    loadChildren: () => import('./pags/address-form/address-form.module').then( m => m.AddressFormPageModule)
-  },
-
 ];
 
 @NgModule({

@@ -24,13 +24,13 @@
       <ion-label position="stacked">Numero</ion-label>
       <ion-input type="text" name="number" [(ngModel)]=address.number required></ion-input>
     </ion-item>
-    <div *ngIf="!idAddress">
+    <div *ngIf="!user.addressId">
       <ion-button class="ion-margin" expand="block" size="default" [disabled]="form.invalid" type="submit">Cadastrar Endereço</ion-button>
     </div>
-    <div *ngIf="idAddress">
+    <div *ngIf="user.addressId">
       <ion-button class="ion-margin" expand="block" size="default" [disabled]="form.invalid" type="submit">Atualizar Endereço</ion-button>
     </div>
-    <ion-button class="ion-margin" expand="block" size="default" type="reset" routerLink="/profile">Cancelar</ion-button>
+    <ion-button class="ion-margin" expand="block" size="default" type="reset" (click)="GoBack()">Cancelar</ion-button>
   </form>
 </div>
 </ion-content>
