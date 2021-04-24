@@ -19,6 +19,7 @@ export class ProfilePage implements OnInit {
   public id: string = null;
   public user: User = new User();
   public telephone: string;
+  public isMobile: boolean;
   private loadingPopupID: string;
 
   //Subscriptions
@@ -26,6 +27,7 @@ export class ProfilePage implements OnInit {
   private subscription2: Subscription;
   private subscription3: Subscription;
   private subscription4: Subscription;
+  private subscription5: Subscription;
 
   constructor(private activatedRoute: ActivatedRoute, private userService: UserService, private imageService: ImageService,
     private router: Router, private alertService: AlertService, private addressService: AddresService) { }
@@ -34,6 +36,7 @@ export class ProfilePage implements OnInit {
 
   ionViewWillEnter() {
     this.getUser();
+    this.GetPlataformInfo()
   }
 
   ionViewWillLeave() {
@@ -45,9 +48,22 @@ export class ProfilePage implements OnInit {
       this.subscription3.unsubscribe();
     if (this.subscription4 && !this.subscription4.closed)
       this.subscription4.unsubscribe();
+    if (this.subscription5 && !this.subscription5.closed)
+      this.subscription5.unsubscribe();
   }
 
-  async getUser() {//getting overly complicated, todo divide into multiple methods
+  GetPlataformInfo() {
+    this.subscription5 = AppInfoService.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
+      this.setDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
+    });
+  }
+
+  setDivWidth(value: string) {
+    document.body.style.setProperty('--maxWidth', value);
+  }
+
+  async getUser() {
     await this.alertService.presentLoading().then(ans => this.loadingPopupID = ans);
     this.id = this.activatedRoute.snapshot.paramMap.get("id");
     if (this.id) {
