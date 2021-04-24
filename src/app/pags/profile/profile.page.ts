@@ -15,12 +15,14 @@ import { User } from 'src/app/structure/user';
 })
 export class ProfilePage implements OnInit {
 
-  public title: string = "Perfil";
-  public id: string = null;
-  public user: User = new User();
-  public telephone: string;
-  public isMobile: boolean;
   private loadingPopupID: string;
+  public title: string = "Perfil";
+  public id: string;
+  public user: User = new User();
+  public loggedUser: User = null;
+  public telephone: string = "";
+  public isMobile: boolean;
+  public showButtons: boolean = false;
 
   //Subscriptions
   private subscription1: Subscription;
@@ -34,12 +36,17 @@ export class ProfilePage implements OnInit {
 
   ngOnInit() { }
 
-  ionViewWillEnter() {
-    this.getUser();
+  async ionViewWillEnter() {
+    await this.getUser();
     this.GetPlataformInfo()
   }
 
   ionViewWillLeave() {
+    this.user = new User();
+    this.loggedUser = null;
+    this.telephone = "";
+    this.showButtons = false;
+    this.id = null;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -64,6 +71,7 @@ export class ProfilePage implements OnInit {
   }
 
   async getUser() {
+    var shouldWait: boolean = true;
     await this.alertService.presentLoading().then(ans => this.loadingPopupID = ans);
     this.id = this.activatedRoute.snapshot.paramMap.get("id");
     if (this.id) {
@@ -71,31 +79,36 @@ export class ProfilePage implements OnInit {
         this.user = ans;
         this.telephone = this.GetUITel(ans.tel);
         this.title = `Perfil de ${ans.name}`;
+        shouldWait = false;
         if (ans.addressId)
           this.subscription2 = (await this.addressService.Get(ans.addressId)).subscribe(async ans2 => this.user.address = ans2);
-        await this.alertService.dismissLoading(this.loadingPopupID);
       });
     }
     this.subscription3 = AppInfoService.GetUserInfo().subscribe(async ans => {
+      if (this.id)
+        while (shouldWait)
+          await new Promise(resolve => setTimeout(resolve, 10))
       if (ans) {
+        this.loggedUser = ans;
+        this.loggedUser.id = ans.id;
         if (!this.id) {
           this.user = ans;
           this.title = `Perfil de ${ans.name}`;
           this.telephone = this.GetUITel(ans.tel);
-          if (ans.addressId)
-            this.subscription4 = (await this.addressService.Get(ans.addressId)).subscribe(ans2 => this.user.address = ans2);
         }
-        this.user.id = ans.id;
+        if (ans.addressId)
+          this.subscription4 = (await this.addressService.Get(ans.addressId)).subscribe(ans2 => this.user.address = ans2);
         await this.alertService.dismissLoading(this.loadingPopupID);
       }
       if (!this.id && !ans) {
         await this.alertService.dismissLoading(this.loadingPopupID);
-        await this.router.navigate(["/login"]);
+        await this.router.navigate(["/"]);
       }
+      this.showButtons = (!this.id || (this.loggedUser && this.id == this.loggedUser.id)) ? true : false;
     }, async err => {
       await this.alertService.dismissLoading(this.loadingPopupID);
-      this.user = null;
-      await this.router.navigate(["/login"]);
+      this.loggedUser = null;
+      await this.router.navigate(["/"]);
     });
   }
 

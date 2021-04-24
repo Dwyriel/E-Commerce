@@ -5,10 +5,10 @@
   <div [ngClass]="{'webrowser':!isMobile}">
     <ion-list>
       <ion-item>
-        <img [src]="user.photo" *ngIf="user.photo && id && user.id != id">
-        <img [src]="user.photo" (click)="alterPhoto()" *ngIf="user.photo && (user.id == id || !id)">
-        <img src="assets/perfil.png" *ngIf="!user.photo && id && user.id != id">
-        <img src="assets/perfil.png" (click)="alterPhoto()" *ngIf="!user.photo && (user.id == id || !id)">
+        <img [src]="user.photo" *ngIf="user.photo && id && (loggedUser && loggedUser.id != id)">
+        <img [src]="user.photo" (click)="alterPhoto()" *ngIf="user.photo && ((loggedUser && loggedUser.id == id) || !id)">
+        <img src="assets/perfil.png" *ngIf="!user.photo && id && (loggedUser && loggedUser.id != id)">
+        <img src="assets/perfil.png" (click)="alterPhoto()" *ngIf="!user.photo && ((loggedUser && loggedUser.id == id) || !id)">
       </ion-item>
       <ion-item>
         <ion-label>Name</ion-label>
@@ -37,11 +37,13 @@
         <ion-label>Address: {{user.address.street}}, {{user.address.number}}</ion-label>
       </ion-item>
     </ion-item-group>
-    <!-- \/ rework \/ -->
-    <ion-button *ngIf="!user.address && (user.id == id || !id)" type="button" color="primary" expand="block" routerLink="/tabs/addressForm" class="ion-margin">Add address</ion-button>
-    <ion-button *ngIf="user.address && (user.id == id || !id)" type="button" color="primary" expand="block" routerLink="/tabs/addressForm/{{user.address}}" class="ion-margin">Update address</ion-button>
-    <!-- /\ rework /\ -->
-    <ion-button *ngIf="!id || id == user.id" type="button" color="primary" expand="block" routerLink="/account" class="ion-margin">Edit</ion-button>
-    <ion-button *ngIf="!id || id == user.id" type="button" color="secondary" expand="block" (click)="logout()" class="ion-margin">Logout</ion-button>
+    <div *ngIf="showButtons">
+      <!-- \/ rework \/ -->
+      <ion-button *ngIf="!user.address && (!id || (loggedUser && id == loggedUser.id))" type="button" color="primary" expand="block" routerLink="/tabs/addressForm" class="ion-margin">Add address</ion-button>
+      <ion-button *ngIf="user.address && (!id || (loggedUser && id == loggedUser.id))" type="button" color="primary" expand="block" routerLink="/tabs/addressForm/{{user.address}}" class="ion-margin">Update address</ion-button>
+      <!-- /\ rework /\ -->
+      <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="primary" expand="block" routerLink="/account" class="ion-margin">Edit</ion-button>
+      <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="secondary" expand="block" (click)="logout()" class="ion-margin">Logout</ion-button>
+    </div>
   </div>
 </ion-content>
