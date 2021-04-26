@@ -33,6 +33,5 @@ export class ProductListPage implements OnInit {
     if (this.allFromCat = "sub") {
       this.subcategory = ItemClassification.GetSubCatFromValue(this.categoryValue);
     }
-
   }
 }

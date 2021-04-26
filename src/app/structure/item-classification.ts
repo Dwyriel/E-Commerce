@@ -226,7 +226,7 @@ export class ItemClassification {
 
     /**Retrives a subcategory with the specified value.
      * @param value the number that represents the subcategory.
-     * @returns the category with the specified value.
+     * @returns the subcategory with the specified value.
      */
     public static GetSubCatFromValue(value: Number) {
         var subcat: SubCategory;
@@ -258,6 +258,10 @@ export class ItemClassification {
         return bool;
     }
 
+    /**Retrives a category with the specified value.
+     * @param value the number that represents the category.
+     * @returns the category with the specified value.
+     */
     public static GetCatFromValue(value: number) {
         var cat: Category;
         if (value >= this.cats.length || value < 0) {

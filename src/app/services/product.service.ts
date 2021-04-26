@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Product } from '../structure/product';
 import { map } from 'rxjs/operators';
+import { SubCategory } from '../structure/categories';
+import { ItemClassification } from '../structure/item-classification';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +40,35 @@ export class ProductService {
           dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data() }))
         )
       )
+  }
+
+  /**
+   * Retrieves the products within the corresponding subcategory.
+   * @param value the subcategory value to get the products from.
+   * @returns an Array with all the products within a subcategory.
+   */
+  async GetAllFromSubCat(value: number) {
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('subCatValue', '==', value)).snapshotChanges().pipe(map(
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data() }))
+    ));
+  }
+
+  /**
+   * Retrieves the products within the corresponding category.
+   * @param value the general category to get the products from.
+   * @returns an Array with all the products within a category.
+   */
+  async getAllFromCat(value: number) {
+    var products: {}[] = [];
+    var subcats: SubCategory[] = ItemClassification.GetSubCatFrom(value);
+    subcats.forEach(async item => {
+      var subscription = (await this.GetAllFromSubCat(item.value)).subscribe(ans => {
+        if (ans)
+          products.push({ ...ans });
+        subscription.unsubscribe();
+      })
+    });
+    return products;
   }
 
   /**
