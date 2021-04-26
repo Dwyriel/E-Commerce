@@ -230,13 +230,17 @@ export class ItemClassification {
      */
     public static GetSubCatFromValue(value: Number) {
         var subcat: SubCategory;
+        if (value >= this.subCats.length || value < 0) {
+            console.error("SubCategory doesn't exist");
+            return null;
+        }
         this.subCats.some(item => {
             if (item.value == value) {
                 subcat = item;
                 return true;
             }
         });
-        return subcat;
+        return (subcat) ? subcat : null;
     }
 
     /**Verifies if the array SubCategory constains any object with the specified value.
@@ -252,5 +256,20 @@ export class ItemClassification {
             }
         });
         return bool;
+    }
+
+    public static GetCatFromValue(value: number) {
+        var cat: Category;
+        if (value >= this.cats.length || value < 0) {
+            console.error("Cat doesn't exist");
+            return null;
+        }
+        this.cats.some(item => {
+            if (item.category == value) {
+                cat = item;
+                return true;
+            }
+        });
+        return (cat) ? cat : null;
     }
 }
