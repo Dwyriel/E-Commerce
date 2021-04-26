@@ -54,7 +54,14 @@ export class ProductService {
    * @param id the id of the product that will be changed.
    */
   async Update(product: Product, id: string) {
-    return this.fireDatabase.collection(this.collection).doc(id).update(product);
+    return this.fireDatabase.collection(this.collection).doc(id).update({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
+      gallery: product.gallery,
+      subCatValue: product.subCatValue,
+    });
   }
 
   /** Changes the verified attribute on the specified product.

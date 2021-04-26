@@ -13,6 +13,51 @@ export class ImageService {
   constructor(private actionSheetController: ActionSheetController, private alerService: AlertService) { }
 
   /**
+   * Shows an actionSheet for the user to choose where to select the image from or if they want to delete the current image.
+   * @param quality the quality of the image from 0 to 100, default is 90. Value will be clamped.
+   * @returns an object with the attribute "image" as a image file in DataUrl format and the attribute "delete" as a boolean representing the delete option.
+   */
+  async getImageWithDelete(quality: number = 90) {
+    var photoPath;
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Existing or new photo?',
+      cssClass: 'my-custom-class',
+      buttons: [{
+        text: 'Camera',
+        icon: 'camera',
+        handler: async () => {
+          var image = await this.takePhoto(quality);
+          actionSheet.dismiss({ image: image, delete: false });
+          return false;
+        }
+      }, {
+        text: 'Gallery',
+        icon: 'image',
+        handler: async () => {
+          var image = await this.choosePhoto(quality);
+          actionSheet.dismiss({ image: image, delete: false });
+          return false;
+        }
+      }, {
+        text: 'Delete',
+        icon: 'trash',
+        handler: () => {
+          actionSheet.dismiss({ image: null, delete: true });
+          return false;
+        }
+      }, {
+        text: 'Cancel',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => { }
+      }]
+    });
+    await actionSheet.present();
+    await actionSheet.onDidDismiss().then((data) => { photoPath = data.data });
+    return photoPath;
+  }
+
+  /**
    * Shows an actionSheet for the user to choose where to select the image from.
    * @param quality the quality of the image from 0 to 100, default is 90. Value will be clamped.
    * @returns the image file in DataUrl format

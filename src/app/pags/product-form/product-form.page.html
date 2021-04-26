@@ -1,0 +1,53 @@
+<app-header [title]="title" segment=0></app-header>
+
+<ion-content [fullscreen]="true">
+  <app-header [title]="title" segment=1></app-header>
+
+  <div [ngClass]="{'webrowser':!isMobile}">
+    <form (ngSubmit)="OnClick(form)" #form="ngForm">
+      <ion-slides pager="true" [options]="slideOpts">
+        <ion-slide *ngFor="let photo of product.gallery; let i = index">
+          <img [src]="photo" (click)="ChancePhoto(i)">
+        </ion-slide>
+        <ion-slide>
+          <img src="assets/NewPhoto.png" (click)="NewPhoto()">
+        </ion-slide>
+      </ion-slides>
+      <ion-item>
+        <ion-label position="floating">Nome</ion-label>
+        <ion-input type="text" name="prod-name" [(ngModel)]=product.name required clearInput pattern="[*-_0-9a-zA-Z'& ]*">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Preço </ion-label>
+        <ion-input type="number" name="prod-price" [(ngModel)]=product.price required clearInput></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Categoria</ion-label>
+        <ion-select name="prod-category" interface="popover" [(ngModel)]=categoryValue (ngModelChange)="CatChange($event)" placeholder="Select One" required>
+          <ng-container *ngFor="let cat of cats" ><ion-select-option [value]="cat.category">{{cat.title}}</ion-select-option></ng-container>
+        </ion-select>
+      </ion-item>
+      <ion-item *ngIf="categoryValue == 0 || categoryValue">
+        <ion-label>Sub Categoria</ion-label>
+        <ion-select name="prod-subCategory" interface="popover" [(ngModel)]=subCategoryValue (ngModelChange)="SubCatChange($event)" placeholder="Select One" required>
+          <ng-container *ngFor="let subCat of subCats" ><ion-select-option [value]="subCat.value">{{subCat.title}}</ion-select-option></ng-container>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Descrição </ion-label>
+        <ion-textarea name="prod-description" autoGrow=true [(ngModel)]=product.description></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Estoque </ion-label>
+        <ion-input type="number" name="prod-stock" [(ngModel)]=product.stock value="0" clearInput></ion-input>
+      </ion-item>
+      <ion-button class="ion-margin" expand="block" size="medium" [disabled]="form.invalid" type="submit">
+        <span *ngIf="product.id">Atualizar</span>
+        <span *ngIf="!product.id">Registrar</span>
+      </ion-button>
+      <ion-button class="ion-margin" expand="block" size="default" type="reset" (click)="GoBack()">Cancelar</ion-button>
+    </form>
+  </div>
+
+</ion-content>

@@ -31,6 +31,15 @@ const routes: Routes = [
     path: 'addressForm',
     loadChildren: () => import('./pags/address-form/address-form.module').then( m => m.AddressFormPageModule)
   },
+  {
+    path: 'productForm',
+    loadChildren: () => import('./pags/product-form/product-form.module').then( m => m.ProductFormPageModule)
+  },
+  {
+    path: 'productForm/:id',
+    loadChildren: () => import('./pags/product-form/product-form.module').then( m => m.ProductFormPageModule)
+  },
+
 ];
 
 @NgModule({
