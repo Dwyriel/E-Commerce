@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { Platform } from '@ionic/angular';
+import { Platform, PopoverController } from '@ionic/angular';
 import { fromEvent, Observable, Subscription } from "rxjs";
 
 import { User } from './structure/user';
 import { AlertService } from './services/alert.service';
 import { UserService } from './services/user.service';
 import { AppInfoService } from './services/app-info.service'
+import { ItemClassification } from './structure/item-classification';
+import { CategoriesComponent } from './components/categories/categories.component';
 
 @Component({
   selector: 'app-root',
@@ -25,29 +27,23 @@ export class AppComponent {
   public isMobile: boolean;
 
   //subscriptions
+  private Observable: Observable<Event>;
   private subscription1: Subscription;
   private subscription2: Subscription;
   private subscription3: Subscription;
   private subscription4: Subscription;
-
-  // change pages for categories
-  public appPages = [
-    { title: 'Home', url: '/home', icon: 'home' },
-    { title: 'Login', url: '/login', icon: 'newspaper' },
-    { title: 'Form', url: '/account', icon: 'help-circle' },
-  ];
 
 
   constructor(
     private platform: Platform,
     private userService: UserService,
     private alertService: AlertService,
+    private popoverController: PopoverController,
     private router: Router//could probably remove this
   ) {
 
   }
 
-  private Observable: Observable<Event>;
   async ngOnInit() {
     await this.verifyUser();
     this.GetPlataformInfo();
@@ -127,4 +123,13 @@ export class AppComponent {
     });
   }
 
+  async ShowCategories(event){
+    var thingy = await this.popoverController.create({
+      component: CategoriesComponent,
+      event: event,
+      mode: 'ios',
+      componentProps: {categories: ItemClassification.Categories()}
+    });
+    thingy.present();
+  }
 }

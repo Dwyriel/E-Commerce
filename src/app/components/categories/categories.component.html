@@ -1,0 +1,6 @@
+<ion-list>
+  <ion-list-header>Categories</ion-list-header>
+  <ng-container *ngFor="let category of categories; let i = index">
+    <ion-item button (click)="ShowSubCategory($event, category.category)">{{category.title}}</ion-item>
+  </ng-container>
+</ion-list>
