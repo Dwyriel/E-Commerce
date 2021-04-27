@@ -16,33 +16,30 @@
               <ion-list-header>Log In</ion-list-header>
             </ion-item>
           </ion-menu-toggle>
-          <ion-menu-toggle auto-hide="false" *ngFor="let page of appPages; let i = index">
-            <ion-item routerDirection="root" [routerLink]="[page.url]" lines="none" detail="false"
-              routerLinkActive="selected">
-              <ion-icon slot="start" [ios]="page.icon + '-outline'" [md]="page.icon + '-sharp'"></ion-icon>
-              <ion-label>{{ page.title }}</ion-label>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerLink="/" lines="none">
+              <ion-icon slot="start" name="home"></ion-icon>
+              <ion-label>Home</ion-label>
             </ion-item>
           </ion-menu-toggle>
-        </ion-list>
-        <ion-list *ngIf="firebaseAns && user && (user.userType == 0 || user.userType == 1)" id="ultra-user-list">
-          <div>
-            <ion-menu-toggle auto-hide="false" *ngFor="let page of editorAppPages; let i = index">
-              <ion-item routerDirection="root" [routerLink]="[page.url]" lines="none" detail="false"
-                routerLinkActive="selected">
-                <ion-icon slot="start" [ios]="page.icon + '-outline'" [md]="page.icon + '-sharp'"></ion-icon>
-                <ion-label>{{ page.title }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-          </div>
-          <div *ngIf="firebaseAns && user && user.userType == 0">
-            <ion-menu-toggle auto-hide="false" *ngFor="let page of adminAppPages; let i = index">
-              <ion-item routerDirection="root" [routerLink]="[page.url]" lines="none" detail="false"
-                routerLinkActive="selected">
-                <ion-icon slot="start" [ios]="page.icon + '-outline'" [md]="page.icon + '-sharp'"></ion-icon>
-                <ion-label>{{ page.title }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-          </div>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerLink="/account" lines="none" *ngIf="!firebaseAns">
+              <ion-icon slot="start" name="help-circle"></ion-icon>
+              <ion-label>Registre-se</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item button lines="none" *ngIf="firebaseAns">
+              <ion-icon slot="start" ios="mail-outline" md="mail-sharp"></ion-icon>
+              <ion-label>Minhas Mensagens</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false">
+            <ion-item button lines="none" *ngIf="firebaseAns">
+              <ion-icon slot="start" ios="cart-outline" md="cart-sharp"></ion-icon>
+              <ion-label>Minhas Compras</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
         </ion-list>
         <ion-fab *ngIf="firebaseAns" vertical="bottom" horizontal="center" id="logout">
           <ion-item (click)="logout()">
@@ -55,35 +52,71 @@
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
   <div contentId="main-content" *ngIf="!isMobile">
-    <ion-grid>
-      <ion-row>
-        <ion-col *ngIf="!firebaseAns">
-          <ion-item routerLink="/login" lines="none">
-            <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>
-            <ion-label>Log In</ion-label>
+    <ion-row class="header ion-align-itens-center">
+        <ion-col>
+          <ion-item routerLink="/" lines="none" (click)="dropdown = false">
+            <ion-icon slot="start" name="home"></ion-icon>
+            <ion-label>Home</ion-label>
           </ion-item>
         </ion-col>
-        <ion-col *ngIf="firebaseAns">
-          <ion-item (click)="logout()">
-            <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
+        <ion-col size="3">
+          <ion-item button>
+            <ion-label>add Popover here</ion-label>
+          </ion-item>
+        </ion-col>
+        <ion-col>
+          <ion-item>
+            <ion-label>
+              space for serachbar
+            </ion-label>
+          </ion-item>
+            <!-- <ion-searchbar placeholder="Pesquisar"></ion-searchbar> essa searchbar buga
+            e some quando esta acima do ion-router-outlet -->
+          </ion-col>
+        <ion-col size="3">
+          <!-- item que chama dropdown de user -->
+          <ion-item button #userbtn (click)="dropdown = !dropdown"
+          class="dropdown-btn" routerdirection="root" routerLinkActive="active-item" *ngIf="!user">
+          <ion-icon slot="start" [name]="dropdown ? 'chevron-down' : 'chevron-up'"></ion-icon>
+            <ion-label>Novo Aqui?</ion-label>
+          </ion-item>
+           <ion-item button #userbtn (click)="dropdown = !dropdown"
+          class="dropdown-btn" routerdirection="root" routerLinkActive="active-item" *ngIf="user">
+            <ion-icon slot="start" [name]="dropdown ? 'chevron-down' : 'chevron-up'"></ion-icon>
+            <img id="userimage" *ngIf="user && !user.photo" src="../assets/perfil.png">
+            <img id="userimage" *ngIf="user && user.photo" [src]="user.photo">
+            <ion-list-header>{{ user.name }}</ion-list-header>
+          </ion-item>
+          <!-- dropdown do user -->
+           <div *ngIf="dropdown" class="dropdown" #dropdownbox>
+            <ion-item routerLink="/profile" *ngIf="firebaseAns" (click)="dropdown = false">
+              <ion-icon slot="start" ios="person-circle-outline" md="person-circle-sharp"></ion-icon>
+              <ion-label>Meu Perfil</ion-label>
+            </ion-item>
+            <ion-item button lines="none" *ngIf="firebaseAns" (click)="dropdown = false">
+              <ion-icon slot="start" ios="cart-outline" md="cart-sharp"></ion-icon>
+              <ion-label>Minhas Compras</ion-label>
+            </ion-item>
+            <ion-item button lines="none" *ngIf="firebaseAns" (click)="dropdown = false">
+              <ion-icon slot="start" ios="mail-outline" md="mail-sharp"></ion-icon>
+              <ion-label>Minhas Mensagens</ion-label>
+            </ion-item>
+            <ion-item routerLink="/login" lines="none" *ngIf="!firebaseAns" (click)="dropdown = false">
+              <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>
+              <ion-label>Log In</ion-label>
+            </ion-item>
+          <ion-item routerLink="/account" lines="none" *ngIf="!firebaseAns" (click)="dropdown = false">
+            <ion-icon slot="start" name="help-circle"></ion-icon>
+            <ion-label>Registre-se</ion-label>
+          </ion-item>
+          <ion-item button (click)="logout()" lines="none" *ngIf="firebaseAns" (click)="dropdown = false">
+            <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>
             <ion-label>Logout</ion-label>
           </ion-item>
+          </div>
         </ion-col>
-        <ng-container *ngFor="let page of appPages; let i = index">
-          <ion-col>
-            <ion-item routerDirection="root" [routerLink]="[page.url]" lines="none" detail="false"
-              routerLinkActive="selected">
-              <ion-icon slot="start" [ios]="page.icon + '-outline'" [md]="page.icon + '-sharp'"></ion-icon>
-              <ion-label>{{ page.title }}</ion-label>
-            </ion-item>
-          </ion-col>
-        </ng-container>
-        <!-- <ion-col>
-            <ion-searchbar placeholder="Pesquisar"></ion-searchbar>
-          </ion-col> -->
-      </ion-row>
-    </ion-grid>
-    <ion-router-outlet id="main-content"></ion-router-outlet>
-  </div>
+    </ion-row>
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+</div>
 
 </ion-app>

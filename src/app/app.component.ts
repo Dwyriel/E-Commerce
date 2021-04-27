@@ -30,13 +30,6 @@ export class AppComponent {
   private subscription3: Subscription;
   private subscription4: Subscription;
 
-  // change pages for categories
-  public appPages = [
-    { title: 'Home', url: '/home', icon: 'home' },
-    { title: 'Login', url: '/login', icon: 'newspaper' },
-    { title: 'Form', url: '/account', icon: 'help-circle' },
-  ];
-
 
   constructor(
     private platform: Platform,
