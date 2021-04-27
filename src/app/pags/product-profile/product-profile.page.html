@@ -1,0 +1,25 @@
+<app-header title="Titulo" segment=0></app-header>
+
+<ion-content [fullscreen]="true">
+  <app-header title="Titulo" segment=1></app-header>
+  <div [ngClass]="{'webrowser':!isMobile}">
+    <ion-slides pager="true" [options]="slideOpts">
+      <ion-slide *ngFor="let photo of product.gallery; let i = index">
+        <ion-img [src]="photo"></ion-img>
+      </ion-slide>
+    </ion-slides>
+    <h2 class="ion-margin">{{product.name}}</h2>
+    <p class="ion-margin">
+      {{product.price | currency:'BRL'}}
+    </p>
+    <ion-button>Add no carrinho</ion-button>
+    <h3 class="ion-margin">Descrição:</h3>
+    <p class="ion-margin">
+      <ion-text>{{product.description}}</ion-text>
+    </p>
+      <h4 routerLink="/profile/{{product.sellerID}}" style="text-align: center;">Vendedor:{{SellerUser.name}}<span> - Perfil do Vendedor</span></h4>
+      <ion-item>
+        <ion-label>Opiniões sobre o produto</ion-label>
+      </ion-item>
+  </div>
+</ion-content>
