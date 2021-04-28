@@ -4,6 +4,7 @@ import { Product } from '../structure/product';
 import { map } from 'rxjs/operators';
 import { SubCategory } from '../structure/categories';
 import { ItemClassification } from '../structure/item-classification';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -59,15 +60,24 @@ export class ProductService {
    * @returns an Array with all the products within a category.
    */
   async getAllFromCat(value: number) {
-    var products: Product[];
+    var shouldWait: boolean = true;
+    var subscriptions: Subscription[] = [];
+    var index = 0;
+    var products: Product[] = [];
     var subcats: SubCategory[] = ItemClassification.GetSubCatFrom(value);
     for (var item of subcats) {
-      var subscription = (await this.GetAllFromSubCat(item.value)).subscribe(ans => {
+      subscriptions.push((await this.GetAllFromSubCat(item.value)).subscribe(ans => {
         if (ans)
           products.push(...ans);
-        subscription.unsubscribe();
-      });
+        index++;
+        if (index >= subcats.length)
+          shouldWait = false;
+      }));
     }
+    while (shouldWait)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    for (var sub of subscriptions)
+      sub.unsubscribe();
     return products;
   }
 
