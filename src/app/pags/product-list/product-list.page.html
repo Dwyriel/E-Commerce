@@ -9,6 +9,7 @@
   <div [ngClass]="{'webrowser':!isMobile}">
     <div *ngIf="!isMobile" style="padding-bottom: .3rem;">{{title}}</div>
     <ion-list>
+      <div *ngIf="!products">Nenhum item encontrado.</div>
       <ion-item lines="inset" *ngFor="let product of products;" routerLink="/product/{{product.id}}">
         <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
         <ion-label>
