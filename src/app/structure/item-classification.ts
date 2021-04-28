@@ -243,21 +243,6 @@ export class ItemClassification {
         return (subcat) ? subcat : null;
     }
 
-    /**Verifies if the array SubCategory constains any object with the specified value.
-     * @param value the number that represents the subcategory.
-     * @returns a boolean based on the result of the verification.
-     */
-    public static SubCatsContains(value: Number): boolean {
-        var bool: boolean = false;
-        this.subCats.some(item => {
-            if (item.value == value) {
-                bool = true;
-                return true;
-            }
-        });
-        return bool;
-    }
-
     /**Retrives a category with the specified value.
      * @param value the number that represents the category.
      * @returns the category with the specified value.
@@ -275,5 +260,35 @@ export class ItemClassification {
             }
         });
         return (cat) ? cat : null;
+    }
+
+    /**Verifies if the array SubCategory constains any object with the specified value.
+     * @param value the number that represents the subcategory.
+     * @returns a boolean based on the result of the verification.
+     */
+    public static SubCatsContains(value: Number): boolean {
+        var bool: boolean = false;
+        this.subCats.some(item => {
+            if (item.value == value) {
+                bool = true;
+                return true;
+            }
+        });
+        return bool;
+    }
+
+    /**Verifies if the array Category constains any object with the specified value.
+     * @param value the number that represents the category.
+     * @returns a boolean based on the result of the verification.
+     */
+    public static CatsContains(value: Number): boolean {
+        var bool: boolean = false;
+        this.cats.some(item => {
+            if (item.category == value) {
+                bool = true;
+                return true;
+            }
+        });
+        return bool;
     }
 }

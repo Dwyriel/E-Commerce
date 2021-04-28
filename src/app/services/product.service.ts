@@ -37,7 +37,7 @@ export class ProductService {
     return this.fireDatabase.collection<Product>(this.collection).snapshotChanges()
       .pipe(
         map(
-          dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data() }))
+          dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
         )
       )
   }
@@ -49,7 +49,7 @@ export class ProductService {
    */
   async GetAllFromSubCat(value: number) {
     return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('subCatValue', '==', value)).snapshotChanges().pipe(map(
-      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data() }))
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
     ));
   }
 
@@ -59,15 +59,15 @@ export class ProductService {
    * @returns an Array with all the products within a category.
    */
   async getAllFromCat(value: number) {
-    var products: {}[] = [];
+    var products: Product[];
     var subcats: SubCategory[] = ItemClassification.GetSubCatFrom(value);
-    subcats.forEach(async item => {
+    for (var item of subcats) {
       var subscription = (await this.GetAllFromSubCat(item.value)).subscribe(ans => {
         if (ans)
-          products.push({ ...ans });
+          products.push(...ans);
         subscription.unsubscribe();
-      })
-    });
+      });
+    }
     return products;
   }
 
