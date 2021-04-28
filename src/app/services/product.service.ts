@@ -78,6 +78,7 @@ export class ProductService {
       await new Promise(resolve => setTimeout(resolve, 10));
     for (var sub of subscriptions)
       sub.unsubscribe();
+    products = products.filter((product, index, array) => index === array.findIndex(prod => (prod.id === product.id)));
     return products;
   }
 

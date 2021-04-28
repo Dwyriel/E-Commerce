@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
+import { AppInfoService } from 'src/app/services/app-info.service';
 import { ProductService } from 'src/app/services/product.service';
 import { ReviewService } from 'src/app/services/review.service';
 import { Category, SubCategory } from 'src/app/structure/categories';
@@ -24,13 +25,12 @@ export class ProductListPage implements OnInit {
   private subcategory: SubCategory;
   public products: Product[];
   public title: string = "Produtos";
+  public isMobile: boolean;
 
   //Subscriptions
   private subscription1: Subscription;
   private subscription2: Subscription;
   private subscription3: Subscription;
-  private subscription4: Subscription;
-  private subscription5: Subscription;
 
   constructor(private activatedRoute: ActivatedRoute, private productService: ProductService, private reviewService: ReviewService, private router: Router,
     private alertService: AlertService) { }
@@ -39,6 +39,7 @@ export class ProductListPage implements OnInit {
   }
 
   async ionViewWillEnter() {
+    this.GetPlataformInfo();
     this.GetProducts();
   }
 
@@ -49,10 +50,17 @@ export class ProductListPage implements OnInit {
       this.subscription2.unsubscribe();
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
-    if (this.subscription4 && !this.subscription4.closed)
-      this.subscription4.unsubscribe();
-    if (this.subscription5 && !this.subscription5.closed)
-      this.subscription5.unsubscribe();
+  }
+
+  GetPlataformInfo() {
+    this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
+      this.setDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
+    });
+  }
+
+  setDivWidth(value: string) {
+    document.body.style.setProperty('--maxWidth', value);
   }
 
   async GetProducts(event = null) {
