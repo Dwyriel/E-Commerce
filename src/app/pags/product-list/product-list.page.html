@@ -1,0 +1,29 @@
+<app-header [title]="title" segment=0></app-header>
+
+<ion-content [fullscreen]="true">
+  <app-header [title]="title" segment=1></app-header>
+  <ion-refresher slot="fixed" (ionRefresh)="RefreshContent($event)">
+    <ion-refresher-content pullingIcon="bubbles" refreshingSpinner="bubbles">
+    </ion-refresher-content>
+  </ion-refresher>
+  <div [ngClass]="{'webrowser':!isMobile}">
+    <div *ngIf="!isMobile" style="padding-bottom: .3rem;">{{title}}</div>
+    <ion-list>
+      <div style="width: 40%; margin-left: 58%; text-align: right;">
+        <ion-select name="sort" interface="popover" [(ngModel)]=sorting (ngModelChange)="sortListing()" placeholder="Ordenar">
+          <ion-select-option [value]="0">Maior preço</ion-select-option>
+          <ion-select-option [value]="1">Menor preço</ion-select-option>
+          <ion-select-option [value]="2">Avaliação</ion-select-option>
+        </ion-select>
+      </div>
+      <div *ngIf="!products">Nenhum item encontrado.</div>
+      <ion-item lines="inset" *ngFor="let product of products;" routerLink="/product/{{product.id}}">
+        <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
+        <ion-label>
+          <h2>{{product.name}}</h2>
+          <h3>{{product.price | currency:'BRL' }}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}</span></h3>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

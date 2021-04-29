@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Product } from '../structure/product';
 import { map } from 'rxjs/operators';
+import { SubCategory } from '../structure/categories';
+import { ItemClassification } from '../structure/item-classification';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -35,9 +38,48 @@ export class ProductService {
     return this.fireDatabase.collection<Product>(this.collection).snapshotChanges()
       .pipe(
         map(
-          dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data() }))
+          dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
         )
       )
+  }
+
+  /**
+   * Retrieves the products within the corresponding subcategory.
+   * @param value the subcategory value to get the products from.
+   * @returns an Array with all the products within a subcategory.
+   */
+  async GetAllFromSubCat(value: number) {
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('subCatValue', '==', value)).snapshotChanges().pipe(map(
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
+    ));
+  }
+
+  /**
+   * Retrieves the products within the corresponding category.
+   * @param value the general category to get the products from.
+   * @returns an Array with all the products within a category.
+   */
+  async getAllFromCat(value: number) {
+    var shouldWait: boolean = true;
+    var subscriptions: Subscription[] = [];
+    var index = 0;
+    var products: Product[] = [];
+    var subcats: SubCategory[] = ItemClassification.GetSubCatFrom(value);
+    for (var item of subcats) {
+      subscriptions.push((await this.GetAllFromSubCat(item.value)).subscribe(ans => {
+        if (ans)
+          products.push(...ans);
+        index++;
+        if (index >= subcats.length)
+          shouldWait = false;
+      }));
+    }
+    while (shouldWait)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    for (var sub of subscriptions)
+      sub.unsubscribe();
+    products = products.filter((product, index, array) => index === array.findIndex(prod => (prod.id === product.id)));
+    return products;
   }
 
   /**

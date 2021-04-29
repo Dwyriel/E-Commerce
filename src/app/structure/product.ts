@@ -35,6 +35,10 @@ export class Product {
      * Calculates and attributes the percentage of good/bad reviews to avgReview.
      */
     public calculateAvgRating() {
+        if (!this.reviews || this.reviews.length < 1) {
+            this.avgReview = null;
+            return;
+        }
         const totalRatings: number = this.reviews.length;
         var positiveRatings: number = 0;
         this.reviews.forEach(rating => {

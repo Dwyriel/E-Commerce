@@ -32,7 +32,7 @@ export class ReviewService {
    * @returns an observable containing all the product's review.
    */
   async GetAllFromProduct(id: string) {
-    return this.fireDatabase.collection<Review>(this.collection, ref => ref.where('productID', '==', id).orderBy('date')).snapshotChanges().pipe(map(
+    return this.fireDatabase.collection<Review>(this.collection, ref => ref.where('productID', '==', id).orderBy('date', 'desc')).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
   }
 

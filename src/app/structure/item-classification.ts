@@ -226,17 +226,40 @@ export class ItemClassification {
 
     /**Retrives a subcategory with the specified value.
      * @param value the number that represents the subcategory.
-     * @returns the category with the specified value.
+     * @returns the subcategory with the specified value.
      */
     public static GetSubCatFromValue(value: Number) {
         var subcat: SubCategory;
+        if (value >= this.subCats.length || value < 0) {
+            console.error("SubCategory doesn't exist");
+            return null;
+        }
         this.subCats.some(item => {
             if (item.value == value) {
                 subcat = item;
                 return true;
             }
         });
-        return subcat;
+        return (subcat) ? subcat : null;
+    }
+
+    /**Retrives a category with the specified value.
+     * @param value the number that represents the category.
+     * @returns the category with the specified value.
+     */
+    public static GetCatFromValue(value: number) {
+        var cat: Category;
+        if (value >= this.cats.length || value < 0) {
+            console.error("Cat doesn't exist");
+            return null;
+        }
+        this.cats.some(item => {
+            if (item.category == value) {
+                cat = item;
+                return true;
+            }
+        });
+        return (cat) ? cat : null;
     }
 
     /**Verifies if the array SubCategory constains any object with the specified value.
@@ -247,6 +270,21 @@ export class ItemClassification {
         var bool: boolean = false;
         this.subCats.some(item => {
             if (item.value == value) {
+                bool = true;
+                return true;
+            }
+        });
+        return bool;
+    }
+
+    /**Verifies if the array Category constains any object with the specified value.
+     * @param value the number that represents the category.
+     * @returns a boolean based on the result of the verification.
+     */
+    public static CatsContains(value: Number): boolean {
+        var bool: boolean = false;
+        this.cats.some(item => {
+            if (item.category == value) {
                 bool = true;
                 return true;
             }
