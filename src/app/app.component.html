@@ -1,8 +1,8 @@
 <ion-app>
   <ion-split-pane contentId="main-content" *ngIf="isMobile">
     <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
-        <ion-list id="normal-user-list">
+      <ion-content style="height: 100%;">
+        <ion-list id="normal-user-list" style="height: auto !important; min-height: 92%;">
           <ion-menu-toggle *ngIf="firebaseAns" auto-hide="false">
             <ion-item routerLink="/profile">
               <img id="userimage" *ngIf="user && !user.photo" src="../assets/perfil.png">
@@ -41,12 +41,17 @@
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
+        <ion-item (click)="logout()" id="logout" *ngIf="firebaseAns">
+          <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
+          <ion-label>Logout</ion-label>
+        </ion-item>
+        <!--
         <ion-fab *ngIf="firebaseAns" vertical="bottom" horizontal="center" id="logout">
           <ion-item (click)="logout()">
             <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
             <ion-label>Logout</ion-label>
           </ion-item>
-        </ion-fab>
+        </ion-fab>-->
       </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
