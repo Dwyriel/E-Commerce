@@ -41,10 +41,12 @@
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
-        <ion-item (click)="logout()" id="logout" *ngIf="firebaseAns">
-          <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
-          <ion-label>Logout</ion-label>
-        </ion-item>
+        <ion-row *ngIf="firebaseAns" class="ion-justify-content-center">
+          <ion-item (click)="logout()" id="logout">
+            <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
+            <ion-label>Logout</ion-label>
+          </ion-item>
+        </ion-row>
         <!--
         <ion-fab *ngIf="firebaseAns" vertical="bottom" horizontal="center" id="logout">
           <ion-item (click)="logout()">
