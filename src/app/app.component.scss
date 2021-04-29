@@ -24,7 +24,6 @@ ion-menu ion-content {
   
   ion-menu.md ion-list#normal-user-list {
     padding-top: 20px;
-    border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
   }
   
   ion-menu.md ion-list#normal-user-list ion-list-header {
@@ -137,5 +136,5 @@ ion-menu ion-content {
   }
   
   #logout {
-    margin-left: -17%;
+    margin-bottom: -20%;
   }
