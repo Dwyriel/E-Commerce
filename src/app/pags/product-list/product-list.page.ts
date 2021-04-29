@@ -26,6 +26,7 @@ export class ProductListPage implements OnInit {
   public products: Product[];
   public title: string = "Produtos";
   public isMobile: boolean;
+  public sorting: number;
 
   //Subscriptions
   private subscription1: Subscription;
@@ -129,5 +130,19 @@ export class ProductListPage implements OnInit {
 
   async RefreshContent(event) {
     await this.GetProducts(event);
+  }
+
+  sortListing() {
+    switch (this.sorting) {
+      case 0:
+        this.products.sort((prodA, prodB) => prodB.price - prodA.price)
+        break
+      case 1:
+        this.products.sort((prodA, prodB) => prodA.price - prodB.price)
+        break;
+      case 2:
+        this.products.sort((prodA, prodB) => prodB.avgReview - prodA.avgReview)
+        break;
+    }
   }
 }
