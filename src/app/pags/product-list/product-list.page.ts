@@ -77,7 +77,7 @@ export class ProductListPage implements OnInit {
       if (ItemClassification.CatsContains(this.categoryValue)) {
         this.category = ItemClassification.GetCatFromValue(this.categoryValue);
         this.title = `Categoria: ${this.category.title}`;
-        this.products = await this.productService.getAllFromCat(this.categoryValue);
+        this.products = await this.productService.getAllVerifiedFromCat(this.categoryValue);
         await this.FillProductAttributes(event);
       }
       return;
@@ -88,7 +88,7 @@ export class ProductListPage implements OnInit {
         this.title = `${this.subcategory.title} em ${ItemClassification.GetCatFromValue(this.subcategory.category).title}`;
         if (this.subscription1 && !this.subscription1.closed)
           this.subscription1.unsubscribe();
-        this.subscription1 = (await this.productService.GetAllFromSubCat(this.categoryValue)).subscribe(async ans => {
+        this.subscription1 = (await this.productService.GetAllVerifiedFromSubCat(this.categoryValue)).subscribe(async ans => {
           this.products = ans;
           await this.FillProductAttributes(event);
         });
@@ -97,7 +97,7 @@ export class ProductListPage implements OnInit {
     }
     if (this.subscription2 && !this.subscription2.closed)
       this.subscription2.unsubscribe();
-    this.subscription2 = (await this.productService.GetAll()).subscribe(async ans => {
+    this.subscription2 = (await this.productService.GetAllVerified()).subscribe(async ans => {
       this.title = `Produtos`;
       this.products = ans;
       await this.FillProductAttributes(event);
