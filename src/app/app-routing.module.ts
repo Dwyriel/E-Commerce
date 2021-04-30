@@ -40,7 +40,7 @@ const routes: Routes = [
     loadChildren: () => import('./pags/product-form/product-form.module').then( m => m.ProductFormPageModule)
   },
   {
-    path: 'productProfile/:id',
+    path: 'product/:id',
     loadChildren: () => import('./pags/product-profile/product-profile.module').then( m => m.ProductProfilePageModule)
   },
 

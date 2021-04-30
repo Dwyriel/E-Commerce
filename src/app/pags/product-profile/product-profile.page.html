@@ -18,8 +18,26 @@
       <ion-text>{{product.description}}</ion-text>
     </p>
       <h4 routerLink="/profile/{{product.sellerID}}" style="text-align: center;">Vendedor:{{SellerUser.name}}<span> - Perfil do Vendedor</span></h4>
-      <ion-item>
-        <ion-label>Opiniões sobre o produto</ion-label>
-      </ion-item>
+      
+
+        <ion-item *ngIf="verifyReviews">
+           <ion-label>Produto sem avaliações</ion-label>
+           <ion-badge color="danger">--<ion-icon name="thumbs-up-sharp"></ion-icon></ion-badge>
+           <ion-badge color="danger">--<ion-icon name="thumbs-down-sharp"></ion-icon></ion-badge>
+           
+           
+        </ion-item>
+        <ng-container *ngIf="!verifyReviews">
+          <ion-badge color="danger" *ngIf="reviews.recommend == true"><ion-icon name="thumbs-up-sharp"></ion-icon></ion-badge>
+          <ion-badge color="danger" *ngIf="reviews.recommend == false"><ion-icon name="thumbs-up-sharp"></ion-icon></ion-badge>
+          <ion-item  lines="inset" *ngFor="let review of reviews;">
+            <ion-label>{{review.title}}</ion-label>
+            <p>{{review.date}}</p>
+            <ion-text>{{review.text}}</ion-text>
+          </ion-item>
+        </ng-container>
+    
+    
+
   </div>
 </ion-content>
