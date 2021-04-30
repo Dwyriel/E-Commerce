@@ -12,7 +12,7 @@
     <p class="ion-margin">
       {{product.price | currency:'BRL'}}
     </p>
-    <ion-button>Add no carrinho</ion-button>
+    <ion-button [disabled]="(1 > product.stock) || (loggedUser && loggedUser.id == product.sellerID)" (click)="AddToCart()" class="ion-margin">Adicionar no carrinho</ion-button>
     <h3 class="ion-margin">Descrição:</h3>
     <p class="ion-margin">
       <ion-text>{{product.description}}</ion-text>
