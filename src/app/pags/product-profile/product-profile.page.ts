@@ -40,7 +40,7 @@ export class ProductProfilePage implements OnInit {
   public loggedUser: User = null;
   public SellerUser: User = new User();
   public reviews: Review[] = [];
-  public verifyReviews: boolean = false;
+  public hasReviews: boolean = false;
 
   constructor(
     private router: Router,
@@ -67,7 +67,7 @@ export class ProductProfilePage implements OnInit {
     this.product = new Product();
     this.id = null;
     this.reviews = [];
-    this.verifyReviews = false;
+    this.hasReviews = false;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -139,8 +139,7 @@ export class ProductProfilePage implements OnInit {
     this.subscription4 = (await this.reviewService.GetAllFromProduct(this.product.id)).subscribe(async ans => {
       this.reviews = ans;
       awaits.reviews = false;
-      this.verifyReviews = this.reviews.length < 1;
-      console.log(this.verifyReviews);
+      this.hasReviews = this.reviews.length > 1;
     }, async err => {
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das avaliações, tente denovo daqui a pouco.")
     });
