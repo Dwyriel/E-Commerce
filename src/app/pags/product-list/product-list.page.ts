@@ -108,6 +108,7 @@ export class ProductListPage implements OnInit {
     var shouldWait: boolean = true;
     var subscriptions: Subscription[] = [];
     var index = 0;
+    var arrayLength = this.products.length;
     for (var product of this.products) {
       product.fillSubCategory();
       subscriptions.push((await this.reviewService.GetAllFromProduct(product.id)).subscribe(ans => {
@@ -115,7 +116,7 @@ export class ProductListPage implements OnInit {
         if (product.reviews)
           product.calculateAvgRating();
         index++;
-        if (index >= this.products.length)
+        if (index >= arrayLength)
           shouldWait = false;
       }));
     }

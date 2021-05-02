@@ -88,12 +88,13 @@ export class ProductService {
     var index = 0;
     var products: Product[] = [];
     var subcats: SubCategory[] = ItemClassification.GetSubCatFrom(value);
+    var arrayLength = subcats.length;
     for (var item of subcats) {
       subscriptions.push((await this.GetAllFromSubCat(item.value)).subscribe(ans => {
         if (ans)
           products.push(...ans);
         index++;
-        if (index >= subcats.length)
+        if (index >= arrayLength)
           shouldWait = false;
       }));
     }
@@ -116,12 +117,13 @@ export class ProductService {
     var index = 0;
     var products: Product[] = [];
     var subcats: SubCategory[] = ItemClassification.GetSubCatFrom(value);
+    var arrayLength = subcats.length;
     for (var item of subcats) {
       subscriptions.push((await this.GetAllVerifiedFromSubCat(item.value)).subscribe(ans => {
         if (ans)
           products.push(...ans);
         index++;
-        if (index >= subcats.length)
+        if (index >= arrayLength)
           shouldWait = false;
       }));
     }
