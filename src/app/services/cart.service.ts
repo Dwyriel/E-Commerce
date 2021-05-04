@@ -40,7 +40,8 @@ export class CartService {
    * @returns the updated cart.
    */
   RemoveItem(productID: string, cart: { productID: string, amount: number }[]) {
-    for (var i = 0; i < cart.length; i++) {
+    var arrayLength = cart.length;
+    for (var i = 0; i < arrayLength; i++) {
       if (productID == cart[i].productID) {
         if (cart[i].amount > 1) {
           cart[i].amount--;
