@@ -1,0 +1,6 @@
+<ion-list>
+  <ion-item button routerLink="/products/all/{{category}}">Todos</ion-item>
+  <ng-container *ngFor="let subcategory of subcategories">
+    <ion-item button routerLink="/products/sub/{{subcategory.value}}">{{subcategory.title}}</ion-item>
+  </ng-container>
+</ion-list>

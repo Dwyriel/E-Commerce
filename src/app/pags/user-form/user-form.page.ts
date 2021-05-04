@@ -107,7 +107,7 @@ export class UserFormPage implements OnInit {
     this.toBeSentUser.tel = this.ddd + this.number;
     if (form.valid) {
       await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans; });
-      this.toBeSentUser.tel = this.ddd + this.number;//easier no? :)
+      this.toBeSentUser.tel = this.ddd + this.number;
       if (!this.logged)
         await this.userService.AddUser(this.toBeSentUser).then(
           async () => {
@@ -123,19 +123,27 @@ export class UserFormPage implements OnInit {
               this.userService.Update(this.toBeSentUser).then(
                 async () => {
                   form.reset();
-                  await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/");//send to profile?
+                  await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/profile");
                 }, async err => {
-                  await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado.");
+                  await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado. Senha e Email atualizados.");
                 });
+            }, async err => {
+              this.UpdateError("Erro", "Não foi possivel atualizar o email. Senha atualizada.");
             });
+          }, async err => {
+            this.UpdateError("Error", "Não foi possivel atualizar a senha.");
           });
         }, async err => {
-          await this.alertService.dismissLoading(this.loadingAlert);
-          this.loggedUser.password = "";
-          await this.alertService.presentAlert("Error", "Senha Antiga não corresponde com a conta.");
+          this.UpdateError("Error", "Senha Antiga não corresponde com a conta.");
         });
       }
     }
+  }
+
+  async UpdateError(title: string, message: string) {
+    await this.alertService.dismissLoading(this.loadingAlert);
+    this.loggedUser.password = "";
+    await this.alertService.presentAlert("Error", "Senha Antiga não corresponde com a conta.");
   }
 
   async successfulSubmit(title: string, description: string, navigateTo: string) {
