@@ -1,0 +1,41 @@
+ion-img {
+    height: 200px;
+    margin: 5px auto 5px auto;
+}
+
+.webrowser{
+    width: var(--maxWidth); 
+    margin: 0 auto; 
+    padding-top: 1rem;
+}
+
+.reviewsTitle{
+    font-size: 1.4rem;
+}
+
+.reviews{
+    padding-top: 1rem;
+    padding-bottom: .7rem;
+    border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
+}
+
+.reviews ion-row{
+    size: 100%;
+}
+
+.reviews ion-note{
+    font-size: .65rem;
+}
+
+.reviewThumb{
+    height: 2.5rem;
+    width: 3rem;
+    margin-right: .3rem;
+    margin-left: -.2rem;
+}
+
+.reviewText{
+    margin-top: .7rem;
+    text-align: start;
+    white-space: pre-wrap;
+} 

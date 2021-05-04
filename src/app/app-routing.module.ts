@@ -40,6 +40,10 @@ const routes: Routes = [
     loadChildren: () => import('./pags/product-form/product-form.module').then( m => m.ProductFormPageModule)
   },
   {
+    path: 'product/:id',
+    loadChildren: () => import('./pags/product-profile/product-profile.module').then( m => m.ProductProfilePageModule)
+  },
+  {
     path: 'products',
     loadChildren: () => import('./pags/product-list/product-list.module').then( m => m.ProductListPageModule)
   },
@@ -47,8 +51,6 @@ const routes: Routes = [
     path: 'products/:cat/:value',
     loadChildren: () => import('./pags/product-list/product-list.module').then( m => m.ProductListPageModule)
   },
-
-
 ];
 
 @NgModule({

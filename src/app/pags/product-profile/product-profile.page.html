@@ -1,0 +1,42 @@
+<app-header title="Titulo" segment=0></app-header>
+
+<ion-content [fullscreen]="true">
+  <app-header title="Titulo" segment=1></app-header>
+  <div [ngClass]="{'webrowser':!isMobile}" class="ion-margin">
+    <ion-slides pager="true" [options]="slideOpts">
+      <ion-slide *ngFor="let photo of product.gallery; let i = index">
+        <ion-img [src]="photo"></ion-img>
+      </ion-slide>
+    </ion-slides>
+    <h2 >{{product.name}}</h2>
+    <p>Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}</p>
+    <p>{{product.price | currency:'BRL'}}</p>
+    <ion-button [disabled]="(1 > product.stock) || (loggedUser && loggedUser.id == product.sellerID)" (click)="AddToCart()">Adicionar no carrinho</ion-button>
+    <h3 >Descrição:</h3>
+    <p >
+      <ion-text>{{product.description}}</ion-text>
+    </p>
+    <h4  routerLink="/profile/{{product.sellerID}}">Vendedor:{{SellerUser.name}}<span> - Perfil do Vendedor</span></h4>
+    
+    <ion-item *ngIf="!hasReviews" >
+        <ion-label>Produto sem avaliações</ion-label>
+    </ion-item>
+    <div *ngIf="hasReviews" >
+      <ion-text class="reviewsTitle">Avaliações:</ion-text>
+      <div class="reviews" *ngFor="let review of reviews">
+        <ion-row class="ion-justify-content-between">
+          <ion-row class="ion-align-items-center">
+            <ion-badge class="reviewThumb" color="{{(review.recommend) ? 'success' : 'danger'}}"><ion-icon size="large" color="dark" name="thumbs-{{(review.recommend) ? 'up' : 'down'}}-sharp"></ion-icon></ion-badge>
+            <ion-text>{{review.title}}</ion-text>
+          </ion-row>
+          <div class="ion-text-end">
+            <ion-note>{{review.date.toLocaleString()}}</ion-note>
+          </div>
+        </ion-row>
+        <div class="reviewText">
+          <ion-text>{{review.text}}</ion-text>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
