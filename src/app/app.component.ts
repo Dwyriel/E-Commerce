@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { Platform, PopoverController } from '@ionic/angular';
+import { ModalController, Platform, PopoverController } from '@ionic/angular';
 import { fromEvent, Observable, Subscription } from "rxjs";
 
 import { User } from './structure/user';
@@ -10,6 +10,7 @@ import { UserService } from './services/user.service';
 import { AppResources } from './services/app-info.service'
 import { ItemClassification } from './structure/item-classification';
 import { CategoriesComponent } from './components/categories/categories.component';
+import { SidebarModalCategory } from './components/sidebar-modal/sidebar-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -39,6 +40,7 @@ export class AppComponent {
     private userService: UserService,
     private alertService: AlertService,
     private popoverController: PopoverController,
+    private modalController: ModalController,
   ) {
 
   }
@@ -132,5 +134,16 @@ export class AppComponent {
     });
     popover.present();
     AppResources.popovers.push(popover);
+  }
+
+  async ShowCategoriesModal() {
+    AppResources.modals = [];
+    var modal = await this.modalController.create({
+      component: SidebarModalCategory,
+      mode: 'ios',
+      componentProps: { categories: ItemClassification.Categories() }
+    });
+    AppResources.modals.push(modal);
+    await modal.present();
   }
 }

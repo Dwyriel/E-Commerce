@@ -9,8 +9,9 @@ export class AppResources {
 
   private static appInfo = new BehaviorSubject<{ appWidth: number, appHeight: number, isDesktop: boolean }>({ appWidth: null, appHeight: null, isDesktop: null });
   private static userInfo = new BehaviorSubject<User>(null);
+  public static readonly maxMobileWidth: number = 880;
   public static popovers: HTMLIonPopoverElement[] = [];
-  public static maxMobileWidth: number = 880;
+  public static modals: HTMLIonModalElement[] = [];
 
   /**
    * Puts and pushes new information into appInfo to all listeners.
