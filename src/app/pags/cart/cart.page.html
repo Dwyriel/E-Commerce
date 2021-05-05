@@ -1,0 +1,34 @@
+<app-header title="Carrinho" segment=0></app-header>
+
+<ion-content [fullscreen]="true">
+  <app-header title="Carrinho" segment=1></app-header>
+  
+  <div *ngIf="1 > products?.length">
+    <p class="ion-text-center">You have no itens in your cart</p>
+  </div>
+  <ion-list *ngIf="products?.length > 0">
+    <ion-grid>
+      <ion-row *ngFor="let item of products;">
+        <ion-col size="9">
+          <ion-item>
+            <img *ngIf="item.product.gallery?.length > 0" [src]="item.product.gallery[0]" [alt]="item.product.name">
+            <ion-label>
+              <h2>{{item.product.name}}</h2>
+              <h3>{{item.product.price | currency:'BRL' }}</h3>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+        <ion-col size="1" class="vertical-align-content">
+          <ion-icon name="chevron-back-outline" (click)="DecreaseAmount(item.product.id)"></ion-icon>
+        </ion-col>
+        <ion-col size="1">
+          <h2>{{item.amount}}</h2>
+        </ion-col>
+        <ion-col size="1" class="vertical-align-content">
+          <ion-icon name="chevron-forward-outline" (click)="IncreaseAmount(item.product.id)"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+  <ion-button *ngIf="products?.length > 0" vertical="bottom" expand="block" size="large" class="ion-margin" (click)="FinishPurchase()">Finish Purchase</ion-button>
+</ion-content>
