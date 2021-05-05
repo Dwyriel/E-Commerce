@@ -23,6 +23,12 @@
             </ion-item>
           </ion-menu-toggle>
           <ion-menu-toggle auto-hide="false">
+            <ion-item (click)="ShowCategoriesModal()" lines="none">
+              <ion-icon slot="start" name="home"></ion-icon>
+              <ion-label>Departamentos</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false">
             <ion-item routerLink="/account" lines="none" *ngIf="!firebaseAns">
               <ion-icon slot="start" name="help-circle"></ion-icon>
               <ion-label>Registre-se</ion-label>
@@ -47,13 +53,6 @@
             <ion-label>Logout</ion-label>
           </ion-item>
         </ion-row>
-        <!--
-        <ion-fab *ngIf="firebaseAns" vertical="bottom" horizontal="center" id="logout">
-          <ion-item (click)="logout()">
-            <ion-icon ios="log-in-outline" md="log-in-sharp"></ion-icon>
-            <ion-label>Logout</ion-label>
-          </ion-item>
-        </ion-fab>-->
       </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
@@ -68,7 +67,7 @@
         </ion-col>
         <ion-col size="3">
           <ion-item button (click)="ShowCategories($event)">
-            <ion-label>Categorias</ion-label>
+            <ion-label>Departamentos</ion-label>
           </ion-item>
         </ion-col>
         <ion-col>

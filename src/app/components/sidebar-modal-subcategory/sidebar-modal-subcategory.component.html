@@ -1,0 +1,18 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>Departamentos</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen>
+  <ion-list>
+    <ion-item button (click)="goToCat(category)">Todos</ion-item>
+    <ng-container *ngFor="let subcategory of subcategories">
+      <ion-item button (click)="goToSubCat(subcategory.value)">{{subcategory.title}}</ion-item>
+    </ng-container>
+  </ion-list>
+</ion-content>

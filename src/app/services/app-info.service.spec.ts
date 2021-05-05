@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AppInfoService } from './app-info.service';
+import { AppResources } from './app-info.service';
 
 describe('AppInfoService', () => {
-  let service: AppInfoService;
+  let service: AppResources;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(AppInfoService);
+    service = TestBed.inject(AppResources);
   });
 
   it('should be created', () => {

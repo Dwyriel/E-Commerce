@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { ValidationService } from 'src/app/services/validation.service';
 import { UserService } from 'src/app/services/user.service';
-import { AppInfoService } from '../../services/app-info.service';
+import { AppResources } from '../../services/app-info.service';
 import { NavController } from '@ionic/angular';
 
 @Component({
@@ -40,7 +40,7 @@ export class LoginPage implements OnInit {
     this.GetPlataformInfo();
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-    this.subscription1 = AppInfoService.GetUserInfo().subscribe(ans => {
+    this.subscription1 = AppResources.GetUserInfo().subscribe(ans => {
       if (ans)
         this.router.navigate(["/"]);
     });
@@ -72,9 +72,9 @@ export class LoginPage implements OnInit {
   GetPlataformInfo() {
     if (this.subscription2 && !this.subscription2.closed)
       this.subscription2.unsubscribe();
-    this.subscription2 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.checkScreen = info.appWidth <= AppInfoService.maxMobileWidth;
-      this.setLoginDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
+    this.subscription2 = AppResources.GetAppInfo().subscribe(info => {
+      this.checkScreen = info.appWidth <= AppResources.maxMobileWidth;
+      this.setLoginDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
   }
 

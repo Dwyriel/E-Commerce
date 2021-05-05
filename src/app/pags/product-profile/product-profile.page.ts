@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
-import { AppInfoService } from 'src/app/services/app-info.service';
+import { AppResources } from 'src/app/services/app-info.service';
 import { CartService } from 'src/app/services/cart.service';
 import { ProductService } from 'src/app/services/product.service';
 import { ReviewService } from 'src/app/services/review.service';
@@ -85,9 +85,9 @@ export class ProductProfilePage implements OnInit {
   GetPlataformInfo() {
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-    this.subscription1 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
-      this.setDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
+    this.subscription1 = AppResources.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
+      this.setDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
   }
 
@@ -151,7 +151,7 @@ export class ProductProfilePage implements OnInit {
   async getLoggedUser() {
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
-    this.subscription5 = AppInfoService.GetUserInfo().subscribe(async ans => {
+    this.subscription5 = AppResources.GetUserInfo().subscribe(async ans => {
       this.loggedUser = ans;
     });
   }

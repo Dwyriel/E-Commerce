@@ -1,0 +1,19 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>Departamentos</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen>
+  <ion-item style="font-size: 1.5rem; font-weight: bold;" mode="md" button (click)="goToProducts()"><ion-text>Todos</ion-text></ion-item>
+  <ion-list style="margin-top: -.8rem;">
+    <ion-list-header>Categorias</ion-list-header>
+    <ng-container *ngFor="let category of categories; let i = index">
+      <ion-item button (click)="ShowSubCategory(category.category)">{{category.title}}</ion-item>
+    </ng-container>
+  </ion-list>
+</ion-content>

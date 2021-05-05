@@ -16,7 +16,7 @@
           <ion-select-option [value]="2">Avaliação</ion-select-option>
         </ion-select>
       </div>
-      <div *ngIf="!products">Nenhum item encontrado.</div>
+      <div *ngIf="!products || (products && 1 > products.length)">Nenhum item encontrado.</div>
       <ion-item lines="inset" *ngFor="let product of products;" routerLink="/product/{{product.id}}">
         <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
         <ion-label>

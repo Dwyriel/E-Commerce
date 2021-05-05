@@ -5,11 +5,11 @@ import { SubCategory } from 'src/app/structure/categories';
 import { ItemClassification } from 'src/app/structure/item-classification';
 
 @Component({
-  selector: 'app-sub-categories',
-  templateUrl: './sub-categories.component.html',
-  styleUrls: ['./sub-categories.component.scss'],
+  selector: 'app-sidebar-modal-subcategory',
+  templateUrl: './sidebar-modal-subcategory.component.html',
+  styleUrls: ['./sidebar-modal-subcategory.component.scss'],
 })
-export class SubCategoriesComponent implements OnInit {
+export class SidebarModalSubcategory implements OnInit {
 
   @Input('category') public category: number;
   public subcategories: SubCategory[];
@@ -20,17 +20,23 @@ export class SubCategoriesComponent implements OnInit {
     this.subcategories = ItemClassification.GetSubCatFrom(this.category);
   }
 
+  async dismissModal() {
+    await AppResources.modals[AppResources.modals.length - 1].dismiss().then(() => {
+      AppResources.modals.pop();
+    });
+  }
+
   async goToCat(value) {
     await this.router.navigate([`/products/all/${value}`]);
-    AppResources.popovers.forEach(popover => {
-      popover.dismiss();
+    AppResources.modals.forEach(modal => {
+      modal.dismiss();
     });
   }
 
   async goToSubCat(value) {
     await this.router.navigate([`/products/sub/${value}`]);
-    AppResources.popovers.forEach(popover => {
-      popover.dismiss();
+    AppResources.modals.forEach(modal => {
+      modal.dismiss();
     });
   }
 }

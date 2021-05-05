@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AddresService } from 'src/app/services/addres.service';
 import { AlertService } from 'src/app/services/alert.service';
-import { AppInfoService } from 'src/app/services/app-info.service';
+import { AppResources } from 'src/app/services/app-info.service';
 import { ImageService } from 'src/app/services/image.service';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/structure/user';
@@ -60,9 +60,9 @@ export class ProfilePage implements OnInit {
   }
 
   GetPlataformInfo() {
-    this.subscription5 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
-      this.setDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
+    this.subscription5 = AppResources.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
+      this.setDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
   }
 
@@ -84,7 +84,7 @@ export class ProfilePage implements OnInit {
           this.subscription2 = (await this.addressService.Get(ans.addressId)).subscribe(async ans2 => this.user.address = ans2);
       });
     }
-    this.subscription3 = AppInfoService.GetUserInfo().subscribe(async ans => {
+    this.subscription3 = AppResources.GetUserInfo().subscribe(async ans => {
       if (this.id)
         while (shouldWait)
           await new Promise(resolve => setTimeout(resolve, 10))

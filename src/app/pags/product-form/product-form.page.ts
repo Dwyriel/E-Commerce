@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
-import { AppInfoService } from 'src/app/services/app-info.service';
+import { AppResources } from 'src/app/services/app-info.service';
 import { ImageService } from 'src/app/services/image.service';
 import { ProductService } from 'src/app/services/product.service';
 import { Categories, Category, SubCategories, SubCategory } from 'src/app/structure/categories';
@@ -72,9 +72,9 @@ export class ProductFormPage implements OnInit {
   GetPlataformInfo() {
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-    this.subscription1 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
-      this.setDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
+    this.subscription1 = AppResources.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
+      this.setDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
   }
 
@@ -86,7 +86,7 @@ export class ProductFormPage implements OnInit {
     await this.alertService.presentLoading().then(ans => this.loadingPopupID = ans);
     if (this.subscription2 && !this.subscription2.closed)
       this.subscription2.unsubscribe();
-    this.subscription2 = AppInfoService.GetUserInfo().subscribe(async ans => {
+    this.subscription2 = AppResources.GetUserInfo().subscribe(async ans => {
       if (!ans) {
         await this.router.navigate(["/"]);
         await this.alertService.dismissLoading(this.loadingPopupID);

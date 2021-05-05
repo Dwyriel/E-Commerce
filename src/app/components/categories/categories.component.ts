@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { PopoverController } from '@ionic/angular';
+import { AppResources } from 'src/app/services/app-info.service';
 import { Category } from 'src/app/structure/categories';
 import { SubCategoriesComponent } from '../sub-categories/sub-categories.component';
 
@@ -12,17 +14,25 @@ export class CategoriesComponent implements OnInit {
 
   @Input("categories") public categories: Category[];
 
-  constructor(private popoverController: PopoverController) { }
+  constructor(private popoverController: PopoverController, private router: Router) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
-  async ShowSubCategory(event, index/**value of category*/){
-    var thingy = await this.popoverController.create({
+  async ShowSubCategory(event, /**value of category*/index) {
+    var popover = await this.popoverController.create({
       component: SubCategoriesComponent,
       event: event,
       mode: 'md',
-      componentProps: {category: index}
+      componentProps: { category: index }
     });
-    thingy.present();
+    AppResources.popovers.push(popover);
+    await popover.present();
+  }
+
+  async goToProducts() {
+    await this.router.navigate([`/products`]);
+    AppResources.popovers.forEach(popover => {
+      popover.dismiss();
+    });
   }
 }
