@@ -9,11 +9,19 @@ import { Category, SubCategory } from 'src/app/structure/categories';
 import { ItemClassification } from 'src/app/structure/item-classification';
 import { Product } from 'src/app/structure/product';
 
+/**
+ * WARNING:
+ * the code in this page is a mess as of right now, there's too many things in very few methods that does too much.
+ * Either try not to change anything or try to understand everything in this page before doing so.
+ * 
+ * I'll be changing, refactoring and correcting this later on to make this page readable and easy to maintain. 
+ */
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.page.html',
   styleUrls: ['./product-list.page.scss'],
 })
+
 export class ProductListPage implements OnInit {
 
   /**sub or all*/

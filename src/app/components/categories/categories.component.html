@@ -1,4 +1,4 @@
-<ion-item style="font-size: 1.5rem; font-weight: bold;" mode="md" button routerLink="/products"><ion-text>Todos</ion-text></ion-item>
+<ion-item style="font-size: 1.5rem; font-weight: bold;" mode="md" button (click)="goToProducts()"><ion-text>Todos</ion-text></ion-item>
 <ion-list style="margin-top: -.8rem;">
   <ion-list-header>Categorias</ion-list-header>
   <ng-container *ngFor="let category of categories; let i = index">

@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { PopoverController } from '@ionic/angular';
 import { AppResources } from 'src/app/services/app-info.service';
 import { Category } from 'src/app/structure/categories';
@@ -13,7 +14,7 @@ export class CategoriesComponent implements OnInit {
 
   @Input("categories") public categories: Category[];
 
-  constructor(private popoverController: PopoverController) { }
+  constructor(private popoverController: PopoverController, private router: Router) { }
 
   ngOnInit() { }
 
@@ -26,5 +27,12 @@ export class CategoriesComponent implements OnInit {
     });
     AppResources.popovers.push(popover);
     await popover.present();
+  }
+
+  async goToProducts() {
+    await this.router.navigate([`/products`]);
+    AppResources.popovers.forEach(popover => {
+      popover.dismiss();
+    });
   }
 }

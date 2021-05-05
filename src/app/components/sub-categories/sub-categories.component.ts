@@ -28,7 +28,6 @@ export class SubCategoriesComponent implements OnInit {
   }
 
   async goToSubCat(value) {
-    console.log(AppResources.popovers)
     await this.router.navigate([`/products/sub/${value}`]);
     AppResources.popovers.forEach(popover => {
       popover.dismiss();
