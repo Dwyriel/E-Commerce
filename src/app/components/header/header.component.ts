@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { AppInfoService } from 'src/app/services/app-info.service';
+import { AppResources } from 'src/app/services/app-info.service';
 
 @Component({
   selector: 'app-header',
@@ -19,8 +19,8 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     if (this.subscription && !this.subscription.closed)
       this.subscription.unsubscribe();
-    this.subscription = AppInfoService.GetAppInfo().subscribe(info => {
-      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
+    this.subscription = AppResources.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
     });
   }
 

@@ -7,7 +7,7 @@ import { fromEvent, Observable, Subscription } from "rxjs";
 import { User } from './structure/user';
 import { AlertService } from './services/alert.service';
 import { UserService } from './services/user.service';
-import { AppInfoService } from './services/app-info.service'
+import { AppResources } from './services/app-info.service'
 import { ItemClassification } from './structure/item-classification';
 import { CategoriesComponent } from './components/categories/categories.component';
 
@@ -39,7 +39,6 @@ export class AppComponent {
     private userService: UserService,
     private alertService: AlertService,
     private popoverController: PopoverController,
-    private router: Router//could probably remove this
   ) {
 
   }
@@ -72,13 +71,13 @@ export class AppComponent {
     });
     if (this.subscription4 && !this.subscription4.closed)
       this.subscription4.unsubscribe();
-    this.subscription4 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
+    this.subscription4 = AppResources.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
     });
   }
 
   getScreenDimations() {
-    AppInfoService.PushAppInfo({
+    AppResources.PushAppInfo({
       appWidth: this.platform.width(),
       appHeight: this.platform.height(),
       isDesktop: this.platform.is('desktop')
@@ -97,17 +96,17 @@ export class AppComponent {
           this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(ans2 => {
             this.user = ans2;
             this.user.id = ans.uid;
-            AppInfoService.PushUserInfo(this.user);
+            AppResources.PushUserInfo(this.user);
           });
           return;
         }
         this.firebaseAns = false;
         this.user = null;
-        AppInfoService.PushUserInfo(this.user);
+        AppResources.PushUserInfo(this.user);
       },
       err => {
         this.user = null;
-        AppInfoService.PushUserInfo(this.user);
+        AppResources.PushUserInfo(this.user);
         console.log(err);
       });
   }
@@ -116,20 +115,22 @@ export class AppComponent {
     await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans });
     await this.userService.auth.signOut().then(async () => {
       this.user = null;
-      AppInfoService.PushUserInfo(this.user);
+      AppResources.PushUserInfo(this.user);
       if (this.subscription2 && !this.subscription2.closed)
         this.subscription2.unsubscribe();
       await this.alertService.dismissLoading(this.loadingAlert);
     });
   }
 
-  async ShowCategories(event){
-    var thingy = await this.popoverController.create({
+  async ShowCategories(event) {
+    AppResources.popovers = [];
+    var popover = await this.popoverController.create({
       component: CategoriesComponent,
       event: event,
       mode: 'ios',
-      componentProps: {categories: ItemClassification.Categories()}
+      componentProps: { categories: ItemClassification.Categories() }
     });
-    thingy.present();
+    popover.present();
+    AppResources.popovers.push(popover);
   }
 }

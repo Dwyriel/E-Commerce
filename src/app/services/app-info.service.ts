@@ -5,10 +5,11 @@ import { User } from '../structure/user';
 @Injectable({
   providedIn: 'root'
 })
-export class AppInfoService {
+export class AppResources {
 
   private static appInfo = new BehaviorSubject<{ appWidth: number, appHeight: number, isDesktop: boolean }>({ appWidth: null, appHeight: null, isDesktop: null });
   private static userInfo = new BehaviorSubject<User>(null);
+  public static popovers: HTMLIonPopoverElement[] = [];
   public static maxMobileWidth: number = 880;
 
   /**
@@ -16,7 +17,7 @@ export class AppInfoService {
    * @param object the new information for appInfo.
    */
   public static PushAppInfo(object: { appWidth: number, appHeight: number, isDesktop: boolean }) {
-    AppInfoService.appInfo.next(object);
+    AppResources.appInfo.next(object);
   }
 
   /**
@@ -24,7 +25,7 @@ export class AppInfoService {
    * @returns an observable for the appInfo.
    */
   static GetAppInfo() {
-    return AppInfoService.appInfo.asObservable();
+    return AppResources.appInfo.asObservable();
   }
 
   /**
@@ -32,7 +33,7 @@ export class AppInfoService {
    * @param object the new information for userInfo.
    */
   public static PushUserInfo(object: User) {
-    AppInfoService.userInfo.next(object);
+    AppResources.userInfo.next(object);
   }
 
   /**
@@ -40,7 +41,7 @@ export class AppInfoService {
    * @returns an observable for the userInfo.
    */
   static GetUserInfo() {
-    return AppInfoService.userInfo.asObservable();
+    return AppResources.userInfo.asObservable();
   }
 
   constructor() { }

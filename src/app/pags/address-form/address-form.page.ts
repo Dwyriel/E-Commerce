@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AppInfoService } from '../../services/app-info.service'
+import { AppResources } from '../../services/app-info.service'
 import { Subscription } from 'rxjs';
 
 import { Address } from '../../structure/address';
@@ -61,9 +61,9 @@ export class AddressFormPage implements OnInit {
   GetPlataformInfo() {
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-    this.subscription1 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
-      this.setDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
+    this.subscription1 = AppResources.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
+      this.setDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
   }
 
@@ -74,7 +74,7 @@ export class AddressFormPage implements OnInit {
   async checkForUser() {
     if (this.subscription2 && !this.subscription2.closed)
       this.subscription2.unsubscribe();
-    this.subscription2 = AppInfoService.GetUserInfo().subscribe(async ans => {
+    this.subscription2 = AppResources.GetUserInfo().subscribe(async ans => {
       if (!ans) {
         await this.router.navigate(["/"]);
         return;

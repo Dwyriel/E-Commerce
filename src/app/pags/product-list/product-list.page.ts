@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
-import { AppInfoService } from 'src/app/services/app-info.service';
+import { AppResources } from 'src/app/services/app-info.service';
 import { ProductService } from 'src/app/services/product.service';
 import { ReviewService } from 'src/app/services/review.service';
 import { Category, SubCategory } from 'src/app/structure/categories';
@@ -54,9 +54,9 @@ export class ProductListPage implements OnInit {
   }
 
   GetPlataformInfo() {
-    this.subscription3 = AppInfoService.GetAppInfo().subscribe(info => {
-      this.isMobile = info.appWidth <= AppInfoService.maxMobileWidth;
-      this.setDivWidth(((info.appWidth * .4 > (AppInfoService.maxMobileWidth / 1.5)) ? "40%" : (AppInfoService.maxMobileWidth / 1.5) + "px"));
+    this.subscription3 = AppResources.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
+      this.setDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
   }
 
@@ -109,17 +109,22 @@ export class ProductListPage implements OnInit {
     var subscriptions: Subscription[] = [];
     var index = 0;
     var arrayLength = this.products.length;
-    for (var product of this.products) {
-      product.fillSubCategory();
-      subscriptions.push((await this.reviewService.GetAllFromProduct(product.id)).subscribe(ans => {
-        product.reviews = ans;
-        if (product.reviews)
-          product.calculateAvgRating();
-        index++;
-        if (index >= arrayLength)
+    if (this.products && this.products.length > 0)
+      for (var product of this.products) {
+        product.fillSubCategory();
+        subscriptions.push((await this.reviewService.GetAllFromProduct(product.id)).subscribe(ans => {
+          product.reviews = ans;
+          if (product.reviews)
+            product.calculateAvgRating();
+          index++;
+          if (index >= arrayLength)
+            shouldWait = false;
+        }, async err => {
           shouldWait = false;
-      }));
-    }
+        }));
+      }
+    else
+      shouldWait = false;
     while (shouldWait)
       await new Promise(resolve => setTimeout(resolve, 10));
     for (var sub of subscriptions)
