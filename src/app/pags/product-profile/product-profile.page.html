@@ -9,7 +9,11 @@
       </ion-slide>
     </ion-slides>
     <h2 >{{product.name}}</h2>
-    <p>Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}</p>
+    <p ><span class="tooltip"> Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}
+      <span class="tooltiptext tooltip-top">
+        <ion-badge class="badge-bottom" color="success" mode="ios" >{{positivos}}</ion-badge> - 
+        <ion-badge  class="badge-bottom" color="danger" mode="ios">{{negativos}}</ion-badge></span></span></p>
+    
     <p>{{product.price | currency:'BRL'}}</p>
     <ion-button [disabled]="(1 > product.stock) || (loggedUser && loggedUser.id == product.sellerID)" (click)="AddToCart()">Adicionar no carrinho</ion-button>
     <h3 >Descrição:</h3>

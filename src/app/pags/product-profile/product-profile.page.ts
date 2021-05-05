@@ -43,6 +43,9 @@ export class ProductProfilePage implements OnInit {
   public reviews: Review[] = [];
   public hasReviews: boolean = false;
 
+  public positivos: number = 0;
+  public negativos: number = 0;
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -146,6 +149,9 @@ export class ProductProfilePage implements OnInit {
     }, async err => {
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das avaliações, tente denovo daqui a pouco.")
     });
+    for(var product of this.reviews){
+   this.positivos = (product.recommend) ? ++this.positivos : this.positivos;
+   this.negativos = (!product.recommend) ? ++this.negativos: this.negativos; }
   }
 
   async getLoggedUser() {
