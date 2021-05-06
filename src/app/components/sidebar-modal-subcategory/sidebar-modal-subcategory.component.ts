@@ -12,12 +12,14 @@ import { ItemClassification } from 'src/app/structure/item-classification';
 export class SidebarModalSubcategory implements OnInit {
 
   @Input('category') public category: number;
+  public categ;
   public subcategories: SubCategory[];
 
   constructor(private router: Router) { }
 
   ngOnInit() {
     this.subcategories = ItemClassification.GetSubCatFrom(this.category);
+    this.categ = ItemClassification.GetCatFromValue(this.category);
   }
 
   async dismissModal() {
