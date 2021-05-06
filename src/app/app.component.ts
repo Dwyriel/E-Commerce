@@ -99,7 +99,10 @@ export class AppComponent {
           this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(ans2 => {
             this.user = ans2;
             this.user.id = ans.uid;
-            this.calculateCartItens();
+            if (ans2.cart && ans2.cart.length > 0)
+              this.calculateCartItens();
+            else
+              this.cartItens = 0;
             AppResources.PushUserInfo(this.user);
           });
           return;

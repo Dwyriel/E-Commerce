@@ -3,10 +3,10 @@
 <ion-content [fullscreen]="true">
   <app-header title="Carrinho" segment=1></app-header>
   <div [ngClass]="{'webrowser':!isMobile}">
-    <div *ngIf="1 > products?.length">
+    <div *ngIf="!hasProducts">
       <p class="ion-text-center">You have no itens in your cart</p>
     </div>
-    <ion-list *ngIf="products?.length > 0">
+    <ion-list *ngIf="hasProducts">
       <ion-grid>
         <ion-row *ngFor="let item of products;">
           <ion-col size="9">
@@ -30,6 +30,6 @@
         </ion-row>
       </ion-grid>
     </ion-list>
-    <ion-button *ngIf="products?.length > 0" vertical="bottom" expand="block" size="large" class="ion-margin" (click)="FinishPurchase()">Finalizar Compra</ion-button>
+    <ion-button *ngIf="hasProducts" vertical="bottom" expand="block" size="large" class="ion-margin" (click)="FinishPurchase()">Finalizar Compra</ion-button>
   </div>
 </ion-content>

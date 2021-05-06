@@ -17,6 +17,7 @@ import { User } from 'src/app/structure/user';
 export class CartPage implements OnInit {
 
   public isMobile: boolean;
+  public hasProducts: boolean;
   public user: User;
   public products: { product: Product, amount: number }[] = [];
   private loadingAlert: string;
@@ -74,7 +75,11 @@ export class CartPage implements OnInit {
       }
       this.user = ans;
       if (this.user && this.user.cart && this.user.cart.length > 0) {
+        this.hasProducts = true;
         await this.getProducts();
+      } else {
+        this.hasProducts = false;
+        await this.alertService.dismissLoading(this.loadingAlert);
       }
     }, async err => {
       await this.alertService.dismissLoading(this.loadingAlert);
@@ -92,17 +97,23 @@ export class CartPage implements OnInit {
       this.subscriptions = [];
     }
     var shouldWait: boolean = true;
+    var shouldWait2: boolean = true;
     var index: number = 0;
     var arrayLength = (this.user.cart && this.user.cart.length > 0) ? this.user.cart.length : null;
     for (var item of this.user.cart) {
+      shouldWait2 = true;
       this.subscriptions.push((await this.prodServ.Get(item.productID)).subscribe(product => {
-        product.id = item.productID;
-        var item2: { product: Product, amount: number } = { product: product, amount: item.amount }
+        var prod: Product = product;
+        prod.id = item.productID;
+        var item2: { product: Product, amount: number } = { product: prod, amount: item.amount }
         products.push(item2);
         index++;
         if (index >= arrayLength)
           shouldWait = false;
+        shouldWait2 = false;
       }));
+      while (shouldWait2)
+        await new Promise(resolve => setTimeout(resolve, 10));
     }
     while (shouldWait)
       await new Promise(resolve => setTimeout(resolve, 10));
@@ -116,6 +127,7 @@ export class CartPage implements OnInit {
   async DecreaseAmount(id: string) {
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
     this.cartServ.RemoveItem(id, this.user.cart);
+    console.log(this.user.cart)
     await this.SendChanges(id, false);
   }
 
