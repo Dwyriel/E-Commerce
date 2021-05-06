@@ -16,6 +16,7 @@ import { User } from 'src/app/structure/user';
 })
 export class CartPage implements OnInit {
 
+  public isMobile: boolean;
   public user: User;
   public products: { product: Product, amount: number }[] = [];
   private loadingAlert: string;
@@ -23,6 +24,7 @@ export class CartPage implements OnInit {
   //Subscriptions
   private subscriptions: Subscription[] = [];
   private subscription1: Subscription;
+  private subscription2: Subscription;
 
   constructor(private userService: UserService, private alertService: AlertService, private router: Router, private prodServ: ProductService, private cartServ: CartService) { }
 
@@ -31,6 +33,7 @@ export class CartPage implements OnInit {
 
   ionViewWillEnter() {
     this.getUserAndCart();
+    this.GetPlataformInfo();
   }
 
   ionViewWillLeave() {
@@ -38,6 +41,8 @@ export class CartPage implements OnInit {
     this.products = [];
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
+    if (this.subscription2 && !this.subscription2.closed)
+      this.subscription2.unsubscribe();
     if (this.subscriptions && this.subscriptions.length > 0) {
       for (var sub of this.subscriptions) {
         if (sub && !sub.closed)
@@ -45,6 +50,17 @@ export class CartPage implements OnInit {
       }
       this.subscriptions = [];
     }
+  }
+
+  GetPlataformInfo() {
+    this.subscription2 = AppResources.GetAppInfo().subscribe(info => {
+      this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
+      this.setDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
+    });
+  }
+
+  setDivWidth(value: string) {
+    document.body.style.setProperty('--maxWidth', value);
   }
 
   async getUserAndCart() {

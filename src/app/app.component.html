@@ -28,20 +28,26 @@
               <ion-label>Departamentos</ion-label>
             </ion-item>
           </ion-menu-toggle>
-          <ion-menu-toggle auto-hide="false">
-            <ion-item routerLink="/account" lines="none" *ngIf="!firebaseAns">
+          <ion-menu-toggle auto-hide="false" *ngIf="!firebaseAns">
+            <ion-item routerLink="/account" lines="none">
               <ion-icon slot="start" name="help-circle"></ion-icon>
               <ion-label>Registre-se</ion-label>
             </ion-item>
           </ion-menu-toggle>
-          <ion-menu-toggle auto-hide="false">
-            <ion-item button lines="none" *ngIf="firebaseAns">
+          <ion-menu-toggle *ngIf="firebaseAns" auto-hide="false">
+            <ion-item button lines="none" routerLink="/cart">
+              <ion-icon slot="start" ios="cart-outline" md="cart-sharp"></ion-icon>
+              <ion-label>Carrinho<ion-badge color="warning" class="cartBadge" mode="ios" *ngIf="cartItens && cartItens > 0">{{cartItens}}</ion-badge></ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false" *ngIf="firebaseAns">
+            <ion-item button lines="none">
               <ion-icon slot="start" ios="mail-outline" md="mail-sharp"></ion-icon>
               <ion-label>Minhas Mensagens</ion-label>
             </ion-item>
           </ion-menu-toggle>
-          <ion-menu-toggle auto-hide="false">
-            <ion-item button lines="none" *ngIf="firebaseAns">
+          <ion-menu-toggle auto-hide="false" *ngIf="firebaseAns">
+            <ion-item button lines="none">
               <ion-icon slot="start" ios="cart-outline" md="cart-sharp"></ion-icon>
               <ion-label>Minhas Compras</ion-label>
             </ion-item>
@@ -83,7 +89,7 @@
           <!-- item que chama dropdown de user -->
           <ion-item button #userbtn (mouseenter)="dropdown = true" 
           class="dropdown-btn" routerdirection="root" routerLinkActive="active-item" *ngIf="!user">
-          <ion-icon slot="start" [name]="dropdown ? 'chevron-down' : 'chevron-up'"></ion-icon>
+          <ion-icon slot="end" [name]="dropdown ? 'chevron-down' : 'chevron-up'"></ion-icon>
             <ion-label>Novo Aqui?</ion-label>
           </ion-item>
            <ion-item button #userbtn (mouseenter)="dropdown = true"
@@ -92,12 +98,17 @@
             <img id="userimage" *ngIf="user && !user.photo" src="../assets/perfil.png">
             <img id="userimage" *ngIf="user && user.photo" [src]="user.photo">
             <ion-list-header>{{ user.name }}</ion-list-header>
+            <ion-badge color="warning" class="cartBadge" mode="ios" *ngIf="!dropdown && cartItens && cartItens > 0">{{cartItens}}</ion-badge>
           </ion-item>
           <!-- dropdown do user -->
            <div *ngIf="dropdown" class="dropdown" #dropdownbox>
-            <ion-item routerLink="/profile" *ngIf="firebaseAns" (click)="dropdown = false">
+            <ion-item button lines="none" routerLink="/profile" *ngIf="firebaseAns" (click)="dropdown = false">
               <ion-icon slot="start" ios="person-circle-outline" md="person-circle-sharp"></ion-icon>
               <ion-label>Meu Perfil</ion-label>
+            </ion-item>
+            <ion-item button lines="none" routerLink="/cart" *ngIf="firebaseAns" (click)="dropdown = false">
+              <ion-icon slot="start" ios="cart-outline" md="cart-sharp"></ion-icon>
+              <ion-label>Carrinho<ion-badge color="warning" class="cartBadge" mode="ios" *ngIf="cartItens && cartItens > 0">{{cartItens}}</ion-badge></ion-label>
             </ion-item>
             <ion-item button lines="none" *ngIf="firebaseAns" (click)="dropdown = false">
               <ion-icon slot="start" ios="cart-outline" md="cart-sharp"></ion-icon>
