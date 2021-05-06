@@ -42,7 +42,6 @@ export class ProductProfilePage implements OnInit {
   public SellerUser: User = new User();
   public reviews: Review[] = [];
   public hasReviews: boolean = false;
-
   public positivos: number = 0;
   public negativos: number = 0;
 
@@ -146,12 +145,16 @@ export class ProductProfilePage implements OnInit {
       this.reviews = ans;
       awaits.reviews = false;
       this.hasReviews = this.reviews.length > 1;
+      this.positivos = 0;
+      this.negativos = 0;
+      for (var product of this.reviews) {
+        this.positivos = (product.recommend) ? ++this.positivos : this.positivos;
+        this.negativos = (!product.recommend) ? ++this.negativos : this.negativos;
+      }
     }, async err => {
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das avaliações, tente denovo daqui a pouco.")
     });
-    for(var product of this.reviews){
-   this.positivos = (product.recommend) ? ++this.positivos : this.positivos;
-   this.negativos = (!product.recommend) ? ++this.negativos: this.negativos; }
+
   }
 
   async getLoggedUser() {
