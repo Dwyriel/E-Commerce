@@ -20,9 +20,10 @@ import { SidebarModalCategory } from './components/sidebar-modal/sidebar-modal.c
 export class AppComponent {
 
   // verification log user
-  public user: User = null;
   private loadingAlert: string;
+  public user: User = null;
   public firebaseAns: boolean;
+  public cartItens: number;
 
   //device
   public isMobile: boolean;
@@ -98,6 +99,7 @@ export class AppComponent {
           this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(ans2 => {
             this.user = ans2;
             this.user.id = ans.uid;
+            this.calculateCartItens();
             AppResources.PushUserInfo(this.user);
           });
           return;
@@ -111,6 +113,12 @@ export class AppComponent {
         AppResources.PushUserInfo(this.user);
         console.log(err);
       });
+  }
+
+  calculateCartItens() {
+    this.cartItens = 0;
+    for (var item of this.user.cart)
+      this.cartItens += item.amount;
   }
 
   async logout() {

@@ -39,13 +39,14 @@ ion-img {
     text-align: start;
     white-space: pre-wrap;
 } 
+
 .tooltip {
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
-  }
-  
-  .tooltip .tooltiptext {
+}
+
+.tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
     background-color: rgb(199, 199, 199);
@@ -53,21 +54,29 @@ ion-img {
     text-align: center;
     border-radius: 6px;
     padding: 5px 0;
-  
+
     /* Position the tooltip */
     position: absolute;
     z-index: 1;
-  }
-  
-  .tooltip:hover .tooltiptext {
+}
+
+.tooltip:hover .tooltiptext {
     visibility: visible;
-  }
-  .tooltip-top{
-      bottom : 125%;
-      left: 50%;
-      margin-left: -16.5%;
-     
-  }
-  .badge-bottom{
+}
+
+.tooltip-top{
+    bottom : 125%;
+    left: 50%;
+    margin-left: -16.5%;
+}
+
+.badge-bottom{
     margin-bottom: -3px;
-  }
+}
+
+#sellerimage {
+    border-radius: 50%;
+    height: 2.5rem;
+    width: 2.5rem;
+    margin-right: .3rem;
+}

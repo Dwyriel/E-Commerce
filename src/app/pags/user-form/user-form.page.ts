@@ -108,7 +108,8 @@ export class UserFormPage implements OnInit {
     if (form.valid) {
       await this.alertService.presentLoading().then(ans => { this.loadingAlert = ans; });
       this.toBeSentUser.tel = this.ddd + this.number;
-      if (!this.logged)
+      if (!this.logged) {
+        this.toBeSentUser.password = this.pword;
         await this.userService.AddUser(this.toBeSentUser).then(
           async () => {
             form.reset;
@@ -116,28 +117,53 @@ export class UserFormPage implements OnInit {
           }, async err => {
             await this.failedSubmit("Ocorreu um erro", "Seu registro não pôde ser efetuado.");
           });
-      else {
-        await this.userService.auth.signInWithEmailAndPassword(this.loggedUser.email, this.loggedUser.password).then(async ans => {
-          await (await this.userService.auth.currentUser).updatePassword(this.pword).then(async () => {
-            await (await this.userService.auth.currentUser).updateEmail(this.toBeSentUser.email).then(async () => {
-              this.userService.Update(this.toBeSentUser).then(
-                async () => {
-                  form.reset();
-                  await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/profile");
-                }, async err => {
-                  await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado. Senha e Email atualizados.");
-                });
-            }, async err => {
-              this.UpdateError("Erro", "Não foi possivel atualizar o email. Senha atualizada.");
-            });
-          }, async err => {
-            this.UpdateError("Error", "Não foi possivel atualizar a senha.");
-          });
-        }, async err => {
-          this.UpdateError("Error", "Senha Antiga não corresponde com a conta.");
-        });
+      } else {
+        if (this.pword != "" && this.confirm != "")
+          await this.UpdateWithNewPassword(form);
+        else
+          await this.UpdateWithoutNewPassword(form);
       }
     }
+  }
+
+  async UpdateWithNewPassword(form) {
+    await this.userService.auth.signInWithEmailAndPassword(this.loggedUser.email, this.loggedUser.password).then(async ans => {
+      await (await this.userService.auth.currentUser).updatePassword(this.pword).then(async () => {
+        await (await this.userService.auth.currentUser).updateEmail(this.toBeSentUser.email).then(async () => {
+          this.userService.Update(this.toBeSentUser).then(
+            async () => {
+              form.reset();
+              await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/profile");
+            }, async err => {
+              await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado. Senha e Email atualizados.");
+            });
+        }, async err => {
+          this.UpdateError("Erro", "Não foi possivel atualizar o email. Senha atualizada.");
+        });
+      }, async err => {
+        this.UpdateError("Error", "Não foi possivel atualizar a senha.");
+      });
+    }, async err => {
+      this.UpdateError("Error", "Senha Antiga não corresponde com a conta.");
+    });
+  }
+
+  async UpdateWithoutNewPassword(form) {
+    await this.userService.auth.signInWithEmailAndPassword(this.loggedUser.email, this.loggedUser.password).then(async ans => {
+      await (await this.userService.auth.currentUser).updateEmail(this.toBeSentUser.email).then(async () => {
+        this.userService.Update(this.toBeSentUser).then(
+          async () => {
+            form.reset();
+            await this.successfulSubmit("Sucesso!", "Seu perfil foi atualizado.", "/profile");
+          }, async err => {
+            await this.failedSubmit("Ocorreu um erro", "Seu perfil não pôde ser atualizado. Senha e Email atualizados.");
+          });
+      }, async err => {
+        this.UpdateError("Erro", "Não foi possivel atualizar o email. Senha atualizada.");
+      });
+    }, async err => {
+      this.UpdateError("Error", "Senha Antiga não corresponde com a conta.");
+    });
   }
 
   async UpdateError(title: string, message: string) {

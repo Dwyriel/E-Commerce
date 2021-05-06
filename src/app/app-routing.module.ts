@@ -21,35 +21,39 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    loadChildren: () => import('./pags/profile/profile.module').then( m => m.ProfilePageModule)
+    loadChildren: () => import('./pags/profile/profile.module').then(m => m.ProfilePageModule)
   },
   {
     path: 'profile/:id',
-    loadChildren: () => import('./pags/profile/profile.module').then( m => m.ProfilePageModule)
+    loadChildren: () => import('./pags/profile/profile.module').then(m => m.ProfilePageModule)
   },
   {
     path: 'addressForm',
-    loadChildren: () => import('./pags/address-form/address-form.module').then( m => m.AddressFormPageModule)
+    loadChildren: () => import('./pags/address-form/address-form.module').then(m => m.AddressFormPageModule)
   },
   {
     path: 'productForm',
-    loadChildren: () => import('./pags/product-form/product-form.module').then( m => m.ProductFormPageModule)
+    loadChildren: () => import('./pags/product-form/product-form.module').then(m => m.ProductFormPageModule)
   },
   {
     path: 'productForm/:id',
-    loadChildren: () => import('./pags/product-form/product-form.module').then( m => m.ProductFormPageModule)
+    loadChildren: () => import('./pags/product-form/product-form.module').then(m => m.ProductFormPageModule)
   },
   {
     path: 'product/:id',
-    loadChildren: () => import('./pags/product-profile/product-profile.module').then( m => m.ProductProfilePageModule)
+    loadChildren: () => import('./pags/product-profile/product-profile.module').then(m => m.ProductProfilePageModule)
   },
   {
     path: 'products',
-    loadChildren: () => import('./pags/product-list/product-list.module').then( m => m.ProductListPageModule)
+    loadChildren: () => import('./pags/product-list/product-list.module').then(m => m.ProductListPageModule)
   },
   {
     path: 'products/:cat/:value',
-    loadChildren: () => import('./pags/product-list/product-list.module').then( m => m.ProductListPageModule)
+    loadChildren: () => import('./pags/product-list/product-list.module').then(m => m.ProductListPageModule)
+  },
+  {
+    path: 'cart',
+    loadChildren: () => import('./pags/cart/cart.module').then(m => m.CartPageModule)
   },
 ];
 

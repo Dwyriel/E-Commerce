@@ -1,31 +1,42 @@
-<app-header title="Titulo" segment=0></app-header>
+<app-header [title]="title" segment=0></app-header>
 
 <ion-content [fullscreen]="true">
-  <app-header title="Titulo" segment=1></app-header>
+  <app-header [title]="title" segment=1></app-header>
   <div [ngClass]="{'webrowser':!isMobile}" class="ion-margin">
     <ion-slides pager="true" [options]="slideOpts">
       <ion-slide *ngFor="let photo of product.gallery; let i = index">
         <ion-img [src]="photo"></ion-img>
       </ion-slide>
     </ion-slides>
-    <h2 >{{product.name}}</h2>
-    <p ><span class="tooltip"> Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}
-      <span class="tooltiptext tooltip-top">
-        <ion-badge class="badge-bottom" color="success" mode="ios" >{{positivos}}</ion-badge> - 
-        <ion-badge  class="badge-bottom" color="danger" mode="ios">{{negativos}}</ion-badge></span></span></p>
-    
+    <h2>{{product.name}}</h2>
+    <p>
+      <span class="tooltip"> Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}
+        <span class="tooltiptext tooltip-top">
+          <ion-badge class="badge-bottom" color="success" mode="ios" >{{positivos}}</ion-badge> - 
+          <ion-badge class="badge-bottom" color="danger" mode="ios">{{negativos}}</ion-badge>
+        </span>
+      </span>
+    </p>
     <p>{{product.price | currency:'BRL'}}</p>
     <ion-button [disabled]="(1 > product.stock) || (loggedUser && loggedUser.id == product.sellerID)" (click)="AddToCart()">Adicionar no carrinho</ion-button>
     <h3 >Descrição:</h3>
-    <p >
+    <p>
       <ion-text>{{product.description}}</ion-text>
     </p>
-    <h4  routerLink="/profile/{{product.sellerID}}">Vendedor:{{SellerUser.name}}<span> - Perfil do Vendedor</span></h4>
-    
-    <ion-item *ngIf="!hasReviews" >
+    <ion-row class="ion-padding-vertical ion-align-items-center ion-justify-content-start" id="product-seller">
+      <img *ngIf="!SellerUser.photo" id="sellerimage" src="../../../assets/perfil.png"
+        routerLink="/profile/{{product.sellerID}}">
+      <img *ngIf="SellerUser.photo" id="sellerimage" [src]="SellerUser.photo"
+        routerLink="/profile/{{product.sellerID}}">
+      <ion-label routerLink="/profile/{{product.sellerID}}">
+        <h3>Vendedor: </h3>
+        <h2>{{SellerUser.name}}</h2>
+      </ion-label>
+    </ion-row>
+    <ion-item *ngIf="!hasReviews">
         <ion-label>Produto sem avaliações</ion-label>
     </ion-item>
-    <div *ngIf="hasReviews" >
+    <div *ngIf="hasReviews">
       <ion-text class="reviewsTitle">Avaliações:</ion-text>
       <div class="reviews" *ngFor="let review of reviews">
         <ion-row class="ion-justify-content-between">

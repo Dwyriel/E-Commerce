@@ -44,6 +44,7 @@ export class ProductProfilePage implements OnInit {
   public hasReviews: boolean = false;
   public positivos: number = 0;
   public negativos: number = 0;
+  public title: string = "Product";
 
   constructor(
     private router: Router,
@@ -66,7 +67,7 @@ export class ProductProfilePage implements OnInit {
   }
 
   ionViewWillLeave() {
-    this.SellerUser = null;
+    this.SellerUser = new User();
     this.loggedUser = null;
     this.product = new Product();
     this.id = null;
@@ -115,6 +116,7 @@ export class ProductProfilePage implements OnInit {
       }
       this.product = { ...ans, fillSubCategory: this.product.fillSubCategory, calculateAvgRating: this.product.calculateAvgRating };
       this.product.id = this.id;
+      this.title = this.product.name;
       var awaits = { seller: true, reviews: true }
       this.GetSeller(awaits);
       this.GetReviews(awaits);

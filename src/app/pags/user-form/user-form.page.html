@@ -37,19 +37,18 @@
         <ion-label position="floating">Senha Antiga <ion-text color="danger" *ngIf="oldPassword.invalid && oldPassword.dirty"><b>Senha curta</b> </ion-text>
         </ion-label>
         <ion-input type="password" name="user-oldPassword" [(ngModel)]=loggedUser.password #oldPassword="ngModel" minlength="{{minlength}}"
-          required></ion-input>
+          [required]="logged"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating"><span *ngIf="logged">Nova </span>Senha <ion-text color="danger" *ngIf="password.invalid && password.dirty"><b>Senha curta</b> </ion-text>
         </ion-label>
-        <ion-input type="password" name="user-password" [(ngModel)]=pword #password="ngModel" minlength="{{minlength}}"
-          required></ion-input>
+        <ion-input type="password" name="user-password" [(ngModel)]=pword #password="ngModel" minlength="{{minlength}}" [required]="!logged"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Confirmar Senha <ion-text color="danger"
             *ngIf="confirmation.value != password.value && confirmation.dirty"><b>Senhas não conferem</b> </ion-text>
         </ion-label>
-        <ion-input type="password" name="confirm" [(ngModel)]=confirm #confirmation="ngModel" minlength="{{minlength}}" required>
+        <ion-input type="password" name="confirm" [(ngModel)]=confirm #confirmation="ngModel" minlength="{{minlength}}" [required]="!logged">
         </ion-input>
       </ion-item>
       <ion-button class="ion-margin" expand="block" size="default"
