@@ -98,6 +98,7 @@ export class ProductFormPage implements OnInit {
   }
 
   async checkForProduct() {
+    var shouldWait = true;
     this.product.id = this.activatedRoute.snapshot.paramMap.get("id");
     if (this.product.id) {
       if (this.subscription3 && !this.subscription3.closed)
@@ -108,14 +109,21 @@ export class ProductFormPage implements OnInit {
           await this.router.navigate(["/"]);
           return;
         }
-        this.product = ans;
-        await this.alertService.dismissLoading(this.loadingPopupID);
+        var tempProduct: Product = new Product();
+        this.product = { ...ans, fillSubCategory: tempProduct.fillSubCategory, calculateAvgRating: tempProduct.calculateAvgRating, id: this.product.id };
+        this.categoryValue = ItemClassification.GetSubCatFromValue(this.product.subCatValue).category;
+        this.subCats = ItemClassification.GetSubCatFrom(this.categoryValue);
+        this.subCategoryValue = this.product.subCatValue;
+        shouldWait = false;
       });
     }
     else {
       this.product.sellerID = this.user.id;
-      await this.alertService.dismissLoading(this.loadingPopupID);
+      shouldWait = false;
     }
+    while (shouldWait)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    await this.alertService.dismissLoading(this.loadingPopupID);
   }
 
   async OnClick(form) {
@@ -124,14 +132,14 @@ export class ProductFormPage implements OnInit {
       if (!this.product.id) {
         await this.productService.Add(this.product).then(async ans => {
           await form.reset();
-          await this.successfulSubmit("Atenção", "Produto registrado!", "/product");//todo change url
+          await this.successfulSubmit("Atenção", "Produto registrado!", `/product/${ans.id}`);
         }, async err => {
           console.error(err);
           await this.failedSubmit("Erro", "Produto não registrado!");
         });
       } else {
         this.productService.Update(this.product, this.product.id).then(async ans => {
-          await this.successfulSubmit("Atenção", "Produto foi atualizado!", "/product/" + this.product.id);//todo change url
+          await this.successfulSubmit("Atenção", "Produto foi atualizado!", "/product/" + this.product.id);
         }, async err => {
           console.error(err);
           await this.failedSubmit("Error", "Produto não foi atualizado!");
