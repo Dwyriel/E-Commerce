@@ -9,14 +9,14 @@
   <div [ngClass]="{'webrowser':!isMobile}">
     <div *ngIf="!isMobile" style="padding-bottom: .3rem;">{{title}}</div>
     <ion-list>
-      <div style="width: 40%; margin-left: 58%; text-align: right;">
+      <div style="width: 40%; margin-left: 58%; text-align: right;" *ngIf="products && products.length > 0">
         <ion-select name="sort" interface="popover" [(ngModel)]=sorting (ngModelChange)="sortListing()" placeholder="Ordenar">
           <ion-select-option [value]="0">Maior preço</ion-select-option>
           <ion-select-option [value]="1">Menor preço</ion-select-option>
           <ion-select-option [value]="2">Avaliação</ion-select-option>
         </ion-select>
       </div>
-      <div *ngIf="!products || (products && 1 > products.length)">Nenhum item encontrado.</div>
+      <div style="text-align: center;" *ngIf="!products || (products && 1 > products.length)">Nenhum item encontrado.</div>
       <ion-item lines="inset" *ngFor="let product of products;" routerLink="/product/{{product.id}}">
         <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
         <ion-label>
