@@ -21,7 +21,7 @@ export class CartPage implements OnInit {
   private loadingAlert: string;
 
   //Subscriptions
-  private subscriptions: Subscription[];
+  private subscriptions: Subscription[] = [];
   private subscription1: Subscription;
 
   constructor(private userService: UserService, private alertService: AlertService, private router: Router, private prodServ: ProductService, private cartServ: CartService) { }
@@ -30,7 +30,7 @@ export class CartPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.getUser();
+    this.getUserAndCart();
   }
 
   ionViewWillLeave() {
@@ -47,7 +47,7 @@ export class CartPage implements OnInit {
     }
   }
 
-  async getUser() {
+  async getUserAndCart() {
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
@@ -57,9 +57,8 @@ export class CartPage implements OnInit {
         await this.alertService.dismissLoading(this.loadingAlert);
       }
       this.user = ans;
-      if (this.user.cart && this.user.cart.length > 0) {
+      if (this.user && this.user.cart && this.user.cart.length > 0) {
         await this.getProducts();
-        await this.alertService.dismissLoading(this.loadingAlert);
       }
     }, async err => {
       await this.alertService.dismissLoading(this.loadingAlert);
@@ -68,7 +67,7 @@ export class CartPage implements OnInit {
   }
 
   async getProducts() {
-    this.products = [];
+    var products: { product: Product, amount: number }[] = [];
     if (this.subscriptions && this.subscriptions.length > 0) {
       for (var sub of this.subscriptions) {
         if (sub && !sub.closed)
@@ -83,7 +82,7 @@ export class CartPage implements OnInit {
       this.subscriptions.push((await this.prodServ.Get(item.productID)).subscribe(product => {
         product.id = item.productID;
         var item2: { product: Product, amount: number } = { product: product, amount: item.amount }
-        this.products.push(item2);
+        products.push(item2);
         index++;
         if (index >= arrayLength)
           shouldWait = false;
@@ -93,15 +92,19 @@ export class CartPage implements OnInit {
       await new Promise(resolve => setTimeout(resolve, 10));
     //if this bugs and duplicates appear uncomment the code below: 
     //this.products = this.products.filter((item, index, array) => index === array.findIndex(item2 => (item2.product.id === item.product.id)));
+    this.products = products;
+    await this.alertService.dismissLoading(this.loadingAlert);
     return;
   }
 
   async DecreaseAmount(id: string) {
+    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
     this.cartServ.RemoveItem(id, this.user.cart);
     await this.SendChanges(id, false);
   }
 
   async IncreaseAmount(id: string) {
+    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
     this.cartServ.AddItem(id, this.user.cart);
     await this.SendChanges(id, true);
   }

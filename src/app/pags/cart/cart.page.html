@@ -10,7 +10,7 @@
     <ion-grid>
       <ion-row *ngFor="let item of products;">
         <ion-col size="9">
-          <ion-item>
+          <ion-item routerLink="/product/{{item.product.id}}">
             <img *ngIf="item.product.gallery?.length > 0" [src]="item.product.gallery[0]" [alt]="item.product.name">
             <ion-label>
               <h2>{{item.product.name}}</h2>
