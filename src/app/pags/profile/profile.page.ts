@@ -79,15 +79,18 @@ export class ProfilePage implements OnInit {
         this.user = ans;
         this.telephone = this.GetUITel(ans.tel);
         this.title = `Perfil de ${ans.name}`;
-        shouldWait = false;
         if (ans.addressId)
-          this.subscription2 = (await this.addressService.Get(ans.addressId)).subscribe(async ans2 => this.user.address = ans2);
+          this.subscription2 = (await this.addressService.Get(ans.addressId)).subscribe(async ans2 => { this.user.address = ans2; shouldWait = false; });
+        else
+          shouldWait = false;
+      }, async err => {
+        shouldWait = false;
       });
     }
+    if (this.id)
+      while (shouldWait)
+        await new Promise(resolve => setTimeout(resolve, 10))
     this.subscription3 = AppResources.GetUserInfo().subscribe(async ans => {
-      if (this.id)
-        while (shouldWait)
-          await new Promise(resolve => setTimeout(resolve, 10))
       if (ans) {
         this.loggedUser = ans;
         this.loggedUser.id = ans.id;
@@ -104,11 +107,15 @@ export class ProfilePage implements OnInit {
         await this.alertService.dismissLoading(this.loadingPopupID);
         await this.router.navigate(["/"]);
       }
+      if (this.id && !ans) {
+        await this.alertService.dismissLoading(this.loadingPopupID);
+      }
       this.showButtons = (!this.id || (this.loggedUser && this.id == this.loggedUser.id)) ? true : false;
     }, async err => {
       await this.alertService.dismissLoading(this.loadingPopupID);
       this.loggedUser = null;
-      await this.router.navigate(["/"]);
+      if (!this.id)
+        await this.router.navigate(["/"]);
     });
   }
 

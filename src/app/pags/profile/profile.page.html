@@ -5,10 +5,10 @@
   <div [ngClass]="{'webrowser':!isMobile}">
     <ion-list>
       <ion-item>
-        <img [src]="user.photo" *ngIf="user.photo && id && (loggedUser && loggedUser.id != id)">
+        <img [src]="user.photo" *ngIf="user.photo && id && ((loggedUser && loggedUser.id != id) || !loggedUser)">
         <img [src]="user.photo" (click)="alterPhoto()" *ngIf="user.photo && ((loggedUser && loggedUser.id == id) || !id)">
-        <img src="assets/perfil.png" *ngIf="!user.photo && id && (loggedUser && loggedUser.id != id)">
-        <img src="assets/perfil.png" (click)="alterPhoto()" *ngIf="!user.photo && ((loggedUser && loggedUser.id == id) || !id)">
+        <img src="../../../assets/perfil.png" *ngIf="!user.photo && id && (loggedUser && loggedUser.id != id)">
+        <img src="../../../assets/perfil.png" (click)="alterPhoto()" *ngIf="!user.photo && ((loggedUser && loggedUser.id == id) || !id)">
       </ion-item>
       <ion-item>
         <ion-label>Name</ion-label>
