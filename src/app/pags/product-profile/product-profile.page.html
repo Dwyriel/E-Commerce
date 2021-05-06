@@ -9,11 +9,18 @@
       </ion-slide>
     </ion-slides>
     <h2>{{product.name}}</h2>
-    <p>Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}</p>
+    <p>
+      <span class="tooltip"> Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}
+        <span class="tooltiptext tooltip-top">
+          <ion-badge class="badge-bottom" color="success" mode="ios" >{{positivos}}</ion-badge> - 
+          <ion-badge class="badge-bottom" color="danger" mode="ios">{{negativos}}</ion-badge>
+        </span>
+      </span>
+    </p>
     <p>{{product.price | currency:'BRL'}}</p>
     <ion-button [disabled]="(1 > product.stock) || (loggedUser && loggedUser.id == product.sellerID)" (click)="AddToCart()">Adicionar no carrinho</ion-button>
     <h3 >Descrição:</h3>
-    <p >
+    <p>
       <ion-text>{{product.description}}</ion-text>
     </p>
     <ion-row class="ion-padding-vertical ion-align-items-center ion-justify-content-start" id="product-seller">
@@ -26,10 +33,10 @@
         <h2>{{SellerUser.name}}</h2>
       </ion-label>
     </ion-row>
-    <ion-item *ngIf="!hasReviews" >
+    <ion-item *ngIf="!hasReviews">
         <ion-label>Produto sem avaliações</ion-label>
     </ion-item>
-    <div *ngIf="hasReviews" >
+    <div *ngIf="hasReviews">
       <ion-text class="reviewsTitle">Avaliações:</ion-text>
       <div class="reviews" *ngFor="let review of reviews">
         <ion-row class="ion-justify-content-between">
