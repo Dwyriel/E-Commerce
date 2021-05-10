@@ -59,4 +59,12 @@ export class PurchasesService {
       subscription.unsubscribe();
     });
   }
+
+  /**
+   * Deletes a single purchase. Use for error handling.
+   * @param id the id of the purchase.
+   */
+  async deletePurchase(id: string) {
+    return this.fireDatabase.collection(this.collection).doc(id).delete();
+  }
 }
