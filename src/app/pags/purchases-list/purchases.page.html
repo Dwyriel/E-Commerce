@@ -2,36 +2,22 @@
 
 <ion-content [fullscreen]="true">
   <app-header title="Compras" segment=1></app-header>
-  
+
   <div [ngClass]="{'webrowser':!isMobile}">
     <div *ngIf="!hasPurchases">
       <p class="ion-text-center">Nenhuma compra realizada.</p>
     </div>
     <ion-list *ngIf="hasPurchases">
-      <ion-grid>
-        <ion-row *ngFor="let item of products;">
-          <ion-col size="9">
-            <ion-item routerLink="/product/{{item.product.id}}">
-              <img *ngIf="item.product.gallery?.length > 0" [src]="item.product.gallery[0]" [alt]="item.product.name">
-              <ion-label>
-                <h2>{{item.product.name}}</h2>
-                <h3>{{item.product.price | currency:'BRL' }}</h3>
-              </ion-label>
-            </ion-item>
-          </ion-col>
-          <ion-col size="1" class="vertical-align-content ion-justify-content-end">
-            <ion-icon name="chevron-back-outline" (click)="DecreaseAmount(item.product.id)"></ion-icon>
-          </ion-col>
-          <ion-col size="1" style="text-align: center;">
-            <h2>{{item.amount}}</h2>
-          </ion-col>
-          <ion-col size="1" class="vertical-align-content ion-justify-content-start">
-            <ion-icon name="chevron-forward-outline" (click)="IncreaseAmount(item.product.id)"></ion-icon>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <ng-container *ngFor="let purchase of purchasesObjs;">
+        <ion-item>
+          <img *ngIf="purchase.exemploProduct.gallery?.length > 0" [src]="purchase.exemploProduct.gallery[0]" [alt]="purchase.exemploProduct.name">
+          <ion-label>
+            <h2>Entrega: </h2>
+            <h3>data: {{purchase.date.toLocaleString()}}</h3>
+          </ion-label>
+        </ion-item>
+      </ng-container>
     </ion-list>
-    <ion-button *ngIf="hasPurchases" vertical="bottom" expand="block" size="large" class="ion-margin" (click)="FinishPurchase()">Finalizar Compra</ion-button>
   </div>
 
 </ion-content>

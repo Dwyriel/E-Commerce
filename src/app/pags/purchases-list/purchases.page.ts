@@ -28,7 +28,7 @@ export class PurchasesListPage implements OnInit {
   private subscription2: Subscription;
   private subscription3: Subscription;
   private subscription4: Subscription;
-  private subscriptions: Subscription[];
+  private subscriptions: Subscription[] = [];
 
   constructor(private alertService: AlertService, private purchaseService: PurchasesService, private router: Router, private productService: ProductService) { }
 
