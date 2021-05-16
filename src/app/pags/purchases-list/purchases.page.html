@@ -12,8 +12,8 @@
         <ion-item>
           <img *ngIf="purchase.exemploProduct.gallery?.length > 0" [src]="purchase.exemploProduct.gallery[0]" [alt]="purchase.exemploProduct.name">
           <ion-label>
-            <h2>Entrega: </h2>
-            <h3>data: {{purchase.date.toLocaleString()}}</h3>
+            <h2>Status: {{StateToString(purchase.purchase.state)}} </h2>
+            <h3>Data: {{purchase.purchase.date.toLocaleString()}}</h3>
           </ion-label>
         </ion-item>
       </ng-container>

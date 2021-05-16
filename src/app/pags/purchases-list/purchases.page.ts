@@ -6,7 +6,7 @@ import { AppResources } from 'src/app/services/app-info.service';
 import { ProductService } from 'src/app/services/product.service';
 import { PurchasesService } from 'src/app/services/purchases.service';
 import { Product } from 'src/app/structure/product';
-import { Purchases } from 'src/app/structure/purchases';
+import { Purchase, State, StateString } from 'src/app/structure/purchases';
 import { User } from 'src/app/structure/user';
 
 @Component({
@@ -17,9 +17,9 @@ import { User } from 'src/app/structure/user';
 export class PurchasesListPage implements OnInit {
   private loadingAlertID: string;
   private user: User;
-  private purchases: Purchases[] = [];
+  private purchases: Purchase[] = [];
 
-  public purchasesObjs: { exemploProduct: Product, date: Date, id: string }[] = [];
+  public purchasesObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
   public hasPurchases: boolean;
   public isMobile: boolean;
 
@@ -27,7 +27,6 @@ export class PurchasesListPage implements OnInit {
   private subscription1: Subscription;
   private subscription2: Subscription;
   private subscription3: Subscription;
-  private subscription4: Subscription;
   private subscriptions: Subscription[] = [];
 
   constructor(private alertService: AlertService, private purchaseService: PurchasesService, private router: Router, private productService: ProductService) { }
@@ -50,8 +49,6 @@ export class PurchasesListPage implements OnInit {
       this.subscription2.unsubscribe();
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
-    if (this.subscription4 && !this.subscription4.closed)
-      this.subscription4.unsubscribe();
     if (this.subscriptions && this.subscriptions.length > 0) {
       for (var sub of this.subscriptions) {
         if (sub && !sub.closed)
@@ -99,15 +96,15 @@ export class PurchasesListPage implements OnInit {
       }
       this.hasPurchases = (ans && ans.length > 0);
       this.purchases = (this.hasPurchases) ? ans : [];
-      var tempPurchasesObjs: { exemploProduct: Product, date: Date, id: string }[] = [];
+      var tempPurchasesObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
       var shouldWait: boolean = true;
       var shouldWait2: boolean = true;
       var index: number = 0;
       var arrayLength = this.purchases.length;
       for (var purchase of this.purchases) {
         shouldWait2 = true;
-        this.subscriptions.push((await this.productService.Get(purchase.itens[0].productID)).subscribe(ans => {
-          tempPurchasesObjs.push({ exemploProduct: ans, date: purchase.date, id: purchase.id });
+        this.subscriptions.push((await this.productService.Get(purchase.item.productID)).subscribe(ans => {
+          tempPurchasesObjs.push({ exemploProduct: ans, purchase: purchase });
           index++;
           if (index >= arrayLength)
             shouldWait = false;
@@ -125,4 +122,8 @@ export class PurchasesListPage implements OnInit {
       await this.alertService.presentAlert("Ops", "Algo deu errado, tente novamente mais tarde.");
     })
   }
+
+  public StateToString(state: State) {
+    return StateString(state);
+  };
 }

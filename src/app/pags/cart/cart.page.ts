@@ -8,7 +8,7 @@ import { ProductService } from 'src/app/services/product.service';
 import { PurchasesService } from 'src/app/services/purchases.service';
 import { UserService } from 'src/app/services/user.service';
 import { Product } from 'src/app/structure/product';
-import { Purchases } from 'src/app/structure/purchases';
+import { NewPurchase, Purchase } from 'src/app/structure/purchases';
 import { User } from 'src/app/structure/user';
 
 @Component({
@@ -151,6 +151,7 @@ export class CartPage implements OnInit {
 
   async SendChanges(productID?: string, increasing?: boolean) {
     await this.userService.UpdateCart(this.user.id, this.user.cart).then(async ans => {
+      await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.ShowToast('Itens Changed');
     }, async err => {
       if (productID && increasing != undefined) {
@@ -164,28 +165,29 @@ export class CartPage implements OnInit {
   }
 
   async FinishPurchase() {
+    var confirmation: boolean;
+    await this.alertService.confirmationAlert("Comprar", "Clique em ok para efetuar a compra.").then(ans => confirmation = ans);
+    if (!confirmation)
+      return;
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
-    var purchase: Purchases = new Purchases();
-    purchase.itens = [];
-    purchase.userId = this.user.id;
     for (var item of this.products) {
-      purchase.itens.push({ productID: item.product.id, amount: item.amount });
+      var shouldWait = true;
+      var purchase: Purchase = NewPurchase(this.user.id, item.product.sellerID, { productID: item.product.id, amount: item.amount });
+      await this.purchaseService.Add(purchase).catch(err => {
+        this.alertService.presentAlert("Ocorreu um erro", `Produto ${item.product.name} não pode ser comprado, tente novamente mais tarde.`);
+      }).finally(() => { shouldWait = false; });
+      while (shouldWait)
+        await new Promise(resolve => setTimeout(resolve, 10));
     }
-    await this.purchaseService.Add(purchase).then(async ans => {
-      await this.userService.UpdateCart(this.user.id, []).then(async ans => {
-        this.user.cart = [];
-        this.products = [];
-        await this.alertService.dismissLoading(this.loadingAlert);
-        await this.alertService.presentAlert("Wheee", "The itens you purchased will be shipped in the next 2534 years");
-      }, async err => {
-        this.purchaseService.deletePurchase(ans.id);
-        await this.alertService.dismissLoading(this.loadingAlert);
-        await this.alertService.presentAlert("Ops", "Um erro ocorreu durante a compra, tente novamente mais tarde.");
-      })
+    await this.userService.UpdateCart(this.user.id, []).then(async () => {
+      this.user.cart = [];
+      this.products = [];
+      await this.alertService.dismissLoading(this.loadingAlert);
+      await this.alertService.presentAlert("Wheee", "The itens you purchased will be shipped in the next 2534 years");
+      await this.router.navigate(["/purchases"]);
     }, async err => {
       await this.alertService.dismissLoading(this.loadingAlert);
-      await this.alertService.presentAlert("Ops", "Um erro ocorreu durante a compra, tente novamente mais tarde.");
-    })
+      await this.alertService.presentAlert("Ops", "Não foi possivel remover os itens do carrinho apos a compra, Por favor verifique suas compras antes de comprar novamente.");
+    });
   }
-
 }
