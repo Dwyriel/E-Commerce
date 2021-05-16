@@ -38,7 +38,7 @@ export class PurchasesService {
    * @returns an observable containing all the user's purchases.
    */
   async GetAllFromUser(id: string) {
-    return this.fireDatabase.collection<Purchases>(this.collection, ref => ref.where('userId', '==', id).orderBy('date')).snapshotChanges().pipe(map(
+    return this.fireDatabase.collection<Purchases>(this.collection, ref => ref.where('userId', '==', id).orderBy('date', "desc")).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
   }
 
