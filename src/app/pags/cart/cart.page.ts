@@ -77,6 +77,7 @@ export class CartPage implements OnInit {
       if (!ans) {
         await this.router.navigate(["/login"]);
         await this.alertService.dismissLoading(this.loadingAlert);
+        return;
       }
       this.user = ans;
       if (this.user && this.user.cart && this.user.cart.length > 0) {
