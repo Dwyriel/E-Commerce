@@ -5,8 +5,10 @@ import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
 import { CartService } from 'src/app/services/cart.service';
 import { ProductService } from 'src/app/services/product.service';
+import { PurchasesService } from 'src/app/services/purchases.service';
 import { UserService } from 'src/app/services/user.service';
 import { Product } from 'src/app/structure/product';
+import { Purchases } from 'src/app/structure/purchases';
 import { User } from 'src/app/structure/user';
 
 @Component({
@@ -21,13 +23,15 @@ export class CartPage implements OnInit {
   public user: User;
   public products: { product: Product, amount: number }[] = [];
   private loadingAlert: string;
+  private loading: boolean = true;
 
   //Subscriptions
   private subscriptions: Subscription[] = [];
   private subscription1: Subscription;
   private subscription2: Subscription;
 
-  constructor(private userService: UserService, private alertService: AlertService, private router: Router, private prodServ: ProductService, private cartServ: CartService) { }
+  constructor(private userService: UserService, private alertService: AlertService, private router: Router, private prodServ: ProductService, private cartServ: CartService,
+    private purchaseService: PurchasesService) { }
 
   ngOnInit() {
   }
@@ -38,6 +42,7 @@ export class CartPage implements OnInit {
   }
 
   ionViewWillLeave() {
+    this.loading = true;
     this.user = null;
     this.products = [];
     if (this.subscription1 && !this.subscription1.closed)
@@ -72,6 +77,7 @@ export class CartPage implements OnInit {
       if (!ans) {
         await this.router.navigate(["/login"]);
         await this.alertService.dismissLoading(this.loadingAlert);
+        return;
       }
       this.user = ans;
       if (this.user && this.user.cart && this.user.cart.length > 0) {
@@ -79,7 +85,10 @@ export class CartPage implements OnInit {
         await this.getProducts();
       } else {
         this.hasProducts = false;
-        await this.alertService.dismissLoading(this.loadingAlert);
+        if (this.loading) {
+          await this.alertService.dismissLoading(this.loadingAlert);
+          this.loading = false;
+        }
       }
     }, async err => {
       await this.alertService.dismissLoading(this.loadingAlert);
@@ -120,7 +129,10 @@ export class CartPage implements OnInit {
     //if this bugs and duplicates appear uncomment the code below: 
     //this.products = this.products.filter((item, index, array) => index === array.findIndex(item2 => (item2.product.id === item.product.id)));
     this.products = products;
-    await this.alertService.dismissLoading(this.loadingAlert);
+    if (this.loading) {
+      await this.alertService.dismissLoading(this.loadingAlert);
+      this.loading = false;
+    }
     return;
   }
 
@@ -137,22 +149,43 @@ export class CartPage implements OnInit {
     await this.SendChanges(id, true);
   }
 
-  async SendChanges(productID: string, increasing: boolean) {
+  async SendChanges(productID?: string, increasing?: boolean) {
     await this.userService.UpdateCart(this.user.id, this.user.cart).then(async ans => {
       await this.alertService.ShowToast('Itens Changed');
-      //await this.getProducts(); //todo finish testing this
     }, async err => {
-      if (increasing)
-        this.cartServ.RemoveItem(productID, this.user.cart);
-      else
-        this.cartServ.AddItem(productID, this.user.cart);
-      await this.alertService.presentAlert("Oops", "There was a problem adding the item to the cart");
+      if (productID && increasing != undefined) {
+        if (increasing)
+          this.cartServ.RemoveItem(productID, this.user.cart);
+        else
+          this.cartServ.AddItem(productID, this.user.cart);
+        await this.alertService.presentAlert("Oops", `There was a problem ${(increasing) ? "increasing" : "decreasing"} the amount of the item from the cart`);
+      }
     });
   }
 
-  FinishPurchase() {
-    this.alertService.presentAlert("Wheee", "The itens you purchased will be shipped in the next 2534 years");
-    //then clear cart etc, etc. 
+  async FinishPurchase() {
+    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
+    var purchase: Purchases = new Purchases();
+    purchase.itens = [];
+    purchase.userId = this.user.id;
+    for (var item of this.products) {
+      purchase.itens.push({ productID: item.product.id, amount: item.amount });
+    }
+    await this.purchaseService.Add(purchase).then(async ans => {
+      await this.userService.UpdateCart(this.user.id, []).then(async ans => {
+        this.user.cart = [];
+        this.products = [];
+        await this.alertService.dismissLoading(this.loadingAlert);
+        await this.alertService.presentAlert("Wheee", "The itens you purchased will be shipped in the next 2534 years");
+      }, async err => {
+        this.purchaseService.deletePurchase(ans.id);
+        await this.alertService.dismissLoading(this.loadingAlert);
+        await this.alertService.presentAlert("Ops", "Um erro ocorreu durante a compra, tente novamente mais tarde.");
+      })
+    }, async err => {
+      await this.alertService.dismissLoading(this.loadingAlert);
+      await this.alertService.presentAlert("Ops", "Um erro ocorreu durante a compra, tente novamente mais tarde.");
+    })
   }
 
 }
