@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { IonContent } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
@@ -34,9 +35,13 @@ export class PurchasePagePage implements OnInit {
   public sellerLoaded: boolean = false;
   public allLoaded: boolean = false;
   public isSeller: boolean;
+  public finished: boolean;
   public showChangeState: boolean = false;
+  public showReviewDiv: boolean = false;
   public stateValue: number;
   public states: { value: State }[] = [];
+  public reviewTitle: string;
+  public reviewContent: string;
 
   private loadingAlertID;
   private user: User;
@@ -49,6 +54,8 @@ export class PurchasePagePage implements OnInit {
   private subscription3: Subscription;
   private subscription4: Subscription;
   private subscription5: Subscription;
+
+  @ViewChild(IonContent) content: IonContent;
 
   constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private productService: ProductService, private userService: UserService, private alertService: AlertService, private router: Router) { }
 
@@ -68,6 +75,7 @@ export class PurchasePagePage implements OnInit {
     this.sellerLoaded = false;
     this.allLoaded = false;
     this.showChangeState = false;
+    this.showReviewDiv = false;
     this.states = [];
     this.loading = true;
     if (this.subscription1 && !this.subscription1.closed)
@@ -144,6 +152,7 @@ export class PurchasePagePage implements OnInit {
         return;
       }
       this.isSeller = this.purchase.sellerId == this.user.id;
+      this.finished = this.purchase.state == State.Entregue;
       this.stateValue = this.purchase.state;
       this.purchaseLoaded = true;
       var shouldWait = { shouldWait1: true, shouldWait2: true }
@@ -204,5 +213,11 @@ export class PurchasePagePage implements OnInit {
     await this.router.navigate([sendTo]);
     await this.alertService.dismissLoading(this.loadingAlertID);
     return;
+  }
+
+  scrollToBotton() {
+    setTimeout(() => {
+      this.content.scrollToBottom(500);
+    }, 100);
   }
 }
