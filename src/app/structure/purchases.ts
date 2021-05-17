@@ -3,8 +3,15 @@ export class Purchase {
     userId: string;
     sellerId: string;
     state: State = State.Processando;
-    item: { productID: string, amount: number };
+    item: { productID: string, amount: number } = { productID: undefined, amount: undefined };
     date: Date;
+    finishDate: Date;
+}
+
+export enum State {
+    Processando,
+    Enviado,
+    Entregue
 }
 
 /**
@@ -21,12 +28,6 @@ export function NewPurchase(userId: string, sellerId: string, item: { productID:
     purchase.item = item;
     purchase.state = state;
     return purchase;
-}
-
-export enum State {
-    Processando,
-    Enviado,
-    Entregue
 }
 
 /**

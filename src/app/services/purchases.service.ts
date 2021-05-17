@@ -40,8 +40,7 @@ export class PurchasesService {
    * @returns an observable containing all the user's purchases.
    */
   async GetAllFromUser(id: string) {
-    return this.fireDatabase.collection<Purchase>(this.collection, ref => ref.where('userId', '==', id).orderBy('date', "desc")).snapshotChanges().pipe(map(
-      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+    return this.fireDatabase.collection<Purchase>(this.collection, ref => ref.where('userId', '==', id).orderBy('date', "desc")).snapshotChanges().pipe(map(ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date), finishDate: (d.payload.doc.data().finishDate) ? new Date(d.payload.doc.data().finishDate) : undefined }))));
   }
 
   /**
@@ -60,7 +59,7 @@ export class PurchasesService {
    * @param state the new state that the purchase will receive.
    */
   updateState(id: string, state: State) {
-    return this.fireDatabase.collection(this.collection).doc(id).update({ state: state });
+    return this.fireDatabase.collection(this.collection).doc(id).update({ state: state, finishDate: (state == State.Entregue) ? new Date().getTime() : null });
   }
 
   /**
