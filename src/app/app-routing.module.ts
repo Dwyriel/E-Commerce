@@ -57,9 +57,12 @@ const routes: Routes = [
   },
   {
     path: 'purchases',
-    loadChildren: () => import('./pags/purchases-list/purchases.module').then( m => m.PurchasesListPageModule)
+    loadChildren: () => import('./pags/purchases-list/purchases.module').then(m => m.PurchasesListPageModule)
   },
-
+  {
+    path: 'purchase/:id',
+    loadChildren: () => import('./pags/purchase-page/purchase-page.module').then(m => m.PurchasePagePageModule)
+  },
 ];
 
 @NgModule({

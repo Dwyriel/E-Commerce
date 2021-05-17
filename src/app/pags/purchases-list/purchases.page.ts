@@ -86,6 +86,8 @@ export class PurchasesListPage implements OnInit {
   }
 
   async GetPurchases() {
+    if (this.subscription3 && !this.subscription3.closed)
+      this.subscription3.unsubscribe();
     this.subscription3 = (await this.purchaseService.GetAllFromUser(this.user.id)).subscribe(async ans => {
       if (this.subscriptions && this.subscriptions.length > 0) {
         for (var sub of this.subscriptions) {

@@ -1,0 +1,44 @@
+<app-header [title]="title" segment=0></app-header>
+
+<ion-content [fullscreen]="true">
+  <app-header [title]="title" segment=1></app-header>
+  <div [ngClass]="{'webrowser':!isMobile}">
+    <ion-list>
+      <ion-slides *ngIf="productLoaded" pager="true" [options]="slideOpts">
+        <ion-slide *ngFor="let photo of product.gallery; let i = index">
+          <ion-img [src]="photo"></ion-img>
+        </ion-slide>
+      </ion-slides>
+      <ion-item *ngIf="productLoaded">
+        <ion-label>Produto</ion-label>
+        <ion-text>{{product.name}}</ion-text>
+      </ion-item>
+      <ion-item *ngIf="purchaseLoaded">
+        <ion-label>Quantidade</ion-label>
+        <ion-text>{{purchase.item.amount}}</ion-text>
+      </ion-item>
+      <ion-item *ngIf="purchaseLoaded">
+        <ion-label>Status</ion-label>
+        <ion-text>{{StateToString(purchase.state)}}</ion-text>
+      </ion-item>
+      <ion-item *ngIf="purchaseLoaded">
+        <ion-label>Efetuada</ion-label>
+        <ion-text>{{purchase.date.toLocaleString()}}</ion-text>
+      </ion-item>
+      <ion-item *ngIf="purchaseLoaded && purchase.finishDate">
+        <ion-label>Entregada</ion-label>
+        <ion-text>{{purchase.finishDate.toLocaleString()}}</ion-text>
+      </ion-item>
+    </ion-list>
+    <div *ngIf="allLoaded">
+      <ion-button type="button" color="primary" expand="block" routerLink="/chat/{{purchase.id}}" class="ion-margin">Conversar com o {{(isSeller) ? "comprador" : "vendedor"}}</ion-button>
+      <ion-button type="button" color="primary" expand="block" *ngIf="isSeller" (click)="showChangeState = !showChangeState" class="ion-margin">Mudar status da venda</ion-button>
+    </div>
+    <ion-item *ngIf="isSeller && showChangeState">
+      <ion-label>Novo status</ion-label>
+      <ion-select interface="popover" [(ngModel)]="stateValue" (ngModelChange)="StateChange($event)" placeholder="Selecione">
+        <ng-container *ngFor="let state of states"><ion-select-option [value]="state.value">{{StateToString(state.value)}}</ion-select-option></ng-container>
+      </ion-select>
+    </ion-item>
+  </div>
+</ion-content>
