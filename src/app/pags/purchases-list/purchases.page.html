@@ -9,7 +9,7 @@
     </div>
     <ion-list *ngIf="hasPurchases">
       <ng-container *ngFor="let purchase of purchasesObjs;">
-        <ion-item>
+        <ion-item routerLink="/purchase/{{purchase.purchase.id}}">
           <img *ngIf="purchase.exemploProduct.gallery?.length > 0" [src]="purchase.exemploProduct.gallery[0]" [alt]="purchase.exemploProduct.name">
           <ion-label>
             <h2>Status: {{StateToString(purchase.purchase.state)}} </h2>
