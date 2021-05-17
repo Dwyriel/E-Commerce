@@ -40,8 +40,7 @@ export class PurchasePagePage implements OnInit {
   public showReviewDiv: boolean = false;
   public stateValue: number;
   public states: { value: State }[] = [];
-  public reviewTitle: string;
-  public reviewContent: string;
+  public review: { title: string, content: string, recommend: boolean } = { title: undefined, content: undefined, recommend: undefined };
 
   private loadingAlertID;
   private user: User;
@@ -206,7 +205,20 @@ export class PurchasePagePage implements OnInit {
     await this.alertService.presentLoading().then(ans => this.loadingAlertID = ans);
     await this.purchaseService.updateState(this.purchase.id, this.stateValue).then(async () => {
       await this.alertService.dismissLoading(this.loadingAlertID);
+      await this.alertService.ShowToast("Status foi modificado");
+      this.showChangeState = !this.showChangeState;
+    }).catch(async () => {
+      await this.alertService.dismissLoading(this.loadingAlertID);
+      await this.alertService.ShowToast("Ocorreu um erro ao modificar status");
     });
+  }
+
+  segmentChanged(event) {
+    this.review.recommend = event.detail.value;
+  }
+
+  SendReview() {
+
   }
 
   async SendAway(sendTo: string) {

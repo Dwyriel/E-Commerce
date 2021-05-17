@@ -39,11 +39,11 @@
     <ng-container *ngIf="showReviewDiv && finished">
       <ion-item>
         <ion-label position="floating">Titulo</ion-label>
-        <ion-input type="text" name="review-title" [(ngModel)]=reviewTitle></ion-input>
+        <ion-input type="text" name="review-title" [(ngModel)]=review.title></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Texto</ion-label>
-        <ion-textarea name="review-content" [(ngModel)]=reviewContent required autoGrow=true></ion-textarea>
+        <ion-textarea name="review-content" [(ngModel)]=review.content required autoGrow=true></ion-textarea>
       </ion-item>
       <ion-item>
         <ion-segment (ionChange)="segmentChanged($event)" value="true">
