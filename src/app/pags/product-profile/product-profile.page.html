@@ -33,7 +33,61 @@
         <h2>{{SellerUser.name}}</h2>
       </ion-label>
     </ion-row>
-    <ion-item *ngIf="!hasReviews">
+
+
+
+    <div *ngIf="questions">
+      <div>
+        <h4>Perguntas:</h4>
+        <div *ngFor="let asked of questions">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>{{asked.user.name}}</ion-card-title>
+              <ion-card-subtitle>{{asked.date.toLocaleString()}}</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              {{asked.text}}
+            </ion-card-content>
+            <ion-item *ngIf="product.sellerID == loggedUser.id" (click)="dropdown = true"
+             style="text-align: end;">
+              <a>Responder</a>
+            </ion-item>
+            <div *ngIf="dropdown" class="dropdown" #dropdownbox>
+              <ion-item>
+              <ion-input></ion-input>
+              <ion-row class="ion-justify-content-end commentButtons">
+                <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply();"
+                  >Responder</ion-button>
+                <ion-button class="rightCommentButton" expand=full size="small" (click)="dropdown=false">Cancel</ion-button>
+              </ion-row>
+            </ion-item>
+          </div>
+          </ion-card>
+      </div>
+    </div>
+    </div>
+
+    <div class="ion-margin-vertical">
+      <!-- <ion-item>
+        <ion-label position="floating">Duvida? faça uma pergunta</ion-label>
+        <ion-textarea name="question" [(ngModel)]=question required autoGrow=true></ion-textarea>
+        <ion-row class="ion-justify-content-end commentButtons">
+          <ion-button class="leftCommentButton" expand=full size="small" (click)="submitButton();"
+            >Enviar</ion-button>
+          <ion-button class="rightCommentButton" expand=full size="small" (click)="cancelButton();">Cancel</ion-button>
+        </ion-row>
+      </ion-item> -->
+    </div>
+ 
+
+
+
+
+
+
+
+
+    <!-- <ion-item *ngIf="!hasReviews">
         <ion-label>Produto sem avaliações</ion-label>
     </ion-item>
     <div *ngIf="hasReviews">
@@ -52,6 +106,6 @@
           <ion-text>{{review.text}}</ion-text>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </ion-content>

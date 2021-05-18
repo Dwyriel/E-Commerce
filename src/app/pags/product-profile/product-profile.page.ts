@@ -11,6 +11,8 @@ import { UserService } from 'src/app/services/user.service';
 import { Product } from 'src/app/structure/product';
 import { Review } from 'src/app/structure/review';
 import { User } from 'src/app/structure/user';
+import { Question } from 'src/app/structure/question'
+import { QuestionService } from 'src/app/services/question.service'
 
 export const slideOpts = {
   slidesPerView: 1,
@@ -32,6 +34,7 @@ export class ProductProfilePage implements OnInit {
   private subscription3: Subscription;
   private subscription4: Subscription;
   private subscription5: Subscription;
+ 
 
   private id: string;
   private loadingAlert: string;
@@ -46,6 +49,14 @@ export class ProductProfilePage implements OnInit {
   public negativos: number = 0;
   public title: string = "Product";
 
+  //questions
+  private subscription6: Subscription;
+  private subscription7: Subscription;
+  public questions: Question[] = [];
+  public question: string = "";
+  private newQuestion: Question = new Question();
+  private test: string;
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -55,6 +66,7 @@ export class ProductProfilePage implements OnInit {
     private reviewService: ReviewService,
     private cartService: CartService,
     private navController: NavController,
+    private questionService: QuestionService
   ) { }
 
   ngOnInit() {
@@ -64,6 +76,7 @@ export class ProductProfilePage implements OnInit {
     this.GetPlataformInfo();
     this.getProduct();
     this.getLoggedUser();
+    this.getQuestions();
   }
 
   ionViewWillLeave() {
@@ -73,6 +86,9 @@ export class ProductProfilePage implements OnInit {
     this.id = null;
     this.reviews = [];
     this.hasReviews = false;
+    this.question = "";
+    this.questions = [];
+    this.newQuestion = new Question();
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -83,6 +99,10 @@ export class ProductProfilePage implements OnInit {
       this.subscription4.unsubscribe();
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
+      if (this.subscription6 && !this.subscription6.closed)
+      this.subscription6.unsubscribe();
+      if (this.subscription7 && !this.subscription7.closed)
+      this.subscription7.unsubscribe();
   }
 
   GetPlataformInfo() {
@@ -128,7 +148,40 @@ export class ProductProfilePage implements OnInit {
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das informações, tente denovo daqui a pouco.")
     });
   }
-
+  async getQuestions() {
+    if (this.subscription6 && !this.subscription6.closed)
+      this.subscription6.unsubscribe();
+      this.id = this.activatedRoute.snapshot.paramMap.get("id");
+    this.subscription6 = (await this.questionService.getQuestions(this.id)).subscribe(async ans => {
+      this.questions = ans;
+      this.questions.forEach(async value => {
+        this.subscription7 = (await this.userService.Get(value.idUser)).subscribe(
+          ans2 =>{
+            value.user = ans2
+            this.subscription7.unsubscribe();
+          }
+        )
+      })
+    })
+  }
+  async submitButton() {
+    if (!this.loggedUser) {
+      await this.alertService.presentAlert("Oops!", "Seems like you're not logged or an internal error occurred, reload and try again.");
+      return;
+    }
+    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
+    this.newQuestion.text = this.question;
+    this.newQuestion.idUser = this.loggedUser.id;
+    await this.questionService.add(this.newQuestion, this.id).then(async ans => {
+      this.newQuestion = new Question();
+      await this.alertService.dismissLoading(this.loadingAlert);
+      await this.alertService.ShowToast("Sucesso. Comentario Enviado.");
+    }, async err => {
+      console.log(err)
+      await this.alertService.ShowToast("Erro. Não foi possivel enviar seu comentario");
+    });
+  }
+  async submitReply(){}
   async GetSeller(awaits) {
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
