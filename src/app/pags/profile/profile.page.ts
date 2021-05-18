@@ -14,7 +14,6 @@ import { User } from 'src/app/structure/user';
   styleUrls: ['./profile.page.scss'],
 })
 export class ProfilePage implements OnInit {
-
   private loadingPopupID: string;
   public title: string = "Perfil";
   public id: string;
