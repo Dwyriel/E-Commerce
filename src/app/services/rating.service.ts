@@ -36,6 +36,26 @@ export class RatingService {
   }
 
   /**
+   * Retrieve the review with the specified linkedPurchaseId.
+   * @param linkedPurchaseId the id of the purchase.
+   * @returns an observable containing the review of the product linked to a purchase.
+   */
+   async GetRatingFromPurchase(linkedPurchaseId: string) {
+    return this.fireDatabase.collection<Rating>(this.collection, ref => ref.where('linkedPurchaseId', '==', linkedPurchaseId)).snapshotChanges().pipe(map(
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+  }
+
+  /** Updates the rating of an user.
+   * @param id the id of the rating.
+   * @param recommend the recommend attribute of the rating
+   */
+  async Update(id: string, recommend: boolean) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({
+      recommend: recommend,
+    });
+  }
+
+  /**
    * Deletes all the ratings of one user. Should be used when deleting a user.
    * @param id the id of the user.
    */
@@ -51,5 +71,13 @@ export class RatingService {
       await batch.commit();
       subscription.unsubscribe();
     });
+  }
+
+  /**
+   * deletes a specific rating. 
+   * @param id the rating's id.
+   */
+  async Delete(id: string) {
+    return await this.fireDatabase.collection(this.collection).doc(id).delete();
   }
 }

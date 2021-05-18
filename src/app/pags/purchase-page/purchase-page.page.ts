@@ -10,6 +10,10 @@ import { UserService } from 'src/app/services/user.service';
 import { Product } from 'src/app/structure/product';
 import { Purchase, State, StateString } from 'src/app/structure/purchases';
 import { User } from 'src/app/structure/user';
+import { Review } from 'src/app/structure/review';
+import { Rating } from 'src/app/structure/rating';
+import { ReviewService } from 'src/app/services/review.service';
+import { RatingService } from 'src/app/services/rating.service';
 
 export const slideOpts = {
   slidesPerView: 1,
@@ -30,6 +34,7 @@ export class PurchasePagePage implements OnInit {
   public purchase: Purchase = new Purchase();
   public product: Product = new Product();
   public seller: User = new User();
+  public reviewExists: boolean;
   public purchaseLoaded: boolean = false;
   public productLoaded: boolean = false;
   public sellerLoaded: boolean = false;
@@ -40,12 +45,15 @@ export class PurchasePagePage implements OnInit {
   public showReviewDiv: boolean = false;
   public stateValue: number;
   public states: { value: State }[] = [];
-  public review: { title: string, content: string, recommend: boolean } = { title: undefined, content: undefined, recommend: undefined };
+  public review: { title: string, content: string, recommend: string } = { title: undefined, content: undefined, recommend: undefined };
 
   private loadingAlertID;
   private user: User;
   private id: string;
   private loading = true;
+  private ratingId: string;
+  private reviewId: string;
+  private prevReview: { title: string, content: string, recommend: boolean } = { title: undefined, content: undefined, recommend: undefined };
 
   //Subscription
   private subscription1: Subscription;
@@ -53,10 +61,12 @@ export class PurchasePagePage implements OnInit {
   private subscription3: Subscription;
   private subscription4: Subscription;
   private subscription5: Subscription;
+  private subscription6: Subscription;
+  private subscription7: Subscription;
 
   @ViewChild(IonContent) content: IonContent;
 
-  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private productService: ProductService, private userService: UserService, private alertService: AlertService, private router: Router) { }
+  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private productService: ProductService, private userService: UserService, private alertService: AlertService, private reviewService: ReviewService, private ratingService: RatingService, private router: Router) { }
 
   ngOnInit() { }
 
@@ -87,6 +97,10 @@ export class PurchasePagePage implements OnInit {
       this.subscription4.unsubscribe();
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
+    if (this.subscription6 && !this.subscription6.closed)
+      this.subscription6.unsubscribe();
+    if (this.subscription7 && !this.subscription7.closed)
+      this.subscription7.unsubscribe();
   }
 
   async GetRequiredAttributes() {
@@ -176,12 +190,46 @@ export class PurchasePagePage implements OnInit {
       this.subscription4.unsubscribe();
     this.subscription4 = (await this.productService.Get(this.purchase.item.productID)).subscribe(async ans => {
       this.product = ans;
+      await this.GetReview();
+      await this.GetRating();
       shouldWait.shouldWait1 = false;
       this.productLoaded = true;
     }, async err => {
       shouldWait.shouldWait1 = false;
       await this.alertService.dismissLoading(this.loadingAlertID);
       await this.alertService.presentAlert("Ops", "Ocorreu um erro ao carregar o produto, tente novamente mais tarde.");
+    });
+  }
+
+  async GetReview() {
+    if (this.subscription6 && !this.subscription6.closed)
+      this.subscription6.unsubscribe();
+    this.subscription6 = (await this.reviewService.GetReviewFromPurchase(this.purchase.id)).subscribe(ans => {
+      if (ans.length < 1) {
+        this.reviewExists = false;
+        return;
+      }
+      this.review.title = ans[0].title;
+      this.review.content = ans[0].text;
+      this.review.recommend = (ans[0].recommend) ? "true" : "false";
+      //repeting to make sure those objects aren't a reference of each other.
+      this.prevReview.title = ans[0].title;
+      this.prevReview.content = ans[0].text;
+      this.prevReview.recommend = ans[0].recommend;
+      this.reviewId = ans[0].id;
+      this.reviewExists = true;
+    }, err => {
+      this.reviewExists = false;
+    });
+  }
+
+  async GetRating() {
+    if (this.subscription7 && !this.subscription7.closed)
+      this.subscription7.unsubscribe();
+    this.subscription7 = (await this.ratingService.GetRatingFromPurchase(this.purchase.id)).subscribe(ans => {
+      if (ans.length < 1)
+        return;
+      this.ratingId = ans[0].id;
     });
   }
 
@@ -217,8 +265,100 @@ export class PurchasePagePage implements OnInit {
     this.review.recommend = event.detail.value;
   }
 
-  SendReview() {
+  async SendReview() {
+    await this.alertService.presentLoading().then(ans => this.loadingAlertID = ans);
+    if (this.reviewExists)
+      await this.UpdateReview();
+    else
+      await this.SendNewReview();
+  }
 
+  async UpdateReview() {
+    var shouldWait = { shouldWait1: true, shouldWait2: true }
+    var waitError = false;
+    var hadError = false;
+    var wentThrough = { wt1: undefined, wt2: undefined }
+    await this.reviewService.Update(this.reviewId, this.review.title, this.review.content, this.review.recommend == "true").then(() => wentThrough.wt1 = true).catch(() => wentThrough.wt1 = false).finally(() => shouldWait.shouldWait1 = false);;
+    await this.ratingService.Update(this.ratingId, this.review.recommend == "true").then(() => wentThrough.wt2 = true).catch(() => wentThrough.wt2 = false).finally(() => shouldWait.shouldWait2 = false);;
+    while (shouldWait.shouldWait1 && shouldWait.shouldWait2)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    waitError = (!wentThrough.wt1 || !wentThrough.wt2) ? true : false;
+    hadError = waitError;
+    if (!wentThrough.wt1 && wentThrough.wt2)
+      await this.ratingService.Update(this.ratingId, this.prevReview.recommend).finally(() => waitError = false);
+    if (!wentThrough.wt2 && wentThrough.wt1)
+      await this.reviewService.Update(this.reviewId, this.prevReview.title, this.prevReview.content, this.prevReview.recommend).finally(() => waitError = false);
+    if (!wentThrough.wt2 && !wentThrough.wt1) {
+      await this.ratingService.Update(this.ratingId, this.prevReview.recommend);
+      await this.reviewService.Update(this.reviewId, this.prevReview.title, this.prevReview.content, this.prevReview.recommend);
+      waitError = false;
+    }
+    while (waitError)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    if (hadError) {
+      await this.alertService.dismissLoading(this.loadingAlertID);
+      await this.alertService.presentAlert("Ocorreu um erro.", "Avaliação não foi atualizada, tente novamente mais tarde.");
+      return;
+    }
+    await this.alertService.dismissLoading(this.loadingAlertID);
+    await this.alertService.ShowToast("Avaliação foi atualizada");
+    this.showReviewDiv = !this.showReviewDiv;
+  }
+
+  async SendNewReview() {
+    var rating: Rating = this.FillRating();
+    var review: Review = this.FillReview();
+    var shouldWait = { shouldWait1: true, shouldWait2: true }
+    var waitError = false;
+    var hadError = false;
+    var wentThrough = { wt1: undefined, wt2: undefined }
+    var reviewID;
+    var ratingID;
+    await this.reviewService.Add(review).then(ans => { reviewID = ans.id; wentThrough.wt1 = true; }).catch(() => wentThrough.wt1 = false).finally(() => shouldWait.shouldWait1 = false);
+    await this.ratingService.Add(rating).then(ans => { ratingID = ans.id; wentThrough.wt2 = true; }).catch(() => wentThrough.wt2 = false).finally(() => shouldWait.shouldWait2 = false);
+    while (shouldWait.shouldWait1 && shouldWait.shouldWait2)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    waitError = (!wentThrough.wt1 || !wentThrough.wt2) ? true : false;
+    hadError = waitError;
+    if (!wentThrough.wt1 && wentThrough.wt2)
+      await this.ratingService.Delete(ratingID).finally(() => waitError = false);
+    if (!wentThrough.wt2 && wentThrough.wt1)
+      await this.reviewService.Delete(reviewID).finally(() => waitError = false);
+    if (!wentThrough.wt2 && !wentThrough.wt1) {
+      await this.ratingService.Delete(ratingID);
+      await this.reviewService.Delete(reviewID);
+      waitError = false;
+    }
+    while (waitError)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    if (hadError) {
+      await this.alertService.dismissLoading(this.loadingAlertID);
+      await this.alertService.presentAlert("Ocorreu um erro.", "Avaliação não foi enviada, tente novamente mais tarde.");
+      return;
+    }
+    await this.alertService.dismissLoading(this.loadingAlertID);
+    await this.alertService.ShowToast("Avaliação foi enviada");
+    this.showReviewDiv = !this.showReviewDiv;
+  }
+
+  FillRating() {
+    var rating = new Rating();
+    rating.linkedPurchaseId = this.purchase.id;
+    rating.ratedUserId = this.purchase.sellerId;
+    rating.raterUserId = this.purchase.userId;
+    rating.recommend = this.review.recommend == "true";
+    return rating;
+  }
+
+  FillReview() {
+    var review = new Review();
+    review.userID = this.purchase.userId;
+    review.productID = this.purchase.item.productID;
+    review.linkedPurchaseId = this.purchase.id;
+    review.title = this.review.title;
+    review.text = this.review.content;
+    review.recommend = this.review.recommend == "true";
+    return review;
   }
 
   async SendAway(sendTo: string) {
