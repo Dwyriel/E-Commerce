@@ -30,15 +30,47 @@
         <ion-text>{{purchase.finishDate.toLocaleString()}}</ion-text>
       </ion-item>
     </ion-list>
-    <div *ngIf="allLoaded">
-      <ion-button type="button" color="primary" expand="block" routerLink="/chat/{{purchase.id}}" class="ion-margin">Conversar com o {{(isSeller) ? "comprador" : "vendedor"}}</ion-button>
-      <ion-button type="button" color="primary" expand="block" *ngIf="isSeller" (click)="showChangeState = !showChangeState" class="ion-margin">Mudar status da venda</ion-button>
-    </div>
     <ion-item *ngIf="isSeller && showChangeState">
       <ion-label>Novo status</ion-label>
       <ion-select interface="popover" [(ngModel)]="stateValue" (ngModelChange)="StateChange($event)" placeholder="Selecione">
         <ng-container *ngFor="let state of states"><ion-select-option [value]="state.value">{{StateToString(state.value)}}</ion-select-option></ng-container>
       </ion-select>
     </ion-item>
+    <ng-container *ngIf="showReviewDiv && finished">
+      <ion-item>
+        <ion-label position="floating">Titulo</ion-label>
+        <ion-input type="text" name="review-title" [(ngModel)]=review.title></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Texto</ion-label>
+        <ion-textarea name="review-content" [(ngModel)]=review.content required autoGrow=true></ion-textarea>
+      </ion-item>
+      <ion-item *ngIf="!reviewExists">
+        <ion-segment (ionChange)="segmentChanged($event)">
+          <ion-segment-button value="true">
+            <ion-icon name="thumbs-up-sharp"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="false">
+            <ion-icon name="thumbs-down-sharp"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item>
+      <ion-item *ngIf="reviewExists">
+        <ion-segment (ionChange)="segmentChanged($event)" value="{{review.recommend}}">
+          <ion-segment-button value="true">
+            <ion-icon name="thumbs-up-sharp"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="false">
+            <ion-icon name="thumbs-down-sharp"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-item>
+      <ion-button type="button" color="primary" expand="block" (click)="SendReview()" class="ion-margin" [disabled]="!review.content || !review.title || !review.recommend">Enviar</ion-button>
+    </ng-container>
+    <div *ngIf="allLoaded">
+      <ion-button type="button" color="primary" expand="block" routerLink="/chat/{{purchase.id}}" class="ion-margin">Conversar com o {{(isSeller) ? "comprador" : "vendedor"}}</ion-button>
+      <ion-button type="button" color="primary" expand="block" *ngIf="isSeller" (click)="showChangeState = !showChangeState; scrollToBotton()" class="ion-margin">Mudar status da venda</ion-button>
+      <ion-button type="button" color="primary" expand="block" *ngIf="!isSeller && finished" (click)="showReviewDiv = !showReviewDiv; scrollToBotton()" class="ion-margin">{{(reviewExists) ? "Atualizar avaliação" : "Avaliar compra" }}</ion-button>
+    </div>
   </div>
 </ion-content>

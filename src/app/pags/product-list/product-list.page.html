@@ -21,7 +21,7 @@
         <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
         <ion-label>
           <h2>{{product.name}}</h2>
-          <h3>{{product.price | currency:'BRL' }}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}</span></h3>
+          <h3>{{product.price | currency:'BRL' }}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span></h3>
         </ion-label>
       </ion-item>
     </ion-list>

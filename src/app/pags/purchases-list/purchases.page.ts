@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
@@ -18,10 +18,12 @@ export class PurchasesListPage implements OnInit {
   private loadingAlertID: string;
   private user: User;
   private purchases: Purchase[] = [];
+  private type: string;
 
   public purchasesObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
   public hasPurchases: boolean;
   public isMobile: boolean;
+  public purchasePage: boolean;
 
   //Subscription
   private subscription1: Subscription;
@@ -29,13 +31,19 @@ export class PurchasesListPage implements OnInit {
   private subscription3: Subscription;
   private subscriptions: Subscription[] = [];
 
-  constructor(private alertService: AlertService, private purchaseService: PurchasesService, private router: Router, private productService: ProductService) { }
+  constructor(private activatedRoute: ActivatedRoute, private alertService: AlertService, private purchaseService: PurchasesService, private router: Router, private productService: ProductService) { }
 
   ngOnInit() {
     this.GetPlataformInfo();
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
+    this.type = this.activatedRoute.snapshot.paramMap.get('type');
+    if (!this.type) {
+      await this.router.navigate(["/"]);
+      return;
+    }
+    this.purchasePage = this.type == "purchases";
     this.GetUserAndPurchases();
   }
 
@@ -88,7 +96,11 @@ export class PurchasesListPage implements OnInit {
   async GetPurchases() {
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
-    this.subscription3 = (await this.purchaseService.GetAllFromUser(this.user.id)).subscribe(async ans => {
+    this.subscription3 = (await ((this.purchasePage) ? this.purchaseService.GetAllFromUser(this.user.id) : this.purchaseService.GetAllFromSeller(this.user.id))).subscribe(async ans => {
+      if (!ans || ans.length < 1) {
+        await this.alertService.dismissLoading(this.loadingAlertID);
+        return;
+      }
       if (this.subscriptions && this.subscriptions.length > 0) {
         for (var sub of this.subscriptions) {
           if (sub && !sub.closed)

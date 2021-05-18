@@ -56,7 +56,7 @@ const routes: Routes = [
     loadChildren: () => import('./pags/cart/cart.module').then(m => m.CartPageModule)
   },
   {
-    path: 'purchases',
+    path: 'purchases/:type',
     loadChildren: () => import('./pags/purchases-list/purchases.module').then(m => m.PurchasesListPageModule)
   },
   {

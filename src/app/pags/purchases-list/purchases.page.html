@@ -2,10 +2,9 @@
 
 <ion-content [fullscreen]="true">
   <app-header title="Compras" segment=1></app-header>
-
   <div [ngClass]="{'webrowser':!isMobile}">
     <div *ngIf="!hasPurchases">
-      <p class="ion-text-center">Nenhuma compra realizada.</p>
+      <p class="ion-text-center">Nenhuma {{(purchasePage) ? "compra" : "venda"}} realizada.</p>
     </div>
     <ion-list *ngIf="hasPurchases">
       <ng-container *ngFor="let purchase of purchasesObjs;">
@@ -19,5 +18,4 @@
       </ng-container>
     </ion-list>
   </div>
-
 </ion-content>

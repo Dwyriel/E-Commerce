@@ -62,9 +62,7 @@ export class AppComponent {
       this.subscription4.unsubscribe();
   }
 
-  GetPlataformInfo() {//does not need to be async yet
-    /**the method below needs to be executed once before, either here, in ngInit or in the constructor to get the first values, 
-     * because {@link subscription3} doesn't go inside the code until the the {@link window} is resized */
+  GetPlataformInfo() {
     this.getScreenDimations();
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();

@@ -18,10 +18,6 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./address-form.page.scss'],
 })
 export class AddressFormPage implements OnInit {
-
-  private subscription1: Subscription;
-  private subscription2: Subscription;
-  private subscription3: Subscription;
   private loadingAlert: string;
 
   public title: string = "Formulário de Endereço";
@@ -29,6 +25,11 @@ export class AddressFormPage implements OnInit {
   public isMobile: boolean;
   public user: User = new User();
   public address: Address = new Address();
+
+  //Subscriptions
+  private subscription1: Subscription;
+  private subscription2: Subscription;
+  private subscription3: Subscription;
 
   constructor(
     private router: Router,

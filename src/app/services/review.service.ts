@@ -17,11 +17,12 @@ export class ReviewService {
    */
   async Add(review: Review) {
     return await this.fireDatabase.collection(this.collection).add({
-      recommend: review.recommend,
-      title: review.title,
-      text: review.text,
       userID: review.userID,
       productID: review.productID,
+      linkedPurchaseId: review.linkedPurchaseId,
+      title: review.title,
+      text: review.text,
+      recommend: review.recommend,
       date: new Date().getTime(),
     });
   }
@@ -34,6 +35,28 @@ export class ReviewService {
   async GetAllFromProduct(id: string) {
     return this.fireDatabase.collection<Review>(this.collection, ref => ref.where('productID', '==', id).orderBy('date', 'desc')).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+  }
+
+  /**
+   * Retrieve the review with the specified linkedPurchaseId.
+   * @param linkedPurchaseId the id of the purchase.
+   * @returns an observable containing the review of the product linked to a purchase.
+   */
+  async GetReviewFromPurchase(linkedPurchaseId: string) {
+    return this.fireDatabase.collection<Review>(this.collection, ref => ref.where('linkedPurchaseId', '==', linkedPurchaseId)).snapshotChanges().pipe(map(
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+  }
+
+  /** Updates the review of a product.
+   * @param id the id of the review.
+   * @param others the attributes of the review
+   */
+  async Update(id: string, title: string, text: string, recommend: boolean) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({
+      title: title,
+      text: text,
+      recommend: recommend,
+    });
   }
 
   /**
@@ -52,5 +75,13 @@ export class ReviewService {
       await batch.commit();
       subscription.unsubscribe();
     });
+  }
+
+  /**
+   * deletes a specific review.
+   * @param id the review's id.
+   */
+  async Delete(id: string) {
+    return await this.fireDatabase.collection(this.collection).doc(id).delete();
   }
 }

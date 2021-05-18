@@ -24,10 +24,6 @@ export const slideOpts = {
   styleUrls: ['./product-form.page.scss'],
 })
 export class ProductFormPage implements OnInit {
-
-  private subscription1: Subscription;
-  private subscription2: Subscription;
-  private subscription3: Subscription;
   private loadingPopupID: string;
 
   public title: string = "Formulário de Produto";
@@ -40,6 +36,11 @@ export class ProductFormPage implements OnInit {
   public categoryValue: number = null;
   public subCategoryValue: number = null;
 
+  //Subscriptions
+  private subscription1: Subscription;
+  private subscription2: Subscription;
+  private subscription3: Subscription;
+  
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,

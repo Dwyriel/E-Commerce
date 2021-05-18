@@ -78,38 +78,54 @@ export class ProductListPage implements OnInit {
     this.allFromCat = this.activatedRoute.snapshot.paramMap.get('cat');
     this.categoryValue = parseInt(this.activatedRoute.snapshot.paramMap.get('value'));
     if (this.searchInput) {
-      //todo search thingy (matching string, removing spaces and looking for just the words, etc)
+      this.GetProductsFromSearch();
       return;
     }
     if (this.allFromCat === "all") {
-      if (ItemClassification.CatsContains(this.categoryValue)) {
-        this.category = ItemClassification.GetCatFromValue(this.categoryValue);
-        this.title = `Categoria: ${this.category.title}`;
-        this.products = await this.productService.getAllVerifiedFromCat(this.categoryValue);
-        await this.FillProductAttributes(event);
-      }
+      this.GetProductsFromCat(event);
       return;
     }
     if (this.allFromCat === "sub") {
-      if (ItemClassification.SubCatsContains(this.categoryValue)) {
-        this.subcategory = ItemClassification.GetSubCatFromValue(this.categoryValue);
-        this.title = `${this.subcategory.title} em ${ItemClassification.GetCatFromValue(this.subcategory.category).title}`;
-        if (this.subscription1 && !this.subscription1.closed)
-          this.subscription1.unsubscribe();
-        this.subscription1 = (await this.productService.GetAllVerifiedFromSubCat(this.categoryValue)).subscribe(async ans => {
-          this.products = ans;
-          await this.FillProductAttributes(event);
-        });
-      }
+      await this.GetProductsFromSubCat(event);
       return;
     }
+    await this.GetAllProducts(event);
+  }
+
+  GetProductsFromSearch() {
+    //todo search thingy (matching string, removing spaces and looking for just the words, etc)
+  }
+
+  async GetProductsFromCat(event = null) {
+    if (ItemClassification.CatsContains(this.categoryValue)) {
+      this.category = ItemClassification.GetCatFromValue(this.categoryValue);
+      this.title = `Categoria: ${this.category.title}`;
+      this.products = await this.productService.getAllVerifiedFromCat(this.categoryValue);
+      await this.FillProductAttributes(event);
+    }
+  }
+
+  async GetProductsFromSubCat(event = null) {
+    if (ItemClassification.SubCatsContains(this.categoryValue)) {
+      this.subcategory = ItemClassification.GetSubCatFromValue(this.categoryValue);
+      this.title = `${this.subcategory.title} em ${ItemClassification.GetCatFromValue(this.subcategory.category).title}`;
+      if (this.subscription1 && !this.subscription1.closed)
+        this.subscription1.unsubscribe();
+      this.subscription1 = (await this.productService.GetAllVerifiedFromSubCat(this.categoryValue)).subscribe(async ans => {
+        this.products = ans;
+        await this.FillProductAttributes(event);
+      });
+    }
+  }
+
+  async GetAllProducts(event = null) {
     if (this.subscription2 && !this.subscription2.closed)
       this.subscription2.unsubscribe();
     this.subscription2 = (await this.productService.GetAllVerified()).subscribe(async ans => {
       this.title = `Produtos`;
       this.products = ans;
       await this.FillProductAttributes(event);
-    })
+    });
   }
 
   async FillProductAttributes(event) {
