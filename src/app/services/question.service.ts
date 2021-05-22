@@ -19,8 +19,14 @@ export class QuestionService {
       date: new Date().getTime(),
     });
   }
+  async update(question: Question) {
+    return this.fireDatabase.collection(this.collection).doc(question.id).update({
+      vendorText: question.textVendor,
+      replyDate: new Date().getTime(),
+    });
+  }
   async getQuestions(id: string) {
     return this.fireDatabase.collection<Question>(this.collection, ref => ref.where('productId', '==', id).orderBy('date')).snapshotChanges().pipe(map(
-      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) ,replyDate: new Date(d.payload.doc.data().replyDate)}))));
   }
 }

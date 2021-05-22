@@ -55,8 +55,10 @@ export class ProductProfilePage implements OnInit {
   public questions: Question[] = [];
   public question: string = "";
   private newQuestion: Question = new Question();
-  private test: string;
-
+  //VendorReply
+  public reply: string ="";
+  public hasReply: boolean = false;
+  
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -88,6 +90,7 @@ export class ProductProfilePage implements OnInit {
     this.hasReviews = false;
     this.question = "";
     this.questions = [];
+    this.reply = "";
     this.newQuestion = new Question();
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
@@ -140,7 +143,7 @@ export class ProductProfilePage implements OnInit {
       var awaits = { seller: true, reviews: true }
       this.GetSeller(awaits);
       this.GetReviews(awaits);
-      while (awaits.reviews || awaits.seller)
+      while (awaits.reviews || awaits.seller )
         await new Promise(resolve => setTimeout(resolve, 10));
       this.product.calculateAvgRating();
       await this.alertService.dismissLoading(this.loadingAlert);
@@ -155,9 +158,13 @@ export class ProductProfilePage implements OnInit {
     this.subscription6 = (await this.questionService.getQuestions(this.id)).subscribe(async ans => {
       this.questions = ans;
       this.questions.forEach(async value => {
+       
+          this.hasReply = value.textVendor != "";
+
         this.subscription7 = (await this.userService.Get(value.idUser)).subscribe(
           ans2 =>{
-            value.user = ans2
+            
+            value.user = ans2;
             this.subscription7.unsubscribe();
           }
         )
@@ -166,7 +173,7 @@ export class ProductProfilePage implements OnInit {
   }
   async submitButton() {
     if (!this.loggedUser) {
-      await this.alertService.presentAlert("Oops!", "Seems like you're not logged or an internal error occurred, reload and try again.");
+      await this.alertService.presentAlert("Erro", "Você não está logado ou ocorreu algum erro interno, recarregue a pagina e tente novamente.");
       return;
     }
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
@@ -178,10 +185,26 @@ export class ProductProfilePage implements OnInit {
       await this.alertService.ShowToast("Sucesso. Comentario Enviado.");
     }, async err => {
       console.log(err)
-      await this.alertService.ShowToast("Erro. Não foi possivel enviar seu comentario");
+      await this.alertService.ShowToast("Erro. Não foi possível enviar seu comentario");
     });
   }
-  async submitReply(){}
+  async submitReply(id:string){
+    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
+      this.newQuestion = new Question();
+      this.newQuestion.id = id;
+      this.newQuestion.textVendor = this.reply
+    await this.questionService.update(this.newQuestion).then( async ans => {
+      this.newQuestion = new Question();
+      this.reply = "";
+      await this.alertService.dismissLoading(this.loadingAlert);
+      await this.alertService.ShowToast("Sucesso. Comentario respondido");
+    },  async erro => { console.log(erro) 
+        await this.alertService.ShowToast("Erro. Não foi possível responder");
+      }
+    )
+
+  }
+
   async GetSeller(awaits) {
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
@@ -197,14 +220,14 @@ export class ProductProfilePage implements OnInit {
     if (this.subscription4 && !this.subscription4.closed)
       this.subscription4.unsubscribe();
     this.subscription4 = (await this.reviewService.GetAllFromProduct(this.product.id)).subscribe(async ans => {
-      this.reviews = ans;
+      this.product.reviews = ans;
       awaits.reviews = false;
-      this.hasReviews = this.reviews.length > 1;
+      this.hasReviews = this.reviews.length > 0;
       this.positivos = 0;
       this.negativos = 0;
-      for (var product of this.reviews) {
-        this.positivos = (product.recommend) ? ++this.positivos : this.positivos;
-        this.negativos = (!product.recommend) ? ++this.negativos : this.negativos;
+      for (var vote of this.product.reviews) {
+        this.positivos = (vote.recommend) ? ++this.positivos : this.positivos;
+        this.negativos = (!vote.recommend) ? ++this.negativos : this.negativos;
       }
     }, async err => {
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das avaliações, tente denovo daqui a pouco.")

@@ -10,7 +10,7 @@
     </ion-slides>
     <h2>{{product.name}}</h2>
     <p>
-      <span class="tooltip"> Avaliação: {{(product.avgReview)? (product.avgReview + "%") : "Nenhum"}}
+      <span class="tooltip"> Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}
         <span class="tooltiptext tooltip-top">
           <ion-badge class="badge-bottom" color="success" mode="ios" >{{positivos}}</ion-badge> - 
           <ion-badge class="badge-bottom" color="danger" mode="ios">{{negativos}}</ion-badge>
@@ -48,17 +48,27 @@
             <ion-card-content>
               {{asked.text}}
             </ion-card-content>
-            <ion-item *ngIf="product.sellerID == loggedUser.id" (click)="dropdown = true"
-             style="text-align: end;">
-              <a>Responder</a>
+            <ng-container *ngIf="product.sellerID == loggedUser.id">
+            <ion-item style="text-align: end;" *ngIf=""> <!--more tests-->
+              <a (click)="dropdown = true">Responder</a>
             </ion-item>
+            <div style="margin-left: 10px" *ngIf="">
+              <a style="text-align: end;">Resposta</a>
+              <br>
+              <h5>{{SellerUser.name}}</h5>
+              <br>
+              <ion-text>{{asked.replyDate.toLocaleString()}}</ion-text>
+              <br>
+              <p>{{asked.vendorText}}</p>
+          </div>
+          </ng-container>
             <div *ngIf="dropdown" class="dropdown" #dropdownbox>
               <ion-item>
-              <ion-input></ion-input>
+              <ion-input name="reply" [(ngModel)]=reply required autoGrow=true></ion-input>
               <ion-row class="ion-justify-content-end commentButtons">
-                <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply();"
+                <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply(asked.id);"
                   >Responder</ion-button>
-                <ion-button class="rightCommentButton" expand=full size="small" (click)="dropdown=false">Cancel</ion-button>
+                <ion-button class="rightCommentButton" expand=full size="small" (click)="dropdown=false">Cancelar</ion-button>
               </ion-row>
             </ion-item>
           </div>
@@ -68,7 +78,7 @@
     </div>
 
     <div class="ion-margin-vertical">
-      <!-- <ion-item>
+      <ion-item>
         <ion-label position="floating">Duvida? faça uma pergunta</ion-label>
         <ion-textarea name="question" [(ngModel)]=question required autoGrow=true></ion-textarea>
         <ion-row class="ion-justify-content-end commentButtons">
@@ -76,7 +86,7 @@
             >Enviar</ion-button>
           <ion-button class="rightCommentButton" expand=full size="small" (click)="cancelButton();">Cancel</ion-button>
         </ion-row>
-      </ion-item> -->
+      </ion-item>
     </div>
  
 
@@ -92,7 +102,7 @@
     </ion-item>
     <div *ngIf="hasReviews">
       <ion-text class="reviewsTitle">Avaliações:</ion-text>
-      <div class="reviews" *ngFor="let review of reviews">
+      <div class="reviews" *ngFor="let review of product.reviews">
         <ion-row class="ion-justify-content-between">
           <ion-row class="ion-align-items-center">
             <ion-badge class="reviewThumb" color="{{(review.recommend) ? 'success' : 'danger'}}"><ion-icon size="large" color="dark" name="thumbs-{{(review.recommend) ? 'up' : 'down'}}-sharp"></ion-icon></ion-badge>
