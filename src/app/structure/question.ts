@@ -11,4 +11,5 @@ export class Question {
     //Vendor reply
     textVendor: string;
     replyDate: Date;
+    hasReply: boolean;
 }

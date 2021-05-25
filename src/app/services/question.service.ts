@@ -17,12 +17,14 @@ export class QuestionService {
       text: question.text,
       idUser: question.idUser,
       date: new Date().getTime(),
+      hasReply: question.hasReply = false,
     });
   }
   async update(question: Question) {
     return this.fireDatabase.collection(this.collection).doc(question.id).update({
       vendorText: question.textVendor,
       replyDate: new Date().getTime(),
+      hasReply: question.hasReply = true,
     });
   }
   async getQuestions(id: string) {

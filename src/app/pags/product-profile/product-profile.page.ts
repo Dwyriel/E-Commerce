@@ -51,13 +51,12 @@ export class ProductProfilePage implements OnInit {
 
   //questions
   private subscription6: Subscription;
-  private subscription7: Subscription;
   public questions: Question[] = [];
   public question: string = "";
   private newQuestion: Question = new Question();
-  //VendorReply
-  public reply: string ="";
-  public hasReply: boolean = false;
+  public hasQuestions: boolean = false;
+
+  
   
   constructor(
     private router: Router,
@@ -90,7 +89,7 @@ export class ProductProfilePage implements OnInit {
     this.hasReviews = false;
     this.question = "";
     this.questions = [];
-    this.reply = "";
+    this.hasQuestions = false;
     this.newQuestion = new Question();
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
@@ -104,8 +103,6 @@ export class ProductProfilePage implements OnInit {
       this.subscription5.unsubscribe();
       if (this.subscription6 && !this.subscription6.closed)
       this.subscription6.unsubscribe();
-      if (this.subscription7 && !this.subscription7.closed)
-      this.subscription7.unsubscribe();
   }
 
   GetPlataformInfo() {
@@ -157,15 +154,13 @@ export class ProductProfilePage implements OnInit {
       this.id = this.activatedRoute.snapshot.paramMap.get("id");
     this.subscription6 = (await this.questionService.getQuestions(this.id)).subscribe(async ans => {
       this.questions = ans;
+      this.hasQuestions = this.questions.length > 0;
       this.questions.forEach(async value => {
-       
-          this.hasReply = value.textVendor != "";
-
-        this.subscription7 = (await this.userService.Get(value.idUser)).subscribe(
+       var subscription7 = (await this.userService.Get(value.idUser)).subscribe(
           ans2 =>{
             
             value.user = ans2;
-            this.subscription7.unsubscribe();
+            subscription7.unsubscribe();
           }
         )
       })
@@ -181,6 +176,7 @@ export class ProductProfilePage implements OnInit {
     this.newQuestion.idUser = this.loggedUser.id;
     await this.questionService.add(this.newQuestion, this.id).then(async ans => {
       this.newQuestion = new Question();
+      this.question = "";
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.ShowToast("Sucesso. Comentario Enviado.");
     }, async err => {
@@ -188,14 +184,13 @@ export class ProductProfilePage implements OnInit {
       await this.alertService.ShowToast("Erro. Não foi possível enviar seu comentario");
     });
   }
-  async submitReply(id:string){
+  async submitReply(id:string, text:string){
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
       this.newQuestion = new Question();
       this.newQuestion.id = id;
-      this.newQuestion.textVendor = this.reply
+      this.newQuestion.textVendor = text;
     await this.questionService.update(this.newQuestion).then( async ans => {
       this.newQuestion = new Question();
-      this.reply = "";
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.ShowToast("Sucesso. Comentario respondido");
     },  async erro => { console.log(erro) 
@@ -222,7 +217,7 @@ export class ProductProfilePage implements OnInit {
     this.subscription4 = (await this.reviewService.GetAllFromProduct(this.product.id)).subscribe(async ans => {
       this.product.reviews = ans;
       awaits.reviews = false;
-      this.hasReviews = this.reviews.length > 0;
+      this.hasReviews = this.product.reviews.length > 0;
       this.positivos = 0;
       this.negativos = 0;
       for (var vote of this.product.reviews) {
