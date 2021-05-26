@@ -48,6 +48,7 @@ export class ProductProfilePage implements OnInit {
   public positivos: number = 0;
   public negativos: number = 0;
   public title: string = "Product";
+  public loadReviews: number = 2;
 
   //questions
   private subscription6: Subscription;
@@ -55,6 +56,7 @@ export class ProductProfilePage implements OnInit {
   public question: string = "";
   private newQuestion: Question = new Question();
   public hasQuestions: boolean = false;
+  public loadQuestions: number = 2;
 
   
   
@@ -91,6 +93,8 @@ export class ProductProfilePage implements OnInit {
     this.questions = [];
     this.hasQuestions = false;
     this.newQuestion = new Question();
+    this.loadQuestions = 2;
+    this.loadReviews =2;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -198,6 +202,18 @@ export class ProductProfilePage implements OnInit {
       }
     )
 
+  }
+  async loadingMoreQuestions(){
+    this.loadQuestions += 2;
+  }
+  async hideQuestions(){
+    this.loadQuestions = 2;
+  }
+  async loadingMoreReviews(){
+    this.loadReviews += 2;
+  }
+  async hideReviews(){
+    this.loadReviews = 2;
   }
 
   async GetSeller(awaits) {

@@ -49,7 +49,8 @@
     </ion-item>
     <div *ngIf="hasQuestions">
         <h4>Perguntas:</h4>
-          <ion-card class="reviews" *ngFor="let asked of questions">
+        <ng-container *ngFor="let asked of questions; let i=index">
+          <ion-card *ngIf="i < loadQuestions">
             <ion-card-header>
               <ion-card-title>{{asked.user.name}}</ion-card-title>
               <ion-card-subtitle>{{asked.date.toLocaleString()}}</ion-card-subtitle>
@@ -68,19 +69,21 @@
               </ion-card-content>
             </div>
             <ng-container *ngIf="product.sellerID == loggedUser.id">
-              <!-- <ion-item style="text-align: end;" *ngIf="asked.hasReply == false"> 
-                <a (click)="dropdown = true">Responder</a>
-              </ion-item> -->
               <ion-item *ngIf="!asked.hasReply">
                 <ion-input name="reply" [(ngModel)]=asked.vendorText required autoGrow=true></ion-input>
                 <ion-row class="ion-justify-content-end commentButtons">
-                  <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply(asked.id, asked.vendorText); dropdown=false"
+                  <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply(asked.id, asked.vendorText)"
                     >Responder</ion-button>
                   <ion-button class="rightCommentButton" expand=full size="small" (click)="dropdown=false">Cancelar</ion-button>
                 </ion-row>
               </ion-item>
               </ng-container>
         </ion-card>
+      </ng-container>
+        <ion-button expand=full size="small" (click)="loadingMoreQuestions()"
+                    >Carregar mais perguntas.</ion-button>
+        <ion-button expand=full size="small" *ngIf="loadQuestions > 2" (click)="hideQuestions()"
+                    >Esconder Perguntas.</ion-button>
     </div>
 
     <ion-item *ngIf="!hasReviews">
@@ -88,7 +91,9 @@
     </ion-item>
     <div *ngIf="hasReviews">
       <ion-text class="reviewsTitle">Avaliações:</ion-text>
-      <div class="reviews" *ngFor="let review of product.reviews">
+      
+      <div class="reviews" *ngFor="let review of product.reviews; let i=index">
+        <ng-container *ngIf="i < loadReviews">
         <ion-row class="ion-justify-content-between">
           <ion-row class="ion-align-items-center">
             <ion-badge class="reviewThumb" color="{{(review.recommend) ? 'success' : 'danger'}}"><ion-icon size="large" color="dark" name="thumbs-{{(review.recommend) ? 'up' : 'down'}}-sharp"></ion-icon></ion-badge>
@@ -101,7 +106,12 @@
         <div class="reviewText">
           <ion-text>{{review.text}}</ion-text>
         </div>
+      </ng-container>
       </div>
+      <ion-button expand=full size="small" (click)="loadingMoreReviews()"
+                    >Carregar mais Reviews de usuários.</ion-button>
+        <ion-button expand=full size="small" *ngIf="loadReviews > 2" (click)="hideReviews()"
+                    >Esconder reviews.</ion-button>
     </div>
   </div>
 </ion-content>
