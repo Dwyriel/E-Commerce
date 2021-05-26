@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 
-import { Router } from '@angular/router';
 import { ModalController, Platform, PopoverController } from '@ionic/angular';
 import { fromEvent, Observable, Subscription } from "rxjs";
 
 import { User } from './structure/user';
 import { AlertService } from './services/alert.service';
 import { UserService } from './services/user.service';
-import { AppResources } from './services/app-info.service'
+import { AppResources, PlatformType } from './services/app-info.service'
 import { ItemClassification } from './structure/item-classification';
 import { CategoriesComponent } from './components/categories/categories.component';
 import { SidebarModalCategory } from './components/sidebar-modal/sidebar-modal.component';
@@ -81,8 +80,18 @@ export class AppComponent {
     AppResources.PushAppInfo({
       appWidth: this.platform.width(),
       appHeight: this.platform.height(),
-      isDesktop: this.platform.is('desktop')
+      platform: this.GetPlatformType()
     });
+  }
+
+  GetPlatformType() {
+    if (this.platform.is("mobileweb"))
+      return PlatformType.mobileweb;
+    if (this.platform.is("desktop"))
+      return PlatformType.desktop;
+    if (this.platform.is("mobile"))
+      return PlatformType.mobile;
+    return null;
   }
 
   async verifyUser() {
