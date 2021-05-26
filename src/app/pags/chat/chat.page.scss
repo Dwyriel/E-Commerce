@@ -1,0 +1,61 @@
+.webrowser{
+    width: var(--maxWidth); 
+    margin: 0 auto; 
+}
+
+.user_img {
+    border-radius: 50%;
+    margin: 0 .5rem 0 .5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+.received_text {
+    background: #0089d8;
+    color:#fff;
+}
+
+.time_date {
+    color: #747474;
+    font-size: .7rem;
+    margin: 8px 0 0;
+}
+
+.message{
+    margin-top:26px;
+}
+
+.text_div {
+    max-width: 65%;
+}
+
+.sent_text {
+    background: #ebebeb;
+    color: #646464;
+}
+
+.text {
+    border-radius: 5px;
+    margin: 0; 
+    font-size: 14px;
+    padding: 5px 10px 5px 10px;
+    white-space: pre-wrap;
+}
+
+.float-left{
+    float:left;
+}
+
+.float-right{
+    float: right;
+}
+
+.input-area{
+    position: fixed;
+    margin-top: 1rem;
+    bottom: 0;
+}
+
+.requiredPadding{
+    height: var(--reqPadding)
+}

@@ -1,8 +1,7 @@
 export class PurchaseChat {
     id: string;
     purchaseId: string;
-    sellerId: string;
-    buyerId: string;
+    senderId: string;
     message: string;
     date: Date;
 }

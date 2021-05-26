@@ -2,7 +2,53 @@
 
 <ion-content [fullscreen]="true">
   <app-header [title]="title" segment=1></app-header>
-  
-  <!-- content here -->
-
+  <div [ngClass]="{'webrowser':!isMobile}">
+      <div >
+        <ng-container *ngFor="let msg of messages">
+          <div class="message">
+            <ion-row class="ion-align-items-start ion-justify-content-{{(msg.senderId == loggedUser.id) ? 'end' : 'start'}}">
+              <img *ngIf="msg.senderId != loggedUser.id" class="user_img" [src]="(otherUser.photo) ? otherUser.photo : '../../../assets/perfil.png'" [alt]="otherUser.name">
+              <div class="text_div">
+                <p class="{{(msg.senderId == loggedUser.id) ? 'sent_text' : 'received_text'}} text">{{msg.message}}</p>
+                <span class="time_date {{(msg.senderId == loggedUser.id) ? 'float-right' : 'float-left'}}"> {{msg.date.toLocaleString()}}</span>
+              </div>
+              <img *ngIf="msg.senderId == loggedUser.id" class="user_img" [src]="(loggedUser.photo) ? loggedUser.photo : '../../../assets/perfil.png'" [alt]="loggedUser.name">
+            </ion-row>
+          </div>
+        </ng-container>
+        <div class="requiredPadding"></div>
+      </div>
+      <ion-item class="input-area" style="width: 100%;">
+        <ion-textarea id="input-textarea" name="input-text" spellcheck=true autoGrow=true [(ngModel)]=inputedText></ion-textarea>
+        <ion-item button (click)="SendMessage()"><ion-icon style="width: 2rem;" slot="end" ios="send-outline" md="send-sharp"></ion-icon></ion-item>
+      </ion-item>
+  </div>
 </ion-content>
+
+
+<!--
+
+
+  <div class="message">
+      <ion-row class="ion-align-items-start ion-justify-content-start">
+        <img class="user_img" src="https://ptetutorials.com/images/user-profile.png" alt="sunil">
+        <div class="text_div">
+          <p class="received_text text">Test which is a new approach to have all solutions</p>
+          <span class="time_date" style="float: left;"> 11:01 AM | June 9</span>
+        </div>
+      </ion-row>
+    </div>
+
+    <div class="message">
+      <ion-row class="ion-align-items-start ion-justify-content-end">
+        <div class="text_div">
+          <p class="sent_text text">Test which is a new approach to have all solutions</p>
+          <span class="time_date" style="float: right;"> 11:01 AM | June 9</span>
+        </div>
+        <img class="user_img" src="https://ptetutorials.com/images/user-profile.png" alt="sunil">
+      </ion-row>
+    </div>
+
+
+
+-->

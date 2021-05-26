@@ -18,8 +18,7 @@ export class ChatService {
   async Add(chat: PurchaseChat) {
     return await this.fireDatabase.collection(this.collection).add({
       purchaseId: chat.purchaseId,
-      buyerId: chat.buyerId,
-      sellerId: chat.sellerId,
+      senderId: chat.senderId,
       message: chat.message,
       date: new Date().getTime(),
     });

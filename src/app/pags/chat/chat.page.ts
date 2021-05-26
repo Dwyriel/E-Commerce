@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { IonContent, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
@@ -27,6 +27,8 @@ export class ChatPage implements OnInit {
   private loadingAlertID: string;
   private purchase: Purchase = null;
   private id: string;
+  private shouldBreak = false;
+  private interruptWhile = false;
 
   //Subscription
   private subscription1: Subscription;
@@ -37,18 +39,23 @@ export class ChatPage implements OnInit {
   private subscription6: Subscription;
   private subscription7: Subscription;
 
+  @ViewChild(IonContent) content: IonContent;
+
   constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private chatService: ChatService, private userService: UserService, private alertService: AlertService, private router: Router, private navController: NavController) { }
 
   ngOnInit() {
   }
 
   async ionViewWillEnter() {
-    await this.GetPlataformInfo();
+    this.shouldBreak = false;
+    this.GetPlataformInfo();
+    this.setInputPadding();
     await this.getLoggedUser();
     await this.GetPurchase();
   }
 
   ionViewWillLeave() {
+    this.shouldBreak = true;
     this.title = "Carregando";
     this.loggedUser = new User();
     this.otherUser = new User();
@@ -79,6 +86,28 @@ export class ChatPage implements OnInit {
 
   setDivWidth(value: string) {
     document.body.style.setProperty('--maxWidth', value);
+  }
+
+  async setInputPadding() {
+    //quick note, this is not good performance wise, but it's "the best way" to do it. it's not, but other methods are either more complex and not worth the trouble or wasn't compiling (ResizeObserver, which is amazing but as I said, wasn't compiling).
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    var element = document.getElementById("input-textarea")
+    var prevVal = -1;
+    while (true) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      if (this.interruptWhile) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.interruptWhile = false;
+      }
+      if (element.offsetHeight == prevVal)
+        continue;
+      var toSet = (element.offsetHeight) + ((element.offsetHeight == 0) ? 65 : 30); //love them magic numbers :d
+      document.body.style.setProperty('--reqPadding', toSet + "px");
+      this.content.scrollByPoint(0, toSet, 0);
+      prevVal = element.offsetHeight;
+      if (this.shouldBreak)
+        break;
+    }
   }
 
   async getLoggedUser() {
@@ -116,10 +145,6 @@ export class ChatPage implements OnInit {
       await this.GetMessages();
       await this.GetOtherUser();
       await this.alertService.dismissLoading(this.loadingAlertID);
-      console.log(this.loggedUser);
-      console.log(this.otherUser);
-      console.log(this.purchase);
-      console.log(this.messages);
     }, async err => {
       this.ErrorHandling("Ops", "Ocorreu um erro ao carregar o chat, tente novamente mais tarde.");
     });
@@ -132,6 +157,7 @@ export class ChatPage implements OnInit {
     this.subscription4 = (await this.chatService.GetAllFromPurchase(this.purchase.id)).subscribe(ans => {
       this.messages = ans;
       shouldWait = false;
+      this.scrollToBotton();
     }, err => {
       this.ErrorHandling("Ops", "Ocorreu um erro ao carregar as mensagens, tente novamente mais tarde.", false);
       shouldWait = false;
@@ -172,16 +198,28 @@ export class ChatPage implements OnInit {
   }
 
   async SendMessage() {
+    if (this.inputedText == "" || this.inputedText == null) return;
     var chat: PurchaseChat = this.CreateMessageObject(this.inputedText);
-    await this.chatService.Add(chat).catch(err => this.alertService.presentAlert("Erro", "Não foi possivel enviar sua mensagem. Tente novamente."));
+    await this.chatService.Add(chat).then(() => {
+      this.inputedText = "";
+      this.interruptWhile = true;
+    }).catch(err => {
+      this.alertService.presentAlert("Erro", "Não foi possivel enviar sua mensagem. Tente novamente.");
+    });
   }
 
   CreateMessageObject(text: string) {
     var obj: PurchaseChat = new PurchaseChat();
     obj.purchaseId = this.purchase.id;
-    obj.sellerId = this.purchase.sellerId;
-    obj.buyerId = this.purchase.userId;
+    obj.senderId = this.loggedUser.id;
     obj.message = text;
     return obj;
+  }
+
+  scrollToBotton() {
+    this.interruptWhile = true;
+    setTimeout(() => {
+      this.content.scrollToBottom(500);
+    }, 300);
   }
 }
