@@ -1,4 +1,5 @@
 export class PurchaseChat {
+    id: string;
     purchaseId: string;
     sellerId: string;
     buyerId: string;
