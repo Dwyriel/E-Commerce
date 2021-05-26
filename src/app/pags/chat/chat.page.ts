@@ -1,6 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
+import { ChatService } from 'src/app/services/chat.service';
+import { PurchasesService } from 'src/app/services/purchases.service';
+import { UserService } from 'src/app/services/user.service';
+import { PurchaseChat } from 'src/app/structure/purchase-chat';
+import { Purchase } from 'src/app/structure/purchases';
 import { User } from 'src/app/structure/user';
 
 @Component({
@@ -9,12 +17,14 @@ import { User } from 'src/app/structure/user';
   styleUrls: ['./chat.page.scss'],
 })
 export class ChatPage implements OnInit {
-  public title: string = "Chat";
+  public title: string = "Carregando";
   public loggedUser: User = new User();
   public otherUser: User = new User();
+  public messages: PurchaseChat[] = [];
   public isMobile: boolean;
 
   private loadingAlertID: string;
+  private purchase: Purchase = null;
   private id: string;
 
   //Subscription
@@ -26,19 +36,22 @@ export class ChatPage implements OnInit {
   private subscription6: Subscription;
   private subscription7: Subscription;
 
-  constructor() { }
+  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private chatService: ChatService, private userService: UserService, private alertService: AlertService, private router: Router, private navController: NavController) { }
 
   ngOnInit() {
   }
 
   async ionViewWillEnter() {
     await this.GetPlataformInfo();
+    await this.GetPurchase();
   }
 
   ionViewWillLeave() {
     this.title = "Carregando";
-    this.loggedUser = new User()
-    this.otherUser = new User()
+    this.loggedUser = new User();
+    this.otherUser = new User();
+    this.purchase = null;
+    this.messages = [];
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -64,5 +77,50 @@ export class ChatPage implements OnInit {
 
   setDivWidth(value: string) {
     document.body.style.setProperty('--maxWidth', value);
+  }
+
+  async GetPurchase() {
+    await this.alertService.presentLoading().then(ans => this.loadingAlertID = ans);
+    this.id = this.activatedRoute.snapshot.paramMap.get('id');
+    if (!this.id) {
+      await this.SendAway("/");
+      return;
+    }
+    this.subscription2 = (await this.purchaseService.Get(this.id)).subscribe(async ans => {
+      if (!ans) {
+        await this.SendAway("/");
+        return;
+      }
+      this.purchase = ans;
+      this.purchase.id = this.id;
+      await this.GetMessages();
+      await this.GetUsers();
+    }, async err => {
+      this.ErrorHandling("Ops", "Ocorreu um erro ao carregar o chat, tente novamente mais tarde.");
+    });
+  }
+
+  async GetMessages() {
+    this.subscription3 = (await this.chatService.GetAllFromPurchase(this.purchase.id)).subscribe(ans => {
+      this.messages = ans;
+    }, err => {
+      this.ErrorHandling("Ops", "Ocorreu um erro ao carregar as mensagens, tente novamente mais tarde.", false);
+    });
+  }
+
+  async GetUsers() {
+
+  }
+
+  async ErrorHandling(title: string, text: string, goBack: boolean = true) {
+    await this.alertService.dismissLoading(this.loadingAlertID);
+    await this.alertService.presentAlert(title, text);
+    if (goBack) this.navController.back();
+  }
+
+  async SendAway(sendTo: string) {
+    await this.router.navigate([sendTo]);
+    await this.alertService.dismissLoading(this.loadingAlertID);
+    return;
   }
 }
