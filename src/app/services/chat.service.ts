@@ -39,7 +39,7 @@ export class ChatService {
    * @returns an observable containing all the Purchase's PurchaseChat.
    */
   async GetAllFromPurchase(id: string) {
-    return this.fireDatabase.collection<PurchaseChat>(this.collection, ref => ref.where('purchaseId', '==', id).orderBy('date', 'desc')).snapshotChanges().pipe(map(
+    return this.fireDatabase.collection<PurchaseChat>(this.collection, ref => ref.where('purchaseId', '==', id).orderBy('date', 'asc')).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
   }
 
