@@ -184,7 +184,7 @@ export class CartPage implements OnInit {
       this.products = [];
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.presentAlert("Wheee", "The itens you purchased will be shipped in the next 2534 years");
-      await this.router.navigate(["/purchases"]);
+      await this.router.navigate(["/purchases/purchases"]);
     }, async err => {
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.presentAlert("Ops", "Não foi possivel remover os itens do carrinho apos a compra, Por favor verifique suas compras antes de comprar novamente.");

@@ -7,7 +7,7 @@ import { User } from '../structure/user';
 })
 export class AppResources {
 
-  private static appInfo = new BehaviorSubject<{ appWidth: number, appHeight: number, isDesktop: boolean }>({ appWidth: null, appHeight: null, isDesktop: null });
+  private static appInfo = new BehaviorSubject<{ appWidth: number, appHeight: number, platform: PlatformType }>({ appWidth: null, appHeight: null, platform: null });
   private static userInfo = new BehaviorSubject<User>(null);
   public static readonly maxMobileWidth: number = 880;
   public static popovers: HTMLIonPopoverElement[] = [];
@@ -17,7 +17,7 @@ export class AppResources {
    * Puts and pushes new information into appInfo to all listeners.
    * @param object the new information for appInfo.
    */
-  public static PushAppInfo(object: { appWidth: number, appHeight: number, isDesktop: boolean }) {
+  public static PushAppInfo(object: { appWidth: number, appHeight: number, platform: PlatformType }) {
     AppResources.appInfo.next(object);
   }
 
@@ -46,4 +46,10 @@ export class AppResources {
   }
 
   constructor() { }
+}
+
+export enum PlatformType {
+  mobile,
+  desktop,
+  mobileweb,
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActionSheetController } from '@ionic/angular';
 import { AlertService } from './alert.service';
 import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
+import { AppResources, PlatformType } from './app-info.service';
 
 const { Camera } = Plugins;
 
@@ -64,6 +65,8 @@ export class ImageService {
    */
   async getImage(quality?: number) {
     var imageUrl;
+    var platform: PlatformType;
+    var sub = AppResources.GetAppInfo().subscribe(ans => {platform = ans.platform; sub.unsubscribe();});
     const actionSheet = await this.actionSheetController.create({
       header: 'Existing or new photo?',
       cssClass: 'my-custom-class',
@@ -88,8 +91,12 @@ export class ImageService {
         handler: () => { }
       }]
     });
-    await actionSheet.present();
-    await actionSheet.onDidDismiss().then((data) => { imageUrl = data.data });
+    if (platform == PlatformType.desktop) {
+      await this.choosePhoto(quality).then(data => imageUrl = data)
+    } else {
+      await actionSheet.present();
+      await actionSheet.onDidDismiss().then((data) => { imageUrl = data.data });
+    }
     return imageUrl;
   }
 
