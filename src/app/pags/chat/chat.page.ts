@@ -39,7 +39,6 @@ export class ChatPage implements OnInit {
   private subscription4: Subscription;
   private subscription5: Subscription;
   private subscription6: Subscription;
-  private subscription7: Subscription;//not used yet
 
   @ViewChild(IonContent) content: IonContent;
 
@@ -76,8 +75,6 @@ export class ChatPage implements OnInit {
       this.subscription5.unsubscribe();
     if (this.subscription6 && !this.subscription6.closed)
       this.subscription6.unsubscribe();
-    if (this.subscription7 && !this.subscription7.closed)
-      this.subscription7.unsubscribe();
   }
 
   GetPlataformInfo() {
