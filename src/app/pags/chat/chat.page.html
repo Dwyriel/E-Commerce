@@ -3,7 +3,7 @@
 <ion-content [fullscreen]="true">
   <app-header [title]="title" segment=1></app-header>
   <div [ngClass]="{'webrowser':!isMobile}">
-      <div >
+      <div>
         <ng-container *ngFor="let msg of messages">
           <div class="message">
             <ion-row class="ion-align-items-start ion-justify-content-{{(msg.senderId == loggedUser.id) ? 'end' : 'start'}}">
@@ -18,7 +18,7 @@
         </ng-container>
         <div class="requiredPadding"></div>
       </div>
-      <ion-item class="input-area" style="width: 100%;">
+      <ion-item class="input-area" style="width: 100%;" [ngClass]="{'chatWidth':!isMobile}">
         <ion-textarea id="input-textarea" name="input-text" spellcheck=true autoGrow=true [(ngModel)]=inputedText></ion-textarea>
         <ion-item button (click)="SendMessage()"><ion-icon style="width: 2rem;" slot="end" ios="send-outline" md="send-sharp"></ion-icon></ion-item>
       </ion-item>

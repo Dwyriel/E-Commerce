@@ -36,7 +36,7 @@ export class ChatPage implements OnInit {
   private subscription3: Subscription;
   private subscription4: Subscription;
   private subscription5: Subscription;
-  private subscription6: Subscription;
+  private subscription6: Subscription;//not used yet
   private subscription7: Subscription;
 
   @ViewChild(IonContent) content: IonContent;
@@ -49,9 +49,9 @@ export class ChatPage implements OnInit {
   async ionViewWillEnter() {
     this.shouldBreak = false;
     this.GetPlataformInfo();
-    this.setInputPadding();
     await this.getLoggedUser();
     await this.GetPurchase();
+    this.setInputPadding();
   }
 
   ionViewWillLeave() {
@@ -94,7 +94,7 @@ export class ChatPage implements OnInit {
     var element = document.getElementById("input-textarea")
     var prevVal = -1;
     while (true) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 100));
       if (this.interruptWhile) {
         await new Promise(resolve => setTimeout(resolve, 1000));
         this.interruptWhile = false;

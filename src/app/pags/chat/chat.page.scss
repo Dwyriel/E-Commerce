@@ -3,6 +3,10 @@
     margin: 0 auto; 
 }
 
+.chatWidth{
+    width: var(--maxWidth) !important; 
+}
+
 .user_img {
     border-radius: 50%;
     margin: 0 .5rem 0 .5rem;
