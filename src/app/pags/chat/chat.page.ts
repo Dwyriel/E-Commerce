@@ -22,6 +22,7 @@ export class ChatPage implements OnInit {
   public otherUser: User = new User();
   public messages: PurchaseChat[] = [];
   public isMobile: boolean;
+  public isDesktop: boolean;
   public inputedText: string = ""; //wont reset when leaving view. that's intentional.
 
   private loadingAlertID: string;
@@ -29,6 +30,7 @@ export class ChatPage implements OnInit {
   private id: string;
   private shouldBreak = false;
   private interruptWhile = false;
+  private messageSent = true;
 
   //Subscription
   private subscription1: Subscription;
@@ -36,8 +38,8 @@ export class ChatPage implements OnInit {
   private subscription3: Subscription;
   private subscription4: Subscription;
   private subscription5: Subscription;
-  private subscription6: Subscription;//not used yet
-  private subscription7: Subscription;
+  private subscription6: Subscription;
+  private subscription7: Subscription;//not used yet
 
   @ViewChild(IonContent) content: IonContent;
 
@@ -56,6 +58,7 @@ export class ChatPage implements OnInit {
 
   ionViewWillLeave() {
     this.shouldBreak = true;
+    this.messageSent = true;
     this.title = "Carregando";
     this.loggedUser = new User();
     this.otherUser = new User();
@@ -79,7 +82,9 @@ export class ChatPage implements OnInit {
 
   GetPlataformInfo() {
     this.subscription1 = AppResources.GetAppInfo().subscribe(info => {
+      //todo add isDesktop code here
       this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
+      this.isDesktop = !this.isMobile;
       this.setDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
   }
@@ -156,8 +161,11 @@ export class ChatPage implements OnInit {
       this.subscription4.unsubscribe();
     this.subscription4 = (await this.chatService.GetAllFromPurchase(this.purchase.id)).subscribe(ans => {
       this.messages = ans;
-      shouldWait = false;
       this.scrollToBotton();
+      if (this.subscription4 && !this.subscription4.closed)
+        this.subscription4.unsubscribe();
+      this.PostMessagesSubscription();
+      shouldWait = false;
     }, err => {
       this.ErrorHandling("Ops", "Ocorreu um erro ao carregar as mensagens, tente novamente mais tarde.", false);
       shouldWait = false;
@@ -167,12 +175,28 @@ export class ChatPage implements OnInit {
     return;
   }
 
+  async PostMessagesSubscription() {
+    if (this.subscription5 && !this.subscription5.closed)
+      this.subscription5.unsubscribe();
+    this.subscription5 = (await this.chatService.GetAllFromPurchase(this.purchase.id)).subscribe(ans => {
+      if (this.messageSent) {
+        this.messageSent = false;
+        return;
+      }
+      this.messages.push(ans[ans.length - 1]);
+      this.scrollToBotton();
+    }, async err => {
+      this.ErrorHandling("Ops", "Ocorreu um erro ao carregar novas mensagens, tente novamente mais tarde.", false);
+    })
+
+  }
+
   async GetOtherUser() {
     var shouldWait: boolean = true;
     var toBeRetrivedUserId = (this.loggedUser.id == this.purchase.sellerId) ? this.purchase.userId : this.purchase.sellerId;
-    if (this.subscription5 && !this.subscription5.closed)
-      this.subscription5.unsubscribe();
-    this.subscription5 = (await this.userService.Get(toBeRetrivedUserId)).subscribe(ans => {
+    if (this.subscription6 && !this.subscription6.closed)
+      this.subscription6.unsubscribe();
+    this.subscription6 = (await this.userService.Get(toBeRetrivedUserId)).subscribe(ans => {
       this.otherUser = ans;
       this.title = `Conversa: ${this.otherUser.name}`
       shouldWait = false;
@@ -197,13 +221,28 @@ export class ChatPage implements OnInit {
     return;
   }
 
+  async EnterKeyInput() {
+    if (!this.isDesktop)
+      return;
+    await this.SendMessage();
+  }
+
   async SendMessage() {
-    if (this.inputedText == "" || this.inputedText == null) return;
+    if (this.inputedText == "" || this.inputedText == null)
+      return;
     var chat: PurchaseChat = this.CreateMessageObject(this.inputedText);
-    await this.chatService.Add(chat).then(() => {
+    if (this.subscription5 && !this.subscription5.closed)
+      this.subscription5.unsubscribe();
+    this.messageSent = true;
+    await this.chatService.Add(chat).then(ans => {
       this.inputedText = "";
       this.interruptWhile = true;
+      chat.date = new Date();
+      this.messages.push(chat);
+      this.scrollToBotton();
+      this.PostMessagesSubscription();
     }).catch(err => {
+      this.PostMessagesSubscription();
       this.alertService.presentAlert("Erro", "Não foi possivel enviar sua mensagem. Tente novamente.");
     });
   }
