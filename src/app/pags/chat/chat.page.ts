@@ -174,12 +174,12 @@ export class ChatPage implements OnInit {
   async PostMessagesSubscription() {
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
-    this.subscription5 = (await this.chatService.GetAllFromPurchase(this.purchase.id)).subscribe(ans => {
+    this.subscription5 = (await this.chatService.GetLatestFromPurchase(this.purchase.id)).subscribe(ans => {
       if (this.messageSent) {
         this.messageSent = false;
         return;
       }
-      this.messages.push(ans[ans.length - 1]);
+      this.messages.push(ans[0]);
       this.scrollToBotton();
     }, async err => {
       this.ErrorHandling("Ops", "Ocorreu um erro ao carregar novas mensagens, tente novamente mais tarde.", false);
