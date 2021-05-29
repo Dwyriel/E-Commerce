@@ -15,13 +15,6 @@ import { Rating } from 'src/app/structure/rating';
 import { ReviewService } from 'src/app/services/review.service';
 import { RatingService } from 'src/app/services/rating.service';
 
-export const slideOpts = {
-  slidesPerView: 1,
-  slidesPerColumn: 1,
-  slidesPerGroup: 1,
-  watchSlidesProgress: true,
-}
-
 @Component({
   selector: 'app-purchase-page',
   templateUrl: './purchase-page.page.html',
@@ -46,6 +39,12 @@ export class PurchasePagePage implements OnInit {
   public stateValue: number;
   public states: { value: State }[] = [];
   public review: { title: string, content: string, recommend: string } = { title: undefined, content: undefined, recommend: undefined };
+  public slideOpts = {
+    slidesPerView: 1,
+    slidesPerColumn: 1,
+    slidesPerGroup: 1,
+    watchSlidesProgress: true,
+  };
 
   private loadingAlertID;
   private user: User;

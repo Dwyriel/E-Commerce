@@ -12,13 +12,6 @@ import { Product } from 'src/app/structure/product';
 import { Review } from 'src/app/structure/review';
 import { User } from 'src/app/structure/user';
 
-export const slideOpts = {
-  slidesPerView: 1,
-  slidesPerColumn: 1,
-  slidesPerGroup: 1,
-  watchSlidesProgress: true,
-}
-
 @Component({
   selector: 'app-product-profile',
   templateUrl: './product-profile.page.html',
@@ -45,6 +38,12 @@ export class ProductProfilePage implements OnInit {
   public positivos: number = 0;
   public negativos: number = 0;
   public title: string = "Product";
+  slideOpts = {
+    slidesPerView: 1,
+    slidesPerColumn: 1,
+    slidesPerGroup: 1,
+    watchSlidesProgress: true,
+  }
 
   constructor(
     private router: Router,
