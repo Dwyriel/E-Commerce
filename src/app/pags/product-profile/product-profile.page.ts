@@ -14,13 +14,6 @@ import { User } from 'src/app/structure/user';
 import { Question } from 'src/app/structure/question'
 import { QuestionService } from 'src/app/services/question.service'
 
-export const slideOpts = {
-  slidesPerView: 1,
-  slidesPerColumn: 1,
-  slidesPerGroup: 1,
-  watchSlidesProgress: true,
-}
-
 @Component({
   selector: 'app-product-profile',
   templateUrl: './product-profile.page.html',
@@ -49,7 +42,13 @@ export class ProductProfilePage implements OnInit {
   public negativos: number = 0;
   public title: string = "Product";
   public loadReviews: number = 2;
-
+  public slideOpts = {
+    slidesPerView: 1,
+    slidesPerColumn: 1,
+    slidesPerGroup: 1,
+    watchSlidesProgress: true,
+  }
+  
   //questions
   private subscription6: Subscription;
   public questions: Question[] = [];

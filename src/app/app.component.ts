@@ -23,6 +23,7 @@ export class AppComponent {
   public user: User = null;
   public firebaseAns: boolean;
   public cartItens: number;
+  public dropdown;
 
   //device
   public isMobile: boolean;

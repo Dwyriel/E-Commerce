@@ -9,7 +9,7 @@ import { AppResources } from 'src/app/services/app-info.service';
 })
 export class HeaderComponent implements OnInit {
   @Input("title") public title: string = "";
-  @Input("segment") public segment: number;
+  @Input("segment") public segment: string;
   public isMobile: boolean = true;
   private subscription: Subscription;
 
