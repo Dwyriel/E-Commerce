@@ -187,7 +187,7 @@ export class ProductProfilePage implements OnInit {
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
     this.newQuestion = new Question();
     this.newQuestion.id = id;
-    this.newQuestion.textVendor = text;
+    this.newQuestion.vendorText = text;
     await this.questionService.update(this.newQuestion).then(async ans => {
       this.newQuestion = new Question();
       await this.alertService.dismissLoading(this.loadingAlert);
@@ -199,6 +199,8 @@ export class ProductProfilePage implements OnInit {
     )
 
   }
+
+  cancelButton() { }
 
   async loadingMoreQuestions() {
     this.loadQuestions += 2;

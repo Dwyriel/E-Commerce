@@ -75,7 +75,7 @@
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
-  <div contentId="main-content" *ngIf="!isMobile">
+  <div contentId="main-content" *ngIf="!isMobile" style="padding: 0 5%;">
     <ion-row class="header ion-align-itens-center">
         <ion-col>
           <ion-item routerLink="/" lines="none" (click)="dropdown = false">
