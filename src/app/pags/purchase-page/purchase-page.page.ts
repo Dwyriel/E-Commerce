@@ -187,7 +187,7 @@ export class PurchasePagePage implements OnInit {
   async GetProduct(shouldWait) {
     if (this.subscription4 && !this.subscription4.closed)
       this.subscription4.unsubscribe();
-    this.subscription4 = (await this.productService.Get(this.purchase.item.productID)).subscribe(async ans => {
+    this.subscription4 = (await this.productService.GetNoRestriction(this.purchase.item.productID)).subscribe(async ans => {
       this.product = ans;
       await this.GetReview();
       await this.GetRating();

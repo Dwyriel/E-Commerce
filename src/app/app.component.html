@@ -53,7 +53,7 @@
             </ion-item>
           </ion-menu-toggle>
           <ion-menu-toggle auto-hide="false" *ngIf="firebaseAns">
-            <ion-item button lines="none" routerLink="/">
+            <ion-item button lines="none" routerLink="/adverts">
               <ion-icon slot="start" ios="pricetag-outline" md="pricetag-sharp"></ion-icon>
               <ion-label>Meus Anúncios</ion-label>
             </ion-item>
@@ -130,7 +130,7 @@
               <ion-icon slot="start" ios="create-outline" md="create-sharp"></ion-icon>
               <ion-label>Anunciar</ion-label>
             </ion-item>
-            <ion-item button lines="none" routerLink="/" *ngIf="firebaseAns" (click)="dropdown = false">
+            <ion-item button lines="none" routerLink="/adverts" *ngIf="firebaseAns" (click)="dropdown = false">
               <ion-icon slot="start" ios="pricetag-outline" md="pricetag-sharp"></ion-icon>
               <ion-label>Meus Anúncios</ion-label>
             </ion-item>

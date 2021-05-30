@@ -139,11 +139,14 @@ export class CartPage implements OnInit {
   async DecreaseAmount(id: string) {
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
     this.cartServ.RemoveItem(id, this.user.cart);
-    console.log(this.user.cart)
     await this.SendChanges(id, false);
   }
 
-  async IncreaseAmount(id: string) {
+  async IncreaseAmount(id: string, stock: number, currentAmount: number) {
+    if(currentAmount >= stock){
+      this.alertService.presentAlert("Ops", "O produto não possui mais estoque.");
+      return;
+    }
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
     this.cartServ.AddItem(id, this.user.cart);
     await this.SendChanges(id, true);
@@ -173,7 +176,9 @@ export class CartPage implements OnInit {
     for (var item of this.products) {
       var shouldWait = true;
       var purchase: Purchase = NewPurchase(this.user.id, item.product.sellerID, { productID: item.product.id, amount: item.amount });
-      await this.purchaseService.Add(purchase).catch(err => {
+      await this.purchaseService.Add(purchase).then(async () => {
+        await this.prodServ.UpdateStock(item.product.id, item.product.stock - item.amount);
+      }).catch(err => {
         this.alertService.presentAlert("Ocorreu um erro", `Produto ${item.product.name} não pode ser comprado, tente novamente mais tarde.`);
       }).finally(() => { shouldWait = false; });
       while (shouldWait)
