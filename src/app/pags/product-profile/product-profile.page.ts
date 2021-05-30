@@ -20,17 +20,9 @@ import { QuestionService } from 'src/app/services/question.service'
   styleUrls: ['./product-profile.page.scss'],
 })
 export class ProductProfilePage implements OnInit {
-
-
-  private subscription1: Subscription;
-  private subscription2: Subscription;
-  private subscription3: Subscription;
-  private subscription4: Subscription;
-  private subscription5: Subscription;
- 
-
   private id: string;
   private loadingAlert: string;
+  private newQuestion: Question = new Question();
 
   public isMobile: boolean;
   public product: Product = new Product();
@@ -42,23 +34,25 @@ export class ProductProfilePage implements OnInit {
   public negativos: number = 0;
   public title: string = "Product";
   public loadReviews: number = 2;
+  public questions: Question[] = [];
+  public question: string = "";
+  public hasQuestions: boolean = false;
+  public loadQuestions: number = 2;
   public slideOpts = {
     slidesPerView: 1,
     slidesPerColumn: 1,
     slidesPerGroup: 1,
     watchSlidesProgress: true,
   }
-  
-  //questions
-  private subscription6: Subscription;
-  public questions: Question[] = [];
-  public question: string = "";
-  private newQuestion: Question = new Question();
-  public hasQuestions: boolean = false;
-  public loadQuestions: number = 2;
 
-  
-  
+  //Subscriptions
+  private subscription1: Subscription;
+  private subscription2: Subscription;
+  private subscription3: Subscription;
+  private subscription4: Subscription;
+  private subscription5: Subscription;
+  private subscription6: Subscription;
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -93,7 +87,7 @@ export class ProductProfilePage implements OnInit {
     this.hasQuestions = false;
     this.newQuestion = new Question();
     this.loadQuestions = 2;
-    this.loadReviews =2;
+    this.loadReviews = 2;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -104,7 +98,7 @@ export class ProductProfilePage implements OnInit {
       this.subscription4.unsubscribe();
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
-      if (this.subscription6 && !this.subscription6.closed)
+    if (this.subscription6 && !this.subscription6.closed)
       this.subscription6.unsubscribe();
   }
 
@@ -143,7 +137,7 @@ export class ProductProfilePage implements OnInit {
       var awaits = { seller: true, reviews: true }
       this.GetSeller(awaits);
       this.GetReviews(awaits);
-      while (awaits.reviews || awaits.seller )
+      while (awaits.reviews || awaits.seller)
         await new Promise(resolve => setTimeout(resolve, 10));
       this.product.calculateAvgRating();
       await this.alertService.dismissLoading(this.loadingAlert);
@@ -151,17 +145,17 @@ export class ProductProfilePage implements OnInit {
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das informações, tente denovo daqui a pouco.")
     });
   }
+
   async getQuestions() {
     if (this.subscription6 && !this.subscription6.closed)
       this.subscription6.unsubscribe();
-      this.id = this.activatedRoute.snapshot.paramMap.get("id");
+    this.id = this.activatedRoute.snapshot.paramMap.get("id");
     this.subscription6 = (await this.questionService.getQuestions(this.id)).subscribe(async ans => {
       this.questions = ans;
       this.hasQuestions = this.questions.length > 0;
       this.questions.forEach(async value => {
-       var subscription7 = (await this.userService.Get(value.idUser)).subscribe(
-          ans2 =>{
-            
+        var subscription7 = (await this.userService.Get(value.idUser)).subscribe(
+          ans2 => {
             value.user = ans2;
             subscription7.unsubscribe();
           }
@@ -169,6 +163,7 @@ export class ProductProfilePage implements OnInit {
       })
     })
   }
+
   async submitButton() {
     if (!this.loggedUser) {
       await this.alertService.presentAlert("Erro", "Você não está logado ou ocorreu algum erro interno, recarregue a pagina e tente novamente.");
@@ -187,31 +182,37 @@ export class ProductProfilePage implements OnInit {
       await this.alertService.ShowToast("Erro. Não foi possível enviar seu comentario");
     });
   }
-  async submitReply(id:string, text:string){
+
+  async submitReply(id: string, text: string) {
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
-      this.newQuestion = new Question();
-      this.newQuestion.id = id;
-      this.newQuestion.textVendor = text;
-    await this.questionService.update(this.newQuestion).then( async ans => {
+    this.newQuestion = new Question();
+    this.newQuestion.id = id;
+    this.newQuestion.textVendor = text;
+    await this.questionService.update(this.newQuestion).then(async ans => {
       this.newQuestion = new Question();
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.ShowToast("Sucesso. Comentario respondido");
-    },  async erro => { console.log(erro) 
-        await this.alertService.ShowToast("Erro. Não foi possível responder");
-      }
+    }, async erro => {
+      console.log(erro)
+      await this.alertService.ShowToast("Erro. Não foi possível responder");
+    }
     )
 
   }
-  async loadingMoreQuestions(){
+
+  async loadingMoreQuestions() {
     this.loadQuestions += 2;
   }
-  async hideQuestions(){
+
+  async hideQuestions() {
     this.loadQuestions = 2;
   }
-  async loadingMoreReviews(){
+
+  async loadingMoreReviews() {
     this.loadReviews += 2;
   }
-  async hideReviews(){
+
+  async hideReviews() {
     this.loadReviews = 2;
   }
 
@@ -275,6 +276,5 @@ export class ProductProfilePage implements OnInit {
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.presentAlert("Oops", "There was a problem adding the item to the cart");
     });
-
   }
 }
