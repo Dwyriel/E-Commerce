@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
-import { AppResources } from 'src/app/services/app-info.service';
+import { AppResources, PlatformType } from 'src/app/services/app-info.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { PurchasesService } from 'src/app/services/purchases.service';
 import { UserService } from 'src/app/services/user.service';
@@ -22,7 +22,7 @@ export class ChatPage implements OnInit {
   public otherUser: User = new User();
   public messages: PurchaseChat[] = [];
   public isMobile: boolean;
-  public isDesktop: boolean;
+  public isDesktopPlatform: boolean;
   public inputedText: string = ""; //wont reset when leaving view. that's intentional.
 
   private loadingAlertID: string;
@@ -39,7 +39,6 @@ export class ChatPage implements OnInit {
   private subscription4: Subscription;
   private subscription5: Subscription;
   private subscription6: Subscription;
-  private subscription7: Subscription;//not used yet
 
   @ViewChild(IonContent) content: IonContent;
 
@@ -76,15 +75,12 @@ export class ChatPage implements OnInit {
       this.subscription5.unsubscribe();
     if (this.subscription6 && !this.subscription6.closed)
       this.subscription6.unsubscribe();
-    if (this.subscription7 && !this.subscription7.closed)
-      this.subscription7.unsubscribe();
   }
 
   GetPlataformInfo() {
     this.subscription1 = AppResources.GetAppInfo().subscribe(info => {
-      //todo add isDesktop code here
       this.isMobile = info.appWidth <= AppResources.maxMobileWidth;
-      this.isDesktop = !this.isMobile;
+      this.isDesktopPlatform = info.platform == PlatformType.desktop;
       this.setDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
   }
@@ -178,12 +174,12 @@ export class ChatPage implements OnInit {
   async PostMessagesSubscription() {
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
-    this.subscription5 = (await this.chatService.GetAllFromPurchase(this.purchase.id)).subscribe(ans => {
+    this.subscription5 = (await this.chatService.GetLatestFromPurchase(this.purchase.id)).subscribe(ans => {
       if (this.messageSent) {
         this.messageSent = false;
         return;
       }
-      this.messages.push(ans[ans.length - 1]);
+      this.messages.push(ans[0]);
       this.scrollToBotton();
     }, async err => {
       this.ErrorHandling("Ops", "Ocorreu um erro ao carregar novas mensagens, tente novamente mais tarde.", false);
@@ -222,7 +218,7 @@ export class ChatPage implements OnInit {
   }
 
   async EnterKeyInput() {
-    if (!this.isDesktop)
+    if (!this.isDesktopPlatform)
       return;
     await this.SendMessage();
   }

@@ -42,6 +42,16 @@ export class ChatService {
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
   }
 
+  /**
+   * Retrieves the newest PurchaseChat of one Purchase.
+   * @param id the id of the Purchase.
+   * @returns an observable containing the latest Purchase's PurchaseChat.
+   */
+   async GetLatestFromPurchase(id: string) {
+    return this.fireDatabase.collection<PurchaseChat>(this.collection, ref => ref.where('purchaseId', '==', id).orderBy('date', 'desc').limit(1)).snapshotChanges().pipe(map(
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+  }
+
   /** Updates the message of a PurchaseChat.
    * @param id the id of the PurchaseChat.
    * @param message the message of the PurchaseChat
