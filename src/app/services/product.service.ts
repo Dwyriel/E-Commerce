@@ -56,6 +56,17 @@ export class ProductService {
   }
 
   /**
+   * Retrieves all the products from a specific seller.
+   * @param id the user id of the seller.
+   * @returns a subscription for an array that contains all the seller's adverts.
+   */
+  async GetAllFromSeller(id: string) {
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('sellerID', '==', id)).snapshotChanges().pipe(map(
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
+    ));
+  }
+
+  /**
    * Retrieves the products within the corresponding subcategory.
    * @param value the subcategory value to get the products from.
    * @returns an Array with all the products within a subcategory.
@@ -165,6 +176,14 @@ export class ProductService {
    */
   async UpdateVerified(id: string, verified: boolean) {
     return await this.fireDatabase.collection(this.collection).doc(id).update({ verified: verified });
+  }
+
+  /** Changes the stock attribute on the specified product.
+   * @param id the product's id.
+   * @param stock the new stock value that will be attributed to the product.
+   */
+  async UpdateStock(id: string, stock: number) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({ stock: stock });
   }
 
   /**
