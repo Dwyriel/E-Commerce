@@ -211,7 +211,7 @@ export class ProductService {
    * @param id the product's id.
    * @param deleted the new deleted value that will be attributed to the product.
    */
-  async DeleteCallFromUser(id: string, deleted: number) {
+  async DeleteCallFromUser(id: string, deleted: boolean) {
     return await this.fireDatabase.collection(this.collection).doc(id).update({ deleted: deleted });
   }
 

@@ -112,4 +112,19 @@ export class AdvertsPage implements OnInit {
       sub.unsubscribe();
     await this.alertService.dismissLoading(this.loadingAlertID);
   }
+
+  async DeleteAdvert(id: string) {
+    var confirm: boolean = false;
+    await this.alertService.confirmationAlert("Deletar", "Tem certeza que deseja deletar esse anuncio?").then(ans => confirm = ans);
+    if (!confirm)
+      return;
+    await this.alertService.presentLoading().then(ans => this.loadingAlertID = ans);
+    await this.productService.DeleteCallFromUser(id, true).then(async () => {
+      await this.alertService.presentAlert("Feito!", "O Anúncio foi deletado.")
+    }).catch(err => {
+      this.alertService.presentAlert("Erro", "Ocorreu um erro e não foi possivel deletar esse anúncio, tente novamente mais tarde.");
+    }).finally(async () => {
+      await this.alertService.dismissLoading(this.loadingAlertID);
+    });
+  }
 }
