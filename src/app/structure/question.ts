@@ -9,7 +9,7 @@ export class Question {
     user: User;
 
     //Vendor reply
-    textVendor: string;
+    vendorText: string;
     replyDate: Date;
     hasReply: boolean;
 }
