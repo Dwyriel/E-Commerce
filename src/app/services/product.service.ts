@@ -28,6 +28,7 @@ export class ProductService {
       gallery: product.gallery,
       subCatValue: product.subCatValue,
       verified: false,
+      deleted: false,
     })
   }
 
@@ -35,6 +36,18 @@ export class ProductService {
    * Retrieves all the products from the database.
    */
   async GetAll() {
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('deleted', '==', false)).snapshotChanges()
+      .pipe(
+        map(
+          dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
+        )
+      )
+  }
+
+  /**
+   * Retrieves all the products from the database.
+   */
+  async GetAllNoRestriction() {
     return this.fireDatabase.collection<Product>(this.collection).snapshotChanges()
       .pipe(
         map(
@@ -47,7 +60,7 @@ export class ProductService {
    * Retrieves all verified products from the database.
    */
   async GetAllVerified() {
-    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('verified', '==', true)).snapshotChanges()
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('verified', '==', true).where('deleted', '==', false)).snapshotChanges()
       .pipe(
         map(
           dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
@@ -61,7 +74,7 @@ export class ProductService {
    * @returns a subscription for an array that contains all the seller's adverts.
    */
   async GetAllFromSeller(id: string) {
-    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('sellerID', '==', id)).snapshotChanges().pipe(map(
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('sellerID', '==', id).where('deleted', '==', false)).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
     ));
   }
@@ -72,7 +85,7 @@ export class ProductService {
    * @returns an Array with all the products within a subcategory.
    */
   async GetAllFromSubCat(value: number) {
-    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('subCatValue', '==', value)).snapshotChanges().pipe(map(
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('subCatValue', '==', value).where('deleted', '==', false)).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
     ));
   }
@@ -83,7 +96,7 @@ export class ProductService {
    * @returns an Array with all the verified products within a subcategory.
    */
   async GetAllVerifiedFromSubCat(value: number) {
-    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('subCatValue', '==', value).where('verified', '==', true)).snapshotChanges().pipe(map(
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('subCatValue', '==', value).where('verified', '==', true).where('deleted', '==', false)).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
     ));
   }
@@ -151,6 +164,14 @@ export class ProductService {
    * @param id the id of the product.
    */
   async Get(id: string) {
+    return this.fireDatabase.collection(this.collection, ref => ref.where('deleted', '==', false)).doc<Product>(id).valueChanges();
+  }
+
+  /**
+   * Retrieves the product with the corresponding id.
+   * @param id the id of the product.
+   */
+  async GetNoRestriction(id: string) {
     return this.fireDatabase.collection(this.collection).doc<Product>(id).valueChanges();
   }
 
@@ -184,6 +205,14 @@ export class ProductService {
    */
   async UpdateStock(id: string, stock: number) {
     return await this.fireDatabase.collection(this.collection).doc(id).update({ stock: stock });
+  }
+
+  /** Changes the deleted attribute on the specified product.
+   * @param id the product's id.
+   * @param deleted the new deleted value that will be attributed to the product.
+   */
+  async DeleteCallFromUser(id: string, deleted: number) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({ deleted: deleted });
   }
 
   /**
