@@ -16,6 +16,15 @@
               <ion-list-header>Log In</ion-list-header>
             </ion-item>
           </ion-menu-toggle>
+            <ion-item>
+              <ion-input placeholder="Pesquisar Produto" [(ngModel)]=searchtext (keyup.enter)="InputEnter()"></ion-input>
+              <ion-menu-toggle>
+                <ion-button id="btnSearch" (click)="searchProd()" fill="clear">
+                  <ion-icon slot="icon-only" name="search-sharp"></ion-icon>
+                </ion-button>
+              </ion-menu-toggle>
+          
+            </ion-item>
           <ion-menu-toggle auto-hide="false">
             <ion-item routerLink="/" lines="none">
               <ion-icon slot="start" ios="home-outline" md="home"></ion-icon>
@@ -90,12 +99,11 @@
         </ion-col>
         <ion-col>
           <ion-item>
-            <ion-label>
-              space for serachbar
-            </ion-label>
+            <ion-input placeholder="Pesquisar Produto" [(ngModel)]=searchtext (keyup.enter)="InputEnter()"></ion-input>
+            <ion-button  id="btnSearch" (click)="searchProd()" fill="clear">
+              <ion-icon slot="icon-only" name="search-sharp"></ion-icon>
+            </ion-button>
           </ion-item>
-            <!-- <ion-searchbar placeholder="Pesquisar"></ion-searchbar> essa searchbar buga
-            e some quando esta acima do ion-router-outlet -->
           </ion-col>
         <ion-col size="3" (mouseleave)="dropdown = false">
           <!-- item que chama dropdown de user -->

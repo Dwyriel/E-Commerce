@@ -60,8 +60,8 @@ export class ProductService {
   /**
    * Retrieves all verified products from the database.
    */
-  async GetAllVerified() {
-    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('verified', '==', true).where('deleted', '==', false)).snapshotChanges()
+  async GetAllVerified(verified: boolean = true) {
+    return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('verified', '==', verified).where('deleted', '==', false)).snapshotChanges()
       .pipe(
         map(
           dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
@@ -85,28 +85,11 @@ export class ProductService {
    * @param search the string used for the search.
    * @returns a subscription for an array that contains the products that were found by the search.
    */
-  async getBySearchFullString(search: string) {
-    var shouldWait: boolean = true;
-    var subscriptions: Subscription[] = [];
-    var index = 0;
-    var products: Product[] = [];
+   async GetBySearchFullString(search: string) {
     var searchArray: string[] = search.toLowerCase().split(" ");
-    var arrayLength = searchArray.length;
-    for (var item of searchArray) {
-      subscriptions.push((await this.GetBySearch(item)).subscribe(ans => {
-        if (ans)
-          products.push(...ans);
-        index++;
-        if (index >= arrayLength)
-          shouldWait = false;
-      }));
-    }
-    while (shouldWait)
-      await new Promise(resolve => setTimeout(resolve, 10));
-    for (var sub of subscriptions)
-      sub.unsubscribe();
-    products = products.filter((product, index, array) => index === array.findIndex(prod => (prod.id === product.id)));
-    return products;
+    return this.fireDatabase.collection<Product>(this.collection, ref =>
+      ref.where("searchArray", "array-contains-any", searchArray).where('verified', '==', true).where('deleted', '==', false)
+    ).snapshotChanges().pipe(map(ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))));
   }
 
   /**
@@ -147,7 +130,7 @@ export class ProductService {
    * @param value the general category to get the products from.
    * @returns an Array with all the products within a category.
    */
-  async getAllFromCat(value: number) {
+  async GetAllFromCat(value: number) {
     var shouldWait: boolean = true;
     var subscriptions: Subscription[] = [];
     var index = 0;
@@ -176,7 +159,7 @@ export class ProductService {
    * @param value the general category to get the products from.
    * @returns an Array with all the verified products within a category.
    */
-  async getAllVerifiedFromCat(value: number) {
+  async GetAllVerifiedFromCat(value: number) {
     var shouldWait: boolean = true;
     var subscriptions: Subscription[] = [];
     var index = 0;

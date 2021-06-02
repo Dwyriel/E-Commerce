@@ -40,9 +40,9 @@ export class ProductListPage implements OnInit {
   private subscription1: Subscription;
   private subscription2: Subscription;
   private subscription3: Subscription;
+  private subscription4: Subscription;
 
-  constructor(private activatedRoute: ActivatedRoute, private productService: ProductService, private reviewService: ReviewService, private router: Router,
-    private alertService: AlertService) { }
+  constructor(private activatedRoute: ActivatedRoute, private productService: ProductService, private reviewService: ReviewService, private router: Router, private alertService: AlertService) { }
 
   ngOnInit() {
   }
@@ -59,6 +59,8 @@ export class ProductListPage implements OnInit {
       this.subscription2.unsubscribe();
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
+    if (this.subscription4 && !this.subscription4.closed)
+      this.subscription4.unsubscribe();
   }
 
   GetPlataformInfo() {
@@ -78,7 +80,7 @@ export class ProductListPage implements OnInit {
     this.allFromCat = this.activatedRoute.snapshot.paramMap.get('cat');
     this.categoryValue = parseInt(this.activatedRoute.snapshot.paramMap.get('value'));
     if (this.searchInput) {
-      this.GetProductsFromSearch();
+      this.GetProductsFromSearch(event);
       return;
     }
     if (this.allFromCat === "all") {
@@ -92,15 +94,21 @@ export class ProductListPage implements OnInit {
     await this.GetAllProducts(event);
   }
 
-  GetProductsFromSearch() {
-    //todo search thingy (matching string, removing spaces and looking for just the words, etc)
+  async GetProductsFromSearch(event = null) {
+    this.title = `Busca: ${this.searchInput}`;
+    if (this.subscription4 && !this.subscription4.closed)
+      this.subscription4.unsubscribe();
+    this.subscription4 = (await this.productService.GetBySearchFullString(this.searchInput)).subscribe(async ans => {
+      this.products = ans;
+      await this.FillProductAttributes(event);
+    });
   }
 
   async GetProductsFromCat(event = null) {
     if (ItemClassification.CatsContains(this.categoryValue)) {
       this.category = ItemClassification.GetCatFromValue(this.categoryValue);
       this.title = `Categoria: ${this.category.title}`;
-      this.products = await this.productService.getAllVerifiedFromCat(this.categoryValue);
+      this.products = await this.productService.GetAllVerifiedFromCat(this.categoryValue);
       await this.FillProductAttributes(event);
     }
   }
