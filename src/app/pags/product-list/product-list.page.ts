@@ -40,6 +40,7 @@ export class ProductListPage implements OnInit {
   private subscription1: Subscription;
   private subscription2: Subscription;
   private subscription3: Subscription;
+  private subscription4: Subscription;
 
   constructor(private activatedRoute: ActivatedRoute, private productService: ProductService, private reviewService: ReviewService, private router: Router,
     private alertService: AlertService) { }
@@ -92,8 +93,9 @@ export class ProductListPage implements OnInit {
     await this.GetAllProducts(event);
   }
 
-  GetProductsFromSearch() {
-    //todo search thingy (matching string, removing spaces and looking for just the words, etc)
+  async GetProductsFromSearch(event = null) {
+      this.products = await this.productService.getBySearchFullString(this.searchInput);
+      await this.FillProductAttributes(event);
   }
 
   async GetProductsFromCat(event = null) {

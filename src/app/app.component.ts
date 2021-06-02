@@ -10,6 +10,7 @@ import { AppResources, PlatformType } from './services/app-info.service'
 import { ItemClassification } from './structure/item-classification';
 import { CategoriesComponent } from './components/categories/categories.component';
 import { SidebarModalCategory } from './components/sidebar-modal/sidebar-modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -35,6 +36,9 @@ export class AppComponent {
   private subscription3: Subscription;
   private subscription4: Subscription;
 
+  //search
+  public searchtext: string = null;
+
 
   constructor(
     private platform: Platform,
@@ -42,6 +46,7 @@ export class AppComponent {
     private alertService: AlertService,
     private popoverController: PopoverController,
     private modalController: ModalController,
+    private router: Router
   ) {
 
   }
@@ -164,5 +169,16 @@ export class AppComponent {
     });
     AppResources.modals.push(modal);
     await modal.present();
+  }
+  async InputEnter() {
+    //case user press enter: function to simulate (click) in button, for close side-menu with ion-menu-toggle.
+    //case user click in button(search): ion-menu-toggle works normal.
+    document.getElementById('btnSearch').click();
+  }
+  async searchProd(){
+    if (this.searchtext == "" || this.searchtext == null){
+      return;
+    }      
+    await this.router.navigate(["/products/"+ this.searchtext]);
   }
 }
