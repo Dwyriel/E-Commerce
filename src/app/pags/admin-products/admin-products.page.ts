@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { PopoverController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { ProductComponent } from 'src/app/components/product/product.component';
 import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
 import { ProductService } from 'src/app/services/product.service';
@@ -26,7 +28,7 @@ export class AdminProductsPage implements OnInit {
   private subscription2: Subscription;
   private subscription3: Subscription;
 
-  constructor(private alertService: AlertService, private router: Router, private productService: ProductService, private reviewService: ReviewService) { }
+  constructor(private alertService: AlertService, private router: Router, private productService: ProductService, private reviewService: ReviewService, private popoverController: PopoverController) { }
 
   ngOnInit() { }
 
@@ -105,7 +107,13 @@ export class AdminProductsPage implements OnInit {
     })
   }
 
-  ShowProduct(product: Product) {
-    console.log("got to showproduct")
+  async ShowProduct(product: Product) {
+    var popover = await this.popoverController.create({
+      component: ProductComponent,
+      mode: 'md',
+      componentProps: { product: product },
+      animated: true
+    });
+    await popover.present();
   }
 }
