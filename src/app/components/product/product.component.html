@@ -1,0 +1,23 @@
+<ion-item class="ion-margin">
+  <div>
+    <ion-slides pager="true" [options]="slideOpts">
+      <ion-slide *ngFor="let photo of product.gallery; let i = index">
+        <ion-img [src]="photo"></ion-img>
+      </ion-slide>
+    </ion-slides>
+    <h2>{{product.name}}</h2>
+    <p>{{product.price | currency:'BRL'}}</p>
+    <h3 >Descrição:</h3>
+    <p>
+      <ion-text>{{product.description}}</ion-text>
+    </p>
+    <ion-row class="ion-padding-vertical ion-align-items-center ion-justify-content-start" id="product-seller">
+      <img *ngIf="!SellerUser.photo" id="sellerimage" src="../../../assets/perfil.png">
+      <img *ngIf="SellerUser.photo" id="sellerimage" [src]="SellerUser.photo">
+      <ion-label>
+        <h3>Vendedor: </h3>
+        <h2>{{SellerUser.name}}</h2>
+      </ion-label>
+    </ion-row>
+  </div>
+</ion-item>
