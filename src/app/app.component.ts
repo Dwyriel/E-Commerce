@@ -39,7 +39,6 @@ export class AppComponent {
   //search
   public searchtext: string = null;
 
-
   constructor(
     private platform: Platform,
     private userService: UserService,
@@ -47,9 +46,7 @@ export class AppComponent {
     private popoverController: PopoverController,
     private modalController: ModalController,
     private router: Router
-  ) {
-
-  }
+  ) { }
 
   async ngOnInit() {
     await this.verifyUser();
@@ -170,15 +167,15 @@ export class AppComponent {
     AppResources.modals.push(modal);
     await modal.present();
   }
+
   async InputEnter() {
-    //case user press enter: function to simulate (click) in button, for close side-menu with ion-menu-toggle.
-    //case user click in button(search): ion-menu-toggle works normal.
     document.getElementById('btnSearch').click();
   }
-  async searchProd(){
-    if (this.searchtext == "" || this.searchtext == null){
+
+  async searchProd() {
+    if (this.searchtext == "" || this.searchtext == null) {
       return;
-    }      
-    await this.router.navigate(["/products/"+ this.searchtext]);
+    }
+    await this.router.navigate(["/products/" + this.searchtext]);
   }
 }
