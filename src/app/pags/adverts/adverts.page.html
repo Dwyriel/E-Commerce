@@ -15,8 +15,9 @@
             <h3>{{product.price | currency:'BRL' }}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span></h3>
             <h4>{{(product.verified) ? "Verificado" : "Não Verificado"}}</h4>
           </ion-label>
+          <ion-item class="ion-margin" color="danger" (click)="DeleteAdvert(product.id)" *ngIf="!isMobile">Deletar</ion-item>
         </ion-item>
-        <ion-item-options side="end">
+        <ion-item-options side="end" *ngIf="isMobile">
           <ion-item-option color="danger" (click)="DeleteAdvert(product.id)"><span id="optionRight">Deletar</span></ion-item-option>
         </ion-item-options>
       </ion-item-sliding>
