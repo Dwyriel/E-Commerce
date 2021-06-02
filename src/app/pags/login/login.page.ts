@@ -31,7 +31,7 @@ export class LoginPage implements OnInit {
     public validationService: ValidationService,
     private alertService: AlertService,
     public navCtrl: NavController
-    ) {
+  ) {
   }
 
   ngOnInit() { }
@@ -96,6 +96,11 @@ export class LoginPage implements OnInit {
 
   setLoginDivWidth(value: string) {
     document.body.style.setProperty('--maxWidth', value);
+  }
+
+  EnterKeyPressed(form: NgForm) {
+    if (form.valid)
+      this.OnFormSubmit(form);
   }
 
   GoBack() {
