@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { ModalController, Platform, PopoverController } from '@ionic/angular';
 import { fromEvent, Observable, Subscription } from "rxjs";
 
-import { User } from './structure/user';
+import { User, UserType } from './structure/user';
 import { AlertService } from './services/alert.service';
 import { UserService } from './services/user.service';
 import { AppResources, PlatformType } from './services/app-info.service'
@@ -23,6 +23,7 @@ export class AppComponent {
   private loadingAlert: string;
   public user: User = null;
   public firebaseAns: boolean;
+  public isAdmin: boolean;
   public cartItens: number;
   public dropdown;
 
@@ -109,6 +110,7 @@ export class AppComponent {
           this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(ans2 => {
             this.user = ans2;
             this.user.id = ans.uid;
+            this.isAdmin = this.user.userType == UserType.Admin;
             if (ans2.cart && ans2.cart.length > 0)
               this.calculateCartItens();
             else

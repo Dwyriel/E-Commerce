@@ -12,7 +12,7 @@
       <ion-text>{{product.description}}</ion-text>
     </p>
     <ion-row class="ion-padding-vertical ion-align-items-center ion-justify-content-start" id="product-seller">
-      <img *ngIf="!SellerUser.photo" id="sellerimage" src="../../../assets/perfil.png">
+      <img *ngIf="!SellerUser.photo" id="sellerimage" src="assets/perfil.png">
       <img *ngIf="SellerUser.photo" id="sellerimage" [src]="SellerUser.photo">
       <ion-label>
         <h3>Vendedor: </h3>

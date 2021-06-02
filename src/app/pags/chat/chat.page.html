@@ -7,12 +7,12 @@
         <ng-container *ngFor="let msg of messages">
           <div class="message">
             <ion-row class="ion-align-items-start ion-justify-content-{{(msg.senderId == loggedUser.id) ? 'end' : 'start'}}">
-              <img *ngIf="msg.senderId != loggedUser.id" class="user_img" [src]="(otherUser.photo) ? otherUser.photo : '../../../assets/perfil.png'" [alt]="otherUser.name">
+              <img *ngIf="msg.senderId != loggedUser.id" class="user_img" [src]="(otherUser.photo) ? otherUser.photo : 'assets/perfil.png'" [alt]="otherUser.name">
               <div class="text_div">
                 <p class="{{(msg.senderId == loggedUser.id) ? 'sent_text' : 'received_text'}} text">{{msg.message}}</p>
                 <span class="time_date {{(msg.senderId == loggedUser.id) ? 'float-right' : 'float-left'}}"> {{msg.date.toLocaleString()}}</span>
               </div>
-              <img *ngIf="msg.senderId == loggedUser.id" class="user_img" [src]="(loggedUser.photo) ? loggedUser.photo : '../../../assets/perfil.png'" [alt]="loggedUser.name">
+              <img *ngIf="msg.senderId == loggedUser.id" class="user_img" [src]="(loggedUser.photo) ? loggedUser.photo : 'assets/perfil.png'" [alt]="loggedUser.name">
             </ion-row>
           </div>
         </ng-container>
