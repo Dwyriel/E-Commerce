@@ -8,11 +8,11 @@
         <ion-label position="floating">Email <ion-text color="danger" *ngIf="!validationService.Email(formEmail.value) && formEmail.dirty">
             <b>Email invalid</b> </ion-text>
         </ion-label>
-        <ion-input type="email" name="user-email" [(ngModel)]=email #formEmail="ngModel" required></ion-input>
+        <ion-input (keyup.enter)="EnterKeyPressed(form)" type="email" name="user-email" [(ngModel)]=email #formEmail="ngModel" required></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Senha </ion-label>
-        <ion-input type="password" name="user-ps" [(ngModel)]=password required></ion-input>
+        <ion-input (keyup.enter)="EnterKeyPressed(form)" type="password" name="user-ps" [(ngModel)]=password required></ion-input>
       </ion-item>
   
       <ion-button expand="block" size="default" [disabled]="form.invalid || !validationService.Email(formEmail.value)" class="ion-margin" type="submit">
