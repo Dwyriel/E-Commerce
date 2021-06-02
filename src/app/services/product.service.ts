@@ -27,6 +27,7 @@ export class ProductService {
       stock: product.stock,
       gallery: product.gallery,
       subCatValue: product.subCatValue,
+      searchArray: product.name.toLowerCase().split(" "),
       verified: false,
       deleted: false,
     })
@@ -66,6 +67,46 @@ export class ProductService {
           dados => dados.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))
         )
       )
+  }
+
+  /**
+   * Retrieves all the products based on a search string.
+   * @param search the string used for the search, should be a single word with no upper case letter.
+   * @returns a subscription for an array that contains the products that were found by the search.
+   */
+  async GetBySearch(search: string) {
+    return this.fireDatabase.collection<Product>(this.collection, ref =>
+      ref.where("searchArray", "array-contains", search).where('verified', '==', true).where('deleted', '==', false)
+    ).snapshotChanges().pipe(map(ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating }))));
+  }
+
+  /**
+   * Retrieves all the products based on a search string.
+   * @param search the string used for the search.
+   * @returns a subscription for an array that contains the products that were found by the search.
+   */
+  async getBySearchFullString(search: string) {
+    var shouldWait: boolean = true;
+    var subscriptions: Subscription[] = [];
+    var index = 0;
+    var products: Product[] = [];
+    var searchArray: string[] = search.toLowerCase().split(" ");
+    var arrayLength = searchArray.length;
+    for (var item of searchArray) {
+      subscriptions.push((await this.GetBySearch(item)).subscribe(ans => {
+        if (ans)
+          products.push(...ans);
+        index++;
+        if (index >= arrayLength)
+          shouldWait = false;
+      }));
+    }
+    while (shouldWait)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    for (var sub of subscriptions)
+      sub.unsubscribe();
+    products = products.filter((product, index, array) => index === array.findIndex(prod => (prod.id === product.id)));
+    return products;
   }
 
   /**
@@ -188,6 +229,7 @@ export class ProductService {
       stock: product.stock,
       gallery: product.gallery,
       subCatValue: product.subCatValue,
+      searchArray: product.name.toLowerCase().split(" "),
     });
   }
 
