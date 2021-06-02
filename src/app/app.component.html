@@ -100,7 +100,7 @@
         <ion-col>
           <ion-item>
             <ion-input placeholder="Pesquisar Produto" [(ngModel)]=searchtext (keyup.enter)="InputEnter()"></ion-input>
-            <ion-button (click)="searchProd()" fill="clear">
+            <ion-button  id="btnSearch" (click)="searchProd()" fill="clear">
               <ion-icon slot="icon-only" name="search-sharp"></ion-icon>
             </ion-button>
           </ion-item>
