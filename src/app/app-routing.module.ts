@@ -75,7 +75,10 @@ const routes: Routes = [
     path: 'adverts',
     loadChildren: () => import('./pags/adverts/adverts.module').then( m => m.AdvertsPageModule)
   },
-
+  {
+    path: 'ADMproducts',
+    loadChildren: () => import('./pags/admin-products/admin-products.module').then( m => m.AdminProductsPageModule)
+  },
 ];
 
 @NgModule({
