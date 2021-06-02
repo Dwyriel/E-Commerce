@@ -1,8 +1,26 @@
-<app-header title="Titulo" segment=0></app-header>
+<app-header title="ADM - Produtos" segment=0></app-header>
 
 <ion-content [fullscreen]="true">
-  <app-header title="Titulo" segment=1></app-header>
+  <app-header title="ADM - Produtos" segment=1></app-header>
 
-  <!-- content here -->
+  <div [ngClass]="{'webrowser':!isMobile}">
+    <div *ngIf="!isMobile" style="padding-bottom: .3rem;">ADM - Produtos</div>
+    <ion-list>
+      <div style="text-align: center;" *ngIf="!products || (products && 1 > products.length)">Nenhum item encontrado.</div>
+      <ion-item-sliding *ngFor="let product of products;">
+        <ion-item lines="inset" button (click)="ShowProduct(product)">
+          <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
+          <ion-label>
+            <h2>{{product.name}}</h2>
+            <h3>{{product.price | currency:'BRL' }}</h3>
+          </ion-label>
+          <ion-item class="ion-margin" button color="warning" (click)="Verify(product); $event.stopPropagation();" *ngIf="!isMobile"><span >Verificar</span></ion-item>
+        </ion-item>
+        <ion-item-options side="end" *ngIf="isMobile">
+          <ion-item-option color="warning" (click)="Verify(product)"><span id="optionRight">Verificar</span></ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
 
 </ion-content>

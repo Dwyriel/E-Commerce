@@ -59,6 +59,7 @@ export class ProductService {
 
   /**
    * Retrieves all verified products from the database.
+   * @param verified [optional] the boolean value of verified, default is true
    */
   async GetAllVerified(verified: boolean = true) {
     return this.fireDatabase.collection<Product>(this.collection, ref => ref.where('verified', '==', verified).where('deleted', '==', false)).snapshotChanges()
