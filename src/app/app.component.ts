@@ -116,6 +116,8 @@ export class AppComponent {
               await this.alertService.presentAlert("Aviso", "Esta conta foi desativada, entre em contato com nosso suporte para saber mais").then(alertAns => this.alertId.push(alertAns));
               await this.router.navigate(["/login"]);
             }
+            if (this.subscription2 && !this.subscription2.closed)
+              this.subscription2.unsubscribe();
           } else {
             this.user = ans2;
             this.user.id = ans.uid;
