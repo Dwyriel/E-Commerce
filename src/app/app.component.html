@@ -79,6 +79,12 @@
               <ion-label>ADM - Produtos</ion-label>
             </ion-item>
           </ion-menu-toggle>
+          <ion-menu-toggle auto-hide="false" *ngIf="firebaseAns && isAdmin">
+            <ion-item button lines="none" routerLink="/ADMusers">
+              <ion-icon slot="start" ios="people-outline" md="people-sharp"></ion-icon>
+              <ion-label>ADM - Usuários</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
         </ion-list>
         <ion-row *ngIf="firebaseAns" class="ion-justify-content-center">
           <ion-item (click)="logout()" id="logout">
@@ -155,6 +161,10 @@
             <ion-item button lines="none" routerLink="/ADMproducts" *ngIf="firebaseAns && isAdmin" (click)="dropdown = false">
               <ion-icon slot="start" ios="briefcase-outline" md="briefcase-sharp"></ion-icon>
               <ion-label>ADM - Produtos</ion-label>
+            </ion-item>
+            <ion-item button lines="none" routerLink="/ADMusers" *ngIf="firebaseAns && isAdmin" (click)="dropdown = false">
+              <ion-icon slot="start" ios="people-outline" md="people-sharp"></ion-icon>
+              <ion-label>ADM - Usuários</ion-label>
             </ion-item>
             <ion-item button (click)="logout()" lines="none" *ngIf="firebaseAns" (click)="dropdown = false">
               <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>

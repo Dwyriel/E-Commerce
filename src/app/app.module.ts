@@ -16,9 +16,10 @@ import { SubCategoriesComponent } from './components/sub-categories/sub-categori
 import { SidebarModalCategory } from './components/sidebar-modal/sidebar-modal.component';
 import { SidebarModalSubcategory } from './components/sidebar-modal-subcategory/sidebar-modal-subcategory.component';
 import { ProductComponent } from './components/product/product.component';
+import { UserComponent } from './components/user/user.component';
 
 @NgModule({
-  declarations: [AppComponent, CategoriesComponent, SubCategoriesComponent, SidebarModalCategory, SidebarModalSubcategory, ProductComponent],
+  declarations: [AppComponent, CategoriesComponent, SubCategoriesComponent, SidebarModalCategory, SidebarModalSubcategory, ProductComponent, UserComponent],
   entryComponents: [],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, AngularFireModule.initializeApp(environment.firebase), AngularFirestoreModule, FormsModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],

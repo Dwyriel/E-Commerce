@@ -42,7 +42,7 @@ export class UserService {
    */
   async GetAll() {
     return this.fireDatabase.collection<User>(this.collection).snapshotChanges().pipe(map(
-      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data() }))
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), calculateAvgRating: new User().calculateAvgRating }))
     ));
   }
 

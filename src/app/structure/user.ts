@@ -20,6 +20,10 @@ export class User {
      * Calculates and attributes the percentage of good/bad ratings to avgRating.
      */
     calculateAvgRating() {
+        if (!this.ratings || this.ratings.length < 1) {
+            this.avgRating = null;
+            return;
+        }
         const totalRatings: number = this.ratings.length;
         var positiveRatings: number = 0;
         this.ratings.forEach(rating => {
