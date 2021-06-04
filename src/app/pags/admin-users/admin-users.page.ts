@@ -17,11 +17,12 @@ export class AdminUsersPage implements OnInit {
 
   private loadingAlertID: string;
   private user: User;
-  private privUsers: User[] = [];
+  private privSortedUsers: User[] = [];
   private isLoading: boolean = true;
 
   public isMobile: boolean;
-  public users: User[] = [];
+  public cachedUsers: User[] = [];
+  public users: { user: User, shouldShow: boolean }[] = [];
   public sorting: number = 0;
 
   //Subscriptions
@@ -42,7 +43,8 @@ export class AdminUsersPage implements OnInit {
   ionViewWillLeave() {
     this.user = null;
     this.users = [];
-    this.privUsers = [];
+    this.cachedUsers = [];
+    this.privSortedUsers = [];
     this.sorting = 0;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
@@ -88,7 +90,7 @@ export class AdminUsersPage implements OnInit {
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
     this.subscription3 = (await this.userService.GetAll()).subscribe(async ans => {
-      this.privUsers = ans;
+      this.cachedUsers = ans;
       this.sortListing();
       if (this.isLoading) {
         this.isLoading = false;
@@ -140,21 +142,30 @@ export class AdminUsersPage implements OnInit {
     })
   }
 
+  HandleSearchbarInput(event) {
+    var input: string = event.target.value.toLowerCase();
+    for (let item of this.users) {
+      item.shouldShow = item.user.name.toLowerCase().includes(input);
+    }
+  }
+
   sortListing() {
     this.users = [];
     switch (this.sorting) {
       case 0:
-        this.users = [...this.privUsers]
-        break
+        this.cachedUsers.forEach(item => {
+          this.users.push({ user: item, shouldShow: true });
+        })
+        break;
       case 1:
-        for (let user of this.privUsers)
+        for (let user of this.cachedUsers)
           if (user.active)
-            this.users.push(user);
+            this.users.push({ user: user, shouldShow: true });
         break;
       case 2:
-        for (let user of this.privUsers)
+        for (let user of this.cachedUsers)
           if (!user.active)
-            this.users.push(user);
+            this.users.push({ user: user, shouldShow: true });
         break;
     }
   }

@@ -6,8 +6,10 @@
   <div [ngClass]="{'webrowser':!isMobile}">
     <div *ngIf="!isMobile" style="padding-bottom: .3rem;">ADM - Usuários</div>
     <ion-list>
-      <ion-row class="ion-align-items-center" *ngIf="users && users.length > 0">
-        <ion-col size="9" style="text-align: left"><ion-searchbar></ion-searchbar></ion-col>
+      <ion-row class="ion-align-items-center" *ngIf="cachedUsers && cachedUsers.length > 0">
+        <ion-col size="9" style="text-align: left">
+          <ion-searchbar (ionInput)="HandleSearchbarInput($event)" placeholder="Procurar"></ion-searchbar>
+        </ion-col>
         <ion-col style="text-align: right">
           <ion-select name="sort" interface="popover" [(ngModel)]=sorting (ngModelChange)="sortListing()" placeholder="Ordenar" value=0>
             <ion-select-option [value]="0">Todos</ion-select-option>
@@ -17,22 +19,24 @@
         </ion-col>
       </ion-row>
       <div style="text-align: center;" *ngIf="!users || (users && 1 > users.length)">Nenhum item encontrado.</div>
-      <ion-item-sliding *ngFor="let user of users;">
-        <ion-item-options side="start" *ngIf="isMobile">
-          <ion-item-option color="warning" (click)="ChangeType(user)"><span id="optionLeft">Privilégio</span></ion-item-option>
-        </ion-item-options>
-        <ion-item lines="inset" button (click)="ShowUser(user)">
-          <img [src]="(user.photo) ? user.photo : 'assets/perfil.png'" [alt]="user.name">
-          <ion-label>
-            <h2>{{user.name}}<span style="font-size: .75rem;" class="ion-float-right">Status: {{(user.active) ? "Ativo" : "Desativo"}}</span></h2>
-            <h3>{{user.email}}<span style="font-size: .75rem;" class="ion-float-right">Privilégio: {{(user.userType == 0) ? "Admin" : "Usuário"}}</span></h3>
-          </ion-label>
-          <ion-item button color="warning" (click)="ChangeActive(user); $event.stopPropagation();" *ngIf="!isMobile" class="ion-margin"><span>{{(user.active) ? "Desativar" : "Ativar"}}</span></ion-item>
-          <ion-item button color="warning" (click)="ChangeType(user); $event.stopPropagation();" *ngIf="!isMobile"><span>Privilégio</span></ion-item>
-        </ion-item>
-        <ion-item-options side="end" *ngIf="isMobile">
-          <ion-item-option color="warning" (click)="ChangeActive(user)"><span id="optionRight">{{(user.active) ? "Desativar" : "Ativar"}}</span></ion-item-option>
-        </ion-item-options>
+      <ion-item-sliding *ngFor="let item of users;">
+        <ng-container *ngIf="item.shouldShow">
+          <ion-item-options side="start" *ngIf="isMobile">
+            <ion-item-option color="warning" (click)="ChangeType(item.user)"><span id="optionLeft">Privilégio</span></ion-item-option>
+          </ion-item-options>
+          <ion-item lines="inset" button (click)="ShowUser(item.user)">
+            <img [src]="(item.user.photo) ? item.user.photo : 'assets/perfil.png'" [alt]="item.user.name">
+            <ion-label>
+              <h2>{{item.user.name}}<span style="font-size: .75rem;" class="ion-float-right">Status: {{(item.user.active) ? "Ativo" : "Desativo"}}</span></h2>
+              <h3>{{item.user.email}}<span style="font-size: .75rem;" class="ion-float-right">Privilégio: {{(item.user.userType == 0) ? "Admin" : "Usuário"}}</span></h3>
+            </ion-label>
+            <ion-item button color="warning" (click)="ChangeActive(item.user); $event.stopPropagation();" *ngIf="!isMobile" class="ion-margin"><span>{{(item.user.active) ? "Desativar" : "Ativar"}}</span></ion-item>
+            <ion-item button color="warning" (click)="ChangeType(item.user); $event.stopPropagation();" *ngIf="!isMobile"><span>Privilégio</span></ion-item>
+          </ion-item>
+          <ion-item-options side="end" *ngIf="isMobile">
+            <ion-item-option color="warning" (click)="ChangeActive(item.user)"><span id="optionRight">{{(item.user.active) ? "Desativar" : "Ativar"}}</span></ion-item-option>
+          </ion-item-options>
+        </ng-container>
       </ion-item-sliding>
     </ion-list>
   </div>
