@@ -56,17 +56,15 @@ export class LoginPage implements OnInit {
   async OnFormSubmit(form: NgForm) {
     var loadingId: string;
     await this.alertService.presentLoading().then(ans => loadingId = ans);
-    await this.userService.auth.signInWithEmailAndPassword(this.email, this.password).then(
-      async ans => {
-        await this.alertService.dismissLoading(loadingId);
-        form.reset();
-        await this.router.navigate(["/"]);
-      },
-      async err => {
-        await this.alertService.dismissLoading(loadingId);
-        this.password = "";
-        await this.alertService.presentAlert("Error", "Email ou Senha invalidos");
-      });
+    await this.userService.auth.signInWithEmailAndPassword(this.email, this.password).then(async ans => {
+      await this.alertService.dismissLoading(loadingId);
+      form.reset();
+      await this.router.navigate(["/"]);
+    }, async err => {
+      await this.alertService.dismissLoading(loadingId);
+      this.password = "";
+      await this.alertService.presentAlert("Error", "Email ou Senha invalidos");
+    });
   }
 
   GetPlataformInfo() {
@@ -76,6 +74,10 @@ export class LoginPage implements OnInit {
       this.checkScreen = info.appWidth <= AppResources.maxMobileWidth;
       this.setLoginDivWidth(((info.appWidth * .4 > (AppResources.maxMobileWidth / 1.5)) ? "40%" : (AppResources.maxMobileWidth / 1.5) + "px"));
     });
+  }
+
+  setLoginDivWidth(value: string) {
+    document.body.style.setProperty('--maxWidth', value);
   }
 
   RecoveryPass(email: string) {
@@ -92,10 +94,6 @@ export class LoginPage implements OnInit {
         await this.router.navigate(["/"]);
       }
     );
-  }
-
-  setLoginDivWidth(value: string) {
-    document.body.style.setProperty('--maxWidth', value);
   }
 
   EnterKeyPressed(form: NgForm) {

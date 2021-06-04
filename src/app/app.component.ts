@@ -21,6 +21,7 @@ export class AppComponent {
 
   // verification log user
   private loadingAlert: string;
+  private alertId: string[] = [];
   public user: User = null;
   public firebaseAns: boolean;
   public isAdmin: boolean;
@@ -101,13 +102,21 @@ export class AppComponent {
   async verifyUser() {
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
-    this.subscription1 = this.userService.auth.user.subscribe(
-      async ans => {
-        if (ans) {
-          this.firebaseAns = true;
-          if (this.subscription2 && !this.subscription2.closed)
-            this.subscription2.unsubscribe();
-          this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(ans2 => {
+    this.subscription1 = this.userService.auth.user.subscribe(async ans => {
+      this.alertId = [];
+      if (ans) {
+        if (this.subscription2 && !this.subscription2.closed)
+          this.subscription2.unsubscribe();
+        this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(async ans2 => {
+          if (!ans2.active) {
+            await this.userService.auth.signOut();
+            this.user = null;
+            this.firebaseAns = false;
+            if (this.alertId.length < 1) {
+              await this.alertService.presentAlert("Aviso", "Esta conta foi desativada, entre em contato com nosso suporte para saber mais").then(alertAns => this.alertId.push(alertAns));
+              await this.router.navigate(["/login"]);
+            }
+          } else {
             this.user = ans2;
             this.user.id = ans.uid;
             this.isAdmin = this.user.userType == UserType.Admin;
@@ -115,19 +124,20 @@ export class AppComponent {
               this.calculateCartItens();
             else
               this.cartItens = 0;
-            AppResources.PushUserInfo(this.user);
-          });
-          return;
-        }
-        this.firebaseAns = false;
-        this.user = null;
-        AppResources.PushUserInfo(this.user);
-      },
-      err => {
-        this.user = null;
-        AppResources.PushUserInfo(this.user);
-        console.log(err);
-      });
+            this.firebaseAns = true;
+          }
+          AppResources.PushUserInfo(this.user);
+        });
+        return;
+      }
+      this.firebaseAns = false;
+      this.user = null;
+      AppResources.PushUserInfo(this.user);
+    }, err => {
+      this.user = null;
+      AppResources.PushUserInfo(this.user);
+      console.log(err);
+    });
   }
 
   calculateCartItens() {
