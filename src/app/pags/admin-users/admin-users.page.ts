@@ -15,9 +15,12 @@ export class AdminUsersPage implements OnInit {
 
   private loadingAlertID: string;
   private user: User;
+  private privUsers: User[] = [];
+  private isLoading: boolean = true;
 
   public isMobile: boolean;
   public users: User[] = [];
+  public sorting: number = 0;
 
   //Subscriptions
   private subscription1: Subscription;
@@ -37,6 +40,8 @@ export class AdminUsersPage implements OnInit {
   ionViewWillLeave() {
     this.user = null;
     this.users = [];
+    this.privUsers = [];
+    this.sorting = 0;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -80,11 +85,65 @@ export class AdminUsersPage implements OnInit {
   async GetUsers() {
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
-    this.subscription3 = (await this.userService.GetAll()).subscribe(ans => {
-      this.users = ans;
+    this.subscription3 = (await this.userService.GetAll()).subscribe(async ans => {
+      this.privUsers = ans;
+      this.sortListing();
+      if (this.isLoading) {
+        this.isLoading = false;
+        await this.alertService.dismissLoading(this.loadingAlertID);
+      }
     }, async err => {
       await this.alertService.dismissLoading(this.loadingAlertID);
       await this.alertService.presentAlert("Ops", "Algo deu errado, tente novamente mais tarde.");
     });
+  }
+
+  async ChangeActive(user: User) {
+    var confirm: boolean;
+    await this.alertService.confirmationAlert(`${(user.active) ? "Desativar" : "Ativar"}`, `Deseja realmente ${(user.active) ? "desativar" : "ativar"} esse usuario?`).then(ans => confirm = ans);
+    if (!confirm)
+      return;
+    await this.alertService.presentLoading().then(ans => this.loadingAlertID = ans);
+    this.userService.UpdateActive(user.id, !user.active).then(async () => {
+      await this.alertService.ShowToast(`Usuário foi ${(user.active) ? "desativado" : "ativado"}`);
+    }).catch(async err => {
+      await this.alertService.ShowToast(`Ocorreu um erro, tente novamente`);
+    }).finally(async () => {
+      await this.alertService.dismissLoading(this.loadingAlertID);
+    });
+  }
+
+  async ChangeType(user: User) {
+    var confirm: boolean;
+    await this.alertService.confirmationAlert(`Privilégio`, `Deseja realmente mudar os privilégios desse usuario para ${(user.userType == UserType.Admin) ? "'Usuário'" : "'Admin'"}?`).then(ans => confirm = ans);
+    if (!confirm)
+      return;
+    await this.alertService.presentLoading().then(ans => this.loadingAlertID = ans);
+    this.userService.UpdateType(user.id, (user.userType == UserType.Admin) ? UserType.User : UserType.Admin).then(async () => {
+      await this.alertService.ShowToast(`Privilégio alterado para ${(user.userType == UserType.Admin) ? "'Usuário'" : "'Admin'"}`);
+    }).catch(async err => {
+      await this.alertService.ShowToast(`Ocorreu um erro, tente novamente`);
+    }).finally(async () => {
+      await this.alertService.dismissLoading(this.loadingAlertID);
+    })
+  }
+
+  sortListing() {
+    this.users = [];
+    switch (this.sorting) {
+      case 0:
+        this.users = [...this.privUsers]
+        break
+      case 1:
+        for (let user of this.privUsers)
+          if (user.active)
+            this.users.push(user);
+        break;
+      case 2:
+        for (let user of this.privUsers)
+          if (!user.active)
+            this.users.push(user);
+        break;
+    }
   }
 }

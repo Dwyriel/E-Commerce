@@ -1,8 +1,37 @@
-<app-header title="ADM - Usuarios" segment=0></app-header>
+<app-header title="ADM - Usuários" segment=0></app-header>
 
 <ion-content [fullscreen]="true">
-  <app-header title="ADM - Usuarios" segment=1></app-header>
+  <app-header title="ADM - Usuários" segment=1></app-header>
   
-  <!-- content here -->
+  <div [ngClass]="{'webrowser':!isMobile}">
+    <div *ngIf="!isMobile" style="padding-bottom: .3rem;">ADM - Usuários</div>
+    <ion-list>
+      <div style="width: 40%; margin-left: 58%; text-align: right;" *ngIf="users && users.length > 0">
+        <ion-select name="sort" interface="popover" [(ngModel)]=sorting (ngModelChange)="sortListing()" placeholder="Ordenar" value=0>
+          <ion-select-option [value]="0">Todos</ion-select-option>
+          <ion-select-option [value]="1">Ativos</ion-select-option>
+          <ion-select-option [value]="2">Desativos</ion-select-option>
+        </ion-select>
+      </div>
+      <div style="text-align: center;" *ngIf="!users || (users && 1 > users.length)">Nenhum item encontrado.</div>
+      <ion-item-sliding *ngFor="let user of users;">
+        <ion-item-options side="start" *ngIf="isMobile">
+          <ion-item-option color="warning" (click)="ChangeType(user)"><span id="optionLeft">Privilégio</span></ion-item-option>
+        </ion-item-options>
+        <ion-item lines="inset" button (click)="ShowProduct(product)">
+          <img [src]="(user.photo) ? user.photo : 'assets/perfil.png'" [alt]="user.name">
+          <ion-label>
+            <h2>{{user.name}}<span style="font-size: .75rem;" class="ion-float-right">Status: {{(user.active) ? "Ativo" : "Desativo"}}</span></h2>
+            <h3>{{user.email}}<span style="font-size: .75rem;" class="ion-float-right">Privilégio: {{(user.userType == 0) ? "Admin" : "Usuário"}}</span></h3>
+          </ion-label>
+          <ion-item button color="warning" (click)="ChangeActive(user); $event.stopPropagation();" *ngIf="!isMobile" class="ion-margin"><span>{{(user.active) ? "Desativar" : "Ativar"}}</span></ion-item>
+          <ion-item button color="warning" (click)="ChangeType(user); $event.stopPropagation();" *ngIf="!isMobile"><span>Privilégio</span></ion-item>
+        </ion-item>
+        <ion-item-options side="end" *ngIf="isMobile">
+          <ion-item-option color="warning" (click)="ChangeActive(user)"><span id="optionRight">{{(user.active) ? "Desativar" : "Ativar"}}</span></ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
 
 </ion-content>
