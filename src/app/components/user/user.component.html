@@ -36,4 +36,22 @@
       <ion-text>{{user.address.street}}, {{user.address.number}}</ion-text>
     </ion-item>
   </ion-item-group>
+  <ion-item-group *ngIf="loading">
+    <ion-item>
+      <ion-label>Estado:</ion-label>
+      <ion-text></ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Cidade:</ion-label>
+      <ion-text></ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>CEP: </ion-label>
+      <ion-text></ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Rua:</ion-label>
+      <ion-text></ion-text>
+    </ion-item>
+  </ion-item-group>
 </ion-list>

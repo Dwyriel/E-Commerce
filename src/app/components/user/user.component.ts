@@ -13,6 +13,7 @@ export class UserComponent implements OnInit {
 
   @Input('user') public user: User = new User();
   public telephone: string;
+  public loading: boolean = true;
 
   private subscription1: Subscription;
   private subscription2: Subscription;
@@ -26,7 +27,10 @@ export class UserComponent implements OnInit {
     if (this.user.addressId)
       this.subscription1 = (await this.AddressService.Get(this.user.addressId)).subscribe(ans => {
         this.user.address = ans;
-      });
+        this.loading = false;
+      }, err => { this.loading = false; });
+    else
+      this.loading = false;
     this.subscription2 = (await this.ratingService.GetAllFromUser(this.user.id)).subscribe(ans => {
       this.user.ratings = ans;
       this.user.calculateAvgRating();
@@ -34,6 +38,8 @@ export class UserComponent implements OnInit {
   }
 
   ionViewWillLeave() {
+    this.loading = true;
+    this.user = new User();
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
