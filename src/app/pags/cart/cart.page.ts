@@ -188,7 +188,7 @@ export class CartPage implements OnInit {
       this.user.cart = [];
       this.products = [];
       await this.alertService.dismissLoading(this.loadingAlert);
-      await this.alertService.presentAlert("Wheee", "The itens you purchased will be shipped in the next 2534 years");
+      await this.alertService.presentAlert("Wheee", "Os itens comprados seram entregue nos proximos 2534 anos");
       await this.router.navigate(["/purchases/purchases"]);
     }, async err => {
       await this.alertService.dismissLoading(this.loadingAlert);
