@@ -25,6 +25,10 @@
         <ion-label>Tel</ion-label>
         <ion-text>{{telephone}}</ion-text>
       </ion-item>
+      <ion-item>
+        <ion-label>Avaliação</ion-label>
+        <ion-text>{{(user.avgRating || user.avgRating == 0) ? (user.avgRating+"%") : 'Nenhum'}}</ion-text>
+      </ion-item>
     </ion-list>
     <ion-item-group *ngIf="user.addressId && user.address">
       <ion-item>
