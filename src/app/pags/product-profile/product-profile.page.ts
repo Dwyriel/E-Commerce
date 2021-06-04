@@ -38,6 +38,8 @@ export class ProductProfilePage implements OnInit {
   public question: string = "";
   public hasQuestions: boolean = false;
   public loadQuestions: number = 2;
+  public numberQuestions: number;
+  public numberReviews: number;
   public slideOpts = {
     slidesPerView: 1,
     slidesPerColumn: 1,
@@ -153,6 +155,7 @@ export class ProductProfilePage implements OnInit {
     this.subscription6 = (await this.questionService.getQuestions(this.id)).subscribe(async ans => {
       this.questions = ans;
       this.hasQuestions = this.questions.length > 0;
+      this.numberQuestions = this.questions.length;
       this.questions.forEach(async value => {
         var subscription7 = (await this.userService.Get(value.idUser)).subscribe(
           ans2 => {
@@ -236,6 +239,7 @@ export class ProductProfilePage implements OnInit {
       this.product.reviews = ans;
       awaits.reviews = false;
       this.hasReviews = this.product.reviews.length > 0;
+      this.numberReviews = this.product.reviews.length;
       this.positivos = 0;
       this.negativos = 0;
       for (var vote of this.product.reviews) {

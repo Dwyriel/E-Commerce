@@ -24,13 +24,13 @@
       </ion-item>
       <ion-item>
         <ion-label>Categoria</ion-label>
-        <ion-select name="prod-category" interface="popover" [(ngModel)]=categoryValue (ngModelChange)="CatChange($event)" placeholder="Select One" required>
+        <ion-select name="prod-category" interface="popover" [(ngModel)]=categoryValue (ngModelChange)="CatChange($event)" placeholder="Selecione" required>
           <ng-container *ngFor="let cat of cats" ><ion-select-option [value]="cat.category">{{cat.title}}</ion-select-option></ng-container>
         </ion-select>
       </ion-item>
       <ion-item *ngIf="categoryValue == 0 || categoryValue">
         <ion-label>Sub Categoria</ion-label>
-        <ion-select name="prod-subCategory" interface="popover" [(ngModel)]=subCategoryValue (ngModelChange)="SubCatChange($event)" placeholder="Select One" required>
+        <ion-select name="prod-subCategory" interface="popover" [(ngModel)]=subCategoryValue (ngModelChange)="SubCatChange($event)" placeholder="Selecione" required>
           <ng-container *ngFor="let subCat of subCats" ><ion-select-option [value]="subCat.value">{{subCat.title}}</ion-select-option></ng-container>
         </ion-select>
       </ion-item>

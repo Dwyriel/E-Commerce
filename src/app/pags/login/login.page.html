@@ -14,7 +14,6 @@
         <ion-label position="floating">Senha </ion-label>
         <ion-input (keyup.enter)="EnterKeyPressed(form)" type="password" name="user-ps" [(ngModel)]=password required></ion-input>
       </ion-item>
-  
       <ion-button expand="block" size="default" [disabled]="form.invalid || !validationService.Email(formEmail.value)" class="ion-margin" type="submit">
         Entrar </ion-button>
       <ion-button expand="block" size="default" type="reset" class="ion-margin" (click)="GoBack()">Cancelar</ion-button>

@@ -10,8 +10,11 @@
         <img src="assets/perfil.png" *ngIf="!user.photo && id && (loggedUser && loggedUser.id != id)">
         <img src="assets/perfil.png" (click)="alterPhoto()" *ngIf="!user.photo && ((loggedUser && loggedUser.id == id) || !id)">
       </ion-item>
+      <ion-row *ngIf="!user.active">
+        <ion-col class="ion-text-center" style="color: red;">Conta Desativada</ion-col>
+      </ion-row>
       <ion-item>
-        <ion-label>Name</ion-label>
+        <ion-label>Nome</ion-label>
         <ion-text>{{user.name}}</ion-text>
       </ion-item>
       <ion-item>
@@ -22,14 +25,18 @@
         <ion-label>Tel</ion-label>
         <ion-text>{{telephone}}</ion-text>
       </ion-item>
+      <ion-item>
+        <ion-label>Avaliação</ion-label>
+        <ion-text>{{(user.avgRating || user.avgRating == 0) ? (user.avgRating+"%") : 'Nenhum'}}</ion-text>
+      </ion-item>
     </ion-list>
     <ion-item-group *ngIf="user.addressId && user.address">
       <ion-item>
-        <ion-label>State:</ion-label>
+        <ion-label>Estado:</ion-label>
         <ion-text>{{user.address.state}}</ion-text>
       </ion-item>
       <ion-item>
-        <ion-label>City:</ion-label>
+        <ion-label>Cidade:</ion-label>
         <ion-text>{{user.address.city}}</ion-text>
       </ion-item>
       <ion-item>
@@ -37,16 +44,16 @@
         <ion-text>{{user.address.cep}}</ion-text>
       </ion-item>
       <ion-item>
-        <ion-label>Address:</ion-label>
+        <ion-label>Rua:</ion-label>
         <ion-text>{{user.address.street}}, {{user.address.number}}</ion-text>
       </ion-item>
     </ion-item-group>
     <div *ngIf="showButtons">
       <ion-button  type="button" color="primary" expand="block" routerLink="/addressForm" class="ion-margin">
-        <span *ngIf="!user.address && (!id || (loggedUser && id == loggedUser.id))">Add address</span>
-        <span *ngIf="user.address && (!id || (loggedUser && id == loggedUser.id))">Update address</span>
+        <span *ngIf="!user.address && (!id || (loggedUser && id == loggedUser.id))">Adicionar endereço</span>
+        <span *ngIf="user.address && (!id || (loggedUser && id == loggedUser.id))">Atualizar endereço</span>
       </ion-button>
-      <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="primary" expand="block" routerLink="/account" class="ion-margin">Edit</ion-button>
+      <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="primary" expand="block" routerLink="/account" class="ion-margin">Editar Conta</ion-button>
       <ion-button *ngIf="!id || (loggedUser && id == loggedUser.id)" type="button" color="secondary" expand="block" (click)="logout()" class="ion-margin">Logout</ion-button>
     </div>
   </div>

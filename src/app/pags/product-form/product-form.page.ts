@@ -133,14 +133,14 @@ export class ProductFormPage implements OnInit {
       if (!this.product.id) {
         await this.productService.Add(this.product).then(async ans => {
           await form.reset();
-          await this.successfulSubmit("Atenção", "Produto registrado!", `/product/${ans.id}`);
+          await this.successfulSubmit("Atenção", "Produto registrado!", `/adverts`);
         }, async err => {
           console.error(err);
           await this.failedSubmit("Erro", "Produto não registrado!");
         });
       } else {
         this.productService.Update(this.product, this.product.id).then(async ans => {
-          await this.successfulSubmit("Atenção", "Produto foi atualizado!", "/product/" + this.product.id);
+          await this.successfulSubmit("Atenção", "Produto foi atualizado!", "/adverts");
         }, async err => {
           console.error(err);
           await this.failedSubmit("Error", "Produto não foi atualizado!");

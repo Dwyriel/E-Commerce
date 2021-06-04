@@ -80,7 +80,7 @@
               </ng-container>
         </ion-card>
       </ng-container>
-        <ion-button expand=full size="small" (click)="loadingMoreQuestions()"
+        <ion-button expand=full size="small" (click)="loadingMoreQuestions()" *ngIf="numberQuestions >= loadQuestions"
                     >Carregar mais perguntas.</ion-button>
         <ion-button expand=full size="small" *ngIf="loadQuestions > 2" (click)="hideQuestions()"
                     >Esconder Perguntas.</ion-button>
@@ -108,7 +108,7 @@
         </div>
       </ng-container>
       </div>
-      <ion-button expand=full size="small" (click)="loadingMoreReviews()"
+      <ion-button expand=full size="small" (click)="loadingMoreReviews()" *ngIf="numberReviews >= loadReviews"
                     >Carregar mais Reviews de usuários.</ion-button>
         <ion-button expand=full size="small" *ngIf="loadReviews > 2" (click)="hideReviews()"
                     >Esconder reviews.</ion-button>

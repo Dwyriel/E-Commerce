@@ -4,7 +4,7 @@
   <app-header title="Carrinho" segment=1></app-header>
   <div [ngClass]="{'webrowser':!isMobile}">
     <div *ngIf="!hasProducts">
-      <p class="ion-text-center">You have no itens in your cart</p>
+      <p class="ion-text-center">Carrinho esta vazio, adicione um item primeiro <a routerLink="/products">aqui</a></p>
     </div>
     <ion-list *ngIf="hasProducts">
       <ion-grid>

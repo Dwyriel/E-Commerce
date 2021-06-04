@@ -36,6 +36,7 @@ export class AlertService {
       buttons: ['OK'],
     });
     await alert.present();
+    return alert.id;
   }
 
   /**Creates and presents an alert message with 2 buttons and a return. 
