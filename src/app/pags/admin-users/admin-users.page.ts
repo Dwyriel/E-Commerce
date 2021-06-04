@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { PopoverController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { UserComponent } from 'src/app/components/user/user.component';
 import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
 import { UserService } from 'src/app/services/user.service';
@@ -27,7 +29,7 @@ export class AdminUsersPage implements OnInit {
   private subscription2: Subscription;
   private subscription3: Subscription;
 
-  constructor(private alertService: AlertService, private router: Router, private userService: UserService) { }
+  constructor(private alertService: AlertService, private router: Router, private userService: UserService, private popoverController: PopoverController) { }
 
   ngOnInit() {
   }
@@ -96,6 +98,16 @@ export class AdminUsersPage implements OnInit {
       await this.alertService.dismissLoading(this.loadingAlertID);
       await this.alertService.presentAlert("Ops", "Algo deu errado, tente novamente mais tarde.");
     });
+  }
+
+  async ShowUser(user: User) {
+    var popover = await this.popoverController.create({
+      component: UserComponent,
+      mode: 'md',
+      componentProps: { user: user },
+      animated: true
+    });
+    await popover.present();
   }
 
   async ChangeActive(user: User) {

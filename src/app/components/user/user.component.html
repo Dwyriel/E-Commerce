@@ -1,0 +1,39 @@
+<ion-list>
+  <ion-item>
+    <img [src]="(user.photo) ? user.photo : 'assets/perfil.png'">
+  </ion-item>
+  <ion-item>
+    <ion-label>Nome</ion-label>
+    <ion-text>{{user.name}}</ion-text>
+  </ion-item>
+  <ion-item>
+    <ion-label>E-mail</ion-label>
+    <ion-text>{{user.email}}</ion-text>
+  </ion-item>
+  <ion-item>
+    <ion-label>Tel</ion-label>
+    <ion-text>{{telephone}}</ion-text>
+  </ion-item>
+  <ion-item>
+    <ion-label>Avaliação</ion-label>
+    <ion-text>{{(user.avgRating || user.avgRating == 0) ? (user.avgRating+"%") : 'Nenhum'}}</ion-text>
+  </ion-item>
+  <ion-item-group *ngIf="user.addressId && user.address">
+    <ion-item>
+      <ion-label>Estado:</ion-label>
+      <ion-text>{{user.address.state}}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Cidade:</ion-label>
+      <ion-text>{{user.address.city}}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>CEP: </ion-label>
+      <ion-text>{{user.address.cep}}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label>Rua:</ion-label>
+      <ion-text>{{user.address.street}}, {{user.address.number}}</ion-text>
+    </ion-item>
+  </ion-item-group>
+</ion-list>
