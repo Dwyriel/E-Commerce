@@ -43,7 +43,6 @@ ion-img {
 .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black;
 }
 
 .tooltip .tooltiptext {
@@ -79,4 +78,8 @@ ion-img {
     height: 2.5rem;
     width: 2.5rem;
     margin-right: .3rem;
+}
+
+.percent-review-color{
+    color: rgb(88, 127, 255);
 }
