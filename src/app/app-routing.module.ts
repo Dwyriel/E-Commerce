@@ -83,6 +83,11 @@ const routes: Routes = [
     path: 'ADMusers',
     loadChildren: () => import('./pags/admin-users/admin-users.module').then( m => m.AdminUsersPageModule)
   },
+  {
+    path: '**',
+    loadChildren: () => import('./pags/error/error.module').then( m => m.ErrorPageModule)
+  },
+
 ];
 
 @NgModule({
