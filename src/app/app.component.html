@@ -98,26 +98,26 @@
   </ion-split-pane>
   <div contentId="main-content" *ngIf="!isMobile" style="padding: 0 5%;">
     <ion-row class="header ion-align-itens-center">
-        <ion-col>
-          <ion-item routerLink="/" lines="none" (click)="dropdown = false">
-            <ion-icon slot="start" ios="home-outline" md="home"></ion-icon>
-            <ion-label>Home</ion-label>
-          </ion-item>
+      <ion-col>
+        <ion-item routerLink="/" lines="none" (click)="dropdown = false">
+          <ion-icon slot="start" ios="home-outline" md="home"></ion-icon>
+          <ion-label>Home</ion-label>
+        </ion-item>
+      </ion-col>
+      <ion-col>
+        <ion-item button (click)="ShowCategories($event)">
+          <ion-label>Departamentos</ion-label>
+        </ion-item>
+      </ion-col>
+      <ion-col>
+        <ion-item>
+          <ion-input placeholder="Pesquisar Produto" [(ngModel)]=searchtext (keyup.enter)="InputEnter()"></ion-input>
+          <ion-button  id="btnSearch" (click)="searchProd()" fill="clear">
+            <ion-icon slot="icon-only" name="search-sharp"></ion-icon>
+          </ion-button>
+        </ion-item>
         </ion-col>
-        <ion-col size="3">
-          <ion-item button (click)="ShowCategories($event)">
-            <ion-label>Departamentos</ion-label>
-          </ion-item>
-        </ion-col>
-        <ion-col>
-          <ion-item>
-            <ion-input placeholder="Pesquisar Produto" [(ngModel)]=searchtext (keyup.enter)="InputEnter()"></ion-input>
-            <ion-button  id="btnSearch" (click)="searchProd()" fill="clear">
-              <ion-icon slot="icon-only" name="search-sharp"></ion-icon>
-            </ion-button>
-          </ion-item>
-          </ion-col>
-        <ion-col size="3" (mouseleave)="dropdown = false">
+        <ion-col (mouseleave)="dropdown = false">
           <!-- item que chama dropdown de user -->
           <ion-item button #userbtn (mouseenter)="dropdown = true" 
           class="dropdown-btn" routerdirection="root" routerLinkActive="active-item" *ngIf="!user">
@@ -180,6 +180,10 @@
             </ion-item>
           </div>
         </ion-col>
+        <ion-item style="margin-top: 6px;">
+          <ion-badge color="warning" class="notificationBadge" mode="ios" *ngIf="cartItens && cartItens > 0">{{cartItens}}</ion-badge>
+          <ion-icon ios="notifications-outline" md="notifications-sharp"></ion-icon>
+        </ion-item>  
       </ion-row>
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </div>
