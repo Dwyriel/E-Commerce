@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { IonContent, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
@@ -54,6 +54,8 @@ export class ProductProfilePage implements OnInit {
   private subscription4: Subscription;
   private subscription5: Subscription;
   private subscription6: Subscription;
+
+  @ViewChild(IonContent) content: IonContent;
 
   constructor(
     private router: Router,
@@ -153,23 +155,28 @@ export class ProductProfilePage implements OnInit {
       this.subscription6.unsubscribe();
     this.id = this.activatedRoute.snapshot.paramMap.get("id");
     this.subscription6 = (await this.questionService.getQuestions(this.id)).subscribe(async ans => {
+      for (let question of ans) {
+        var shouldWait: boolean = true;
+        var subscription = (await this.userService.Get(question.idUser)).subscribe(ans2 => {
+          question.user = ans2;
+          subscription.unsubscribe();
+          shouldWait = false;
+        }, err => {
+          shouldWait = false;
+        });
+        while (shouldWait)
+          await new Promise(resolve => setTimeout(resolve, 10));
+      }
       this.questions = ans;
       this.hasQuestions = this.questions.length > 0;
       this.numberQuestions = this.questions.length;
-      this.questions.forEach(async value => {
-        var subscription7 = (await this.userService.Get(value.idUser)).subscribe(
-          ans2 => {
-            value.user = ans2;
-            subscription7.unsubscribe();
-          }
-        )
-      })
-    })
+    });
   }
 
   async submitButton() {
-    if (!this.loggedUser) {
-      await this.alertService.presentAlert("Erro", "Você não está logado ou ocorreu algum erro interno, recarregue a pagina e tente novamente.");
+    if (!this.question || this.question.trim().length < 1) {
+      await this.alertService.presentAlert("Ops", "Mensagem não pode estar vazia.");
+      this.question = "";
       return;
     }
     await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
@@ -184,6 +191,10 @@ export class ProductProfilePage implements OnInit {
       console.log(err)
       await this.alertService.ShowToast("Erro. Não foi possível enviar seu comentario");
     });
+  }
+
+  cancelButton() {
+    this.question = "";
   }
 
   async submitReply(id: string, text: string) {
@@ -202,8 +213,6 @@ export class ProductProfilePage implements OnInit {
     )
 
   }
-
-  cancelButton() { }
 
   async loadingMoreQuestions() {
     this.loadQuestions += 2;
@@ -282,5 +291,12 @@ export class ProductProfilePage implements OnInit {
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.presentAlert("Oops", "There was a problem adding the item to the cart");
     });
+  }
+
+  scrollTo(id: string) {
+    if (!this.hasReviews)
+      return;
+    let y = document.getElementById(id).offsetTop;
+    this.content.scrollToPoint(0, y, 1500);
   }
 }

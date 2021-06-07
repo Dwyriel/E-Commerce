@@ -17,7 +17,6 @@ export class AdminUsersPage implements OnInit {
 
   private loadingAlertID: string;
   private user: User;
-  private privSortedUsers: User[] = [];
   private isLoading: boolean = true;
 
   public isMobile: boolean;
@@ -36,6 +35,7 @@ export class AdminUsersPage implements OnInit {
   }
 
   async ionViewWillEnter() {
+    this.isLoading = true;
     this.GetPlataformInfo();
     this.GetUser();
   }
@@ -44,7 +44,6 @@ export class AdminUsersPage implements OnInit {
     this.user = null;
     this.users = [];
     this.cachedUsers = [];
-    this.privSortedUsers = [];
     this.sorting = 0;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();

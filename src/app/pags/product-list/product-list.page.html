@@ -20,8 +20,9 @@
       <ion-item lines="inset" *ngFor="let product of products;" routerLink="/product/{{product.id}}">
         <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
         <ion-label>
-          <h2>{{product.name}}</h2>
-          <h3>{{product.price | currency:'BRL' }}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span></h3>
+          <h2>{{product.name}}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span></h2>
+          <h3><s>{{product.price | currency:'BRL' }}</s><span *ngIf="product.price*.8 >= 50" style="font-size: .75rem;" class="ion-float-right">Frete grátis</span></h3>
+          <h3>{{product.price *.8 | currency:'BRL' }} à vista</h3>
         </ion-label>
       </ion-item>
     </ion-list>

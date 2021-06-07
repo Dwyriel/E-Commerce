@@ -8,17 +8,22 @@
         <ion-img [src]="photo"></ion-img>
       </ion-slide>
     </ion-slides>
-    <h2>{{product.name}}</h2>
-    <p>
-      <span class="tooltip"> Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}
-        <span class="tooltiptext tooltip-top">
-          <ion-badge class="badge-bottom" color="success" mode="ios" >{{positivos}}</ion-badge> - 
-          <ion-badge class="badge-bottom" color="danger" mode="ios">{{negativos}}</ion-badge>
+    <div style="text-align: center;">
+      <h2>{{product.name}}</h2>
+      <p>
+        <span class="tooltip"> Avaliação: 
+          <span (click)="scrollTo('reviews')" [ngClass]="{'percent-review-color':(product.avgReview || product.avgReview == 0)}">{{(product.avgReview || product.avgReview == 0) ? (product.avgReview + "%") : "Nenhum"}}</span>
+          <span class="tooltiptext tooltip-top">
+            <ion-badge class="badge-bottom" color="success" mode="ios" >{{positivos}}</ion-badge> - 
+            <ion-badge class="badge-bottom" color="danger" mode="ios">{{negativos}}</ion-badge>
+          </span>
         </span>
-      </span>
-    </p>
-    <p>{{product.price | currency:'BRL'}}</p>
-    <ion-button [disabled]="(1 > product.stock) || (loggedUser && loggedUser.id == product.sellerID)" (click)="AddToCart()">Adicionar no carrinho</ion-button>
+      </p>
+      <p style="font-size: large;">À prazo {{product.price | currency:'BRL'}} em ate 12x sem juros</p>
+      <p style="font-size: larger;">À vista {{product.price*.8 | currency:'BRL'}} no boleto ou pix com 20% de desconto</p>
+      <p *ngIf="product.price*.8 >= 50">Este item tem frete grátis</p>
+      <ion-button [disabled]="(1 > product.stock) || (loggedUser && loggedUser.id == product.sellerID)" (click)="AddToCart()">Adicionar no carrinho</ion-button>
+    </div>
     <h3 >Descrição:</h3>
     <p>
       <ion-text>{{product.description}}</ion-text>
@@ -44,56 +49,53 @@
         </ion-row>
       </ion-item>
     </div>
+
     <ion-item *ngIf="!hasQuestions">
       <ion-label>Sem perguntas</ion-label>
     </ion-item>
     <div *ngIf="hasQuestions">
-        <h4>Perguntas:</h4>
-        <ng-container *ngFor="let asked of questions; let i=index">
-          <ion-card *ngIf="i < loadQuestions">
+      <h4>Perguntas:</h4>
+      <ng-container *ngFor="let asked of questions | slice:0:loadQuestions">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{asked.user.name}}</ion-card-title>
+            <ion-card-subtitle>{{asked.date.toLocaleString()}}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            {{asked.text}}
+          </ion-card-content> 
+          <div *ngIf="asked.hasReply" style="margin-left: 50px;">
+            <span style="margin-left: 15px;">Resposta do vendedor</span>
             <ion-card-header>
-              <ion-card-title>{{asked.user.name}}</ion-card-title>
-              <ion-card-subtitle>{{asked.date.toLocaleString()}}</ion-card-subtitle>
+              <ion-card-title>{{SellerUser.name}}</ion-card-title>
+              <ion-card-subtitle>{{asked.replyDate.toLocaleString()}}</ion-card-subtitle>
             </ion-card-header>
             <ion-card-content>
-              {{asked.text}}
-            </ion-card-content> 
-            <div *ngIf="asked.hasReply">
-              <a style="text-align: end; margin-left: 10px;">Resposta do vendedor</a>
-              <ion-card-header>
-                <ion-card-title>{{SellerUser.name}}</ion-card-title>
-                <ion-card-subtitle>{{asked.replyDate.toLocaleString()}}</ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content>
-                {{asked.vendorText}}
-              </ion-card-content>
-            </div>
-            <ng-container *ngIf="product.sellerID == loggedUser.id">
-              <ion-item *ngIf="!asked.hasReply">
-                <ion-input name="reply" [(ngModel)]=asked.vendorText required autoGrow=true></ion-input>
-                <ion-row class="ion-justify-content-end commentButtons">
-                  <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply(asked.id, asked.vendorText)"
-                    >Responder</ion-button>
-                  <ion-button class="rightCommentButton" expand=full size="small">Cancelar</ion-button>
-                </ion-row>
-              </ion-item>
-              </ng-container>
+              {{asked.vendorText}}
+            </ion-card-content>
+          </div>
+          <ng-container *ngIf="product.sellerID == loggedUser.id">
+            <ion-item *ngIf="!asked.hasReply">
+              <ion-input name="reply" [(ngModel)]=asked.vendorText required autoGrow=true></ion-input>
+              <ion-row class="ion-justify-content-end commentButtons">
+                <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply(asked.id, asked.vendorText)"
+                  >Responder</ion-button>
+                <ion-button class="rightCommentButton" expand=full size="small">Cancelar</ion-button>
+              </ion-row>
+            </ion-item>
+          </ng-container>
         </ion-card>
       </ng-container>
-        <ion-button expand=full size="small" (click)="loadingMoreQuestions()" *ngIf="numberQuestions >= loadQuestions"
-                    >Carregar mais perguntas.</ion-button>
-        <ion-button expand=full size="small" *ngIf="loadQuestions > 2" (click)="hideQuestions()"
-                    >Esconder Perguntas.</ion-button>
+      <ion-button expand=full size="small" (click)="loadingMoreQuestions()" *ngIf="numberQuestions >= loadQuestions">Carregar mais perguntas.</ion-button>
+      <ion-button expand=full size="small" *ngIf="loadQuestions > 2" (click)="hideQuestions()">Esconder Perguntas.</ion-button>
     </div>
 
-    <ion-item *ngIf="!hasReviews">
-        <ion-label>Produto sem avaliações</ion-label>
+    <ion-item *ngIf="!hasReviews" class="ion-margin-top">
+      <ion-label>Produto sem avaliações</ion-label>
     </ion-item>
-    <div *ngIf="hasReviews">
+    <div *ngIf="hasReviews" class="ion-margin-top" id=reviews>
       <ion-text class="reviewsTitle">Avaliações:</ion-text>
-      
-      <div class="reviews" *ngFor="let review of product.reviews; let i=index">
-        <ng-container *ngIf="i < loadReviews">
+      <div class="reviews ion-margin-horizontal" *ngFor="let review of product.reviews | slice:0:loadReviews">
         <ion-row class="ion-justify-content-between">
           <ion-row class="ion-align-items-center">
             <ion-badge class="reviewThumb" color="{{(review.recommend) ? 'success' : 'danger'}}"><ion-icon size="large" color="dark" name="thumbs-{{(review.recommend) ? 'up' : 'down'}}-sharp"></ion-icon></ion-badge>
@@ -106,12 +108,9 @@
         <div class="reviewText">
           <ion-text>{{review.text}}</ion-text>
         </div>
-      </ng-container>
       </div>
-      <ion-button expand=full size="small" (click)="loadingMoreReviews()" *ngIf="numberReviews >= loadReviews"
-                    >Carregar mais Reviews de usuários.</ion-button>
-        <ion-button expand=full size="small" *ngIf="loadReviews > 2" (click)="hideReviews()"
-                    >Esconder reviews.</ion-button>
+      <ion-button expand=full size="small" (click)="loadingMoreReviews()" *ngIf="numberReviews >= loadReviews">Carregar mais Reviews de usuários.</ion-button>
+      <ion-button expand=full size="small" *ngIf="loadReviews > 2" (click)="hideReviews()">Esconder reviews.</ion-button>
     </div>
   </div>
 </ion-content>
