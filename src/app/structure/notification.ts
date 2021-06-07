@@ -5,13 +5,24 @@ export class AppNotification {
     userId: string;
     from: NotificationType;
     date: Date;
+    icon: string;
+
+    equals(notification: AppNotification) {
+        return this.url == notification.url;
+    }
+
+    urlEquals(url: string) {
+        return this.url == url;
+    }
 }
 
 export enum NotificationType {
     chat,
     newSoldItem,
     boughtItemChanged,
-    advertVerified
+    advertVerified,
+    advertNewQuestion,
+    advertNewAnwser
 }
 
 export function GetIconForNotification(item: NotificationType) {
@@ -24,7 +35,20 @@ export function GetIconForNotification(item: NotificationType) {
             return "bag-handle";
         case NotificationType.advertVerified:
             return "pricetag";
+        case NotificationType.advertNewQuestion:
+            return "newspaper";
+        case NotificationType.advertNewAnwser:
+            return "document-text";
         default:
             return null;
     }
+}
+
+export function NewAppNotification(text: string, url: string, notificationFor: string, from: NotificationType) {
+    var notification = new AppNotification();
+    notification.text = text;
+    notification.url = url;
+    notification.userId = notificationFor;
+    notification.from = from;
+    return notification;
 }

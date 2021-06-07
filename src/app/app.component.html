@@ -180,8 +180,8 @@
             </ion-item>
           </div>
         </ion-col>
-        <ion-item style="margin-top: 6px;">
-          <ion-badge color="warning" class="notificationBadge" mode="ios" *ngIf="cartItens && cartItens > 0">{{cartItens}}</ion-badge>
+        <ion-item style="margin-top: 6px;" *ngIf="firebaseAns">
+          <ion-badge color="warning" class="notificationBadge" mode="ios" *ngIf="numOfnotifications && numOfnotifications > 0">{{numOfnotifications}}</ion-badge>
           <ion-icon ios="notifications-outline" md="notifications-sharp"></ion-icon>
         </ion-item>  
       </ion-row>

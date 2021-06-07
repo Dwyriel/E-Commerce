@@ -11,6 +11,8 @@ import { ItemClassification } from './structure/item-classification';
 import { CategoriesComponent } from './components/categories/categories.component';
 import { SidebarModalCategory } from './components/sidebar-modal/sidebar-modal.component';
 import { Router } from '@angular/router';
+import { AppNotification } from './structure/notification';
+import { NotificationService } from './services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +29,8 @@ export class AppComponent {
   public isAdmin: boolean;
   public cartItens: number;
   public dropdown;
+  public numOfnotifications: number;
+  public notifications: AppNotification[] = [];
 
   //device
   public isMobile: boolean;
@@ -37,6 +41,7 @@ export class AppComponent {
   private subscription2: Subscription;
   private subscription3: Subscription;
   private subscription4: Subscription;
+  private subscription5: Subscription;
 
   //search
   public searchtext: string = null;
@@ -47,7 +52,8 @@ export class AppComponent {
     private alertService: AlertService,
     private popoverController: PopoverController,
     private modalController: ModalController,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationService
   ) { }
 
   async ngOnInit() {
@@ -64,6 +70,8 @@ export class AppComponent {
       this.subscription3.unsubscribe();
     if (this.subscription4 && !this.subscription4.closed)
       this.subscription4.unsubscribe();
+    if (this.subscription5 && !this.subscription5.closed)
+      this.subscription5.unsubscribe();
   }
 
   GetPlataformInfo() {
@@ -109,7 +117,12 @@ export class AppComponent {
           this.subscription2.unsubscribe();
         this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(async ans2 => {
           if (!ans2.active) {
-            await this.userService.auth.signOut();
+            await this.userService.auth.signOut().then(() => {//only stop subscription if signOut was successful
+              if (this.subscription2 && !this.subscription2.closed)
+                this.subscription2.unsubscribe();
+              if (this.subscription5 && !this.subscription5.closed)
+                this.subscription5.unsubscribe();
+            });
             this.user = null;
             this.firebaseAns = false;
             if (this.alertId.length < 1) {
@@ -127,6 +140,11 @@ export class AppComponent {
             else
               this.cartItens = 0;
             this.firebaseAns = true;
+            if (this.subscription5 && !this.subscription5.closed)
+              this.subscription5.unsubscribe();
+            this.subscription5 = (await this.notificationService.GetAllFromUser(this.user.id)).subscribe(async ans => {
+              this.notifications = ans;
+            })
           }
           AppResources.PushUserInfo(this.user);
         });

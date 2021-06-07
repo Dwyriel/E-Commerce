@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
-import { AppNotification } from '../structure/notification';
+import { AppNotification, GetIconForNotification } from '../structure/notification';
 
 @Injectable({
   providedIn: 'root'
@@ -31,8 +31,9 @@ export class NotificationService {
    * @returns an observable containing all the user's notification.
    */
   async GetAllFromUser(id: string) {
+    var notification = new AppNotification();
     return this.fireDatabase.collection<AppNotification>(this.collection, ref => ref.where('userId', '==', id)).snapshotChanges().pipe(map(
-      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date), icon: GetIconForNotification(d.payload.doc.data().from), equals: notification.equals, urlEquals: notification.urlEquals }))));
   }
 
   /**
