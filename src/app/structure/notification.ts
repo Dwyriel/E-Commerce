@@ -1,9 +1,10 @@
-export class Notification {
+export class AppNotification {
     id: string;
     text: string;
     url: string;
     userId: string;
     from: NotificationType;
+    date: Date;
 }
 
 export enum NotificationType {
