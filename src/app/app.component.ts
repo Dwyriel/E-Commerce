@@ -11,8 +11,9 @@ import { ItemClassification } from './structure/item-classification';
 import { CategoriesComponent } from './components/categories/categories.component';
 import { SidebarModalCategory } from './components/sidebar-modal/sidebar-modal.component';
 import { Router } from '@angular/router';
-import { AppNotification } from './structure/notification';
+import { AppNotification, GetIconForNotification } from './structure/notification';
 import { NotificationService } from './services/notification.service';
+import { NotificationComponent } from './components/notification/notification.component';
 
 @Component({
   selector: 'app-root',
@@ -113,41 +114,7 @@ export class AppComponent {
     this.subscription1 = this.userService.auth.user.subscribe(async ans => {
       this.alertId = [];
       if (ans) {
-        if (this.subscription2 && !this.subscription2.closed)
-          this.subscription2.unsubscribe();
-        this.subscription2 = (await this.userService.Get(ans.uid)).subscribe(async ans2 => {
-          if (!ans2.active) {
-            await this.userService.auth.signOut().then(() => {//only stop subscription if signOut was successful
-              if (this.subscription2 && !this.subscription2.closed)
-                this.subscription2.unsubscribe();
-              if (this.subscription5 && !this.subscription5.closed)
-                this.subscription5.unsubscribe();
-            });
-            this.user = null;
-            this.firebaseAns = false;
-            if (this.alertId.length < 1) {
-              await this.alertService.presentAlert("Aviso", "Esta conta foi desativada, entre em contato com nosso suporte para saber mais").then(alertAns => this.alertId.push(alertAns));
-              await this.router.navigate(["/login"]);
-            }
-            if (this.subscription2 && !this.subscription2.closed)
-              this.subscription2.unsubscribe();
-          } else {
-            this.user = ans2;
-            this.user.id = ans.uid;
-            this.isAdmin = this.user.userType == UserType.Admin;
-            if (ans2.cart && ans2.cart.length > 0)
-              this.calculateCartItens();
-            else
-              this.cartItens = 0;
-            this.firebaseAns = true;
-            if (this.subscription5 && !this.subscription5.closed)
-              this.subscription5.unsubscribe();
-            this.subscription5 = (await this.notificationService.GetAllFromUser(this.user.id)).subscribe(async ans => {
-              this.notifications = ans;
-            })
-          }
-          AppResources.PushUserInfo(this.user);
-        });
+        await this.GetUser(ans.uid);
         return;
       }
       this.firebaseAns = false;
@@ -160,9 +127,55 @@ export class AppComponent {
     });
   }
 
+  async GetUser(userId: string) {
+    if (this.subscription2 && !this.subscription2.closed)
+      this.subscription2.unsubscribe();
+    this.subscription2 = (await this.userService.Get(userId)).subscribe(async ans2 => {
+      if (!ans2.active) {
+        await this.UserNotActive();
+      } else {
+        this.user = ans2;
+        this.user.id = userId;
+        this.isAdmin = this.user.userType == UserType.Admin;
+        if (ans2.cart && ans2.cart.length > 0)
+          this.calculateCartItens();
+        else
+          this.cartItens = 0;
+        this.firebaseAns = true;
+        if (this.subscription5 && !this.subscription5.closed)
+          this.subscription5.unsubscribe();
+        this.subscription5 = (await this.notificationService.GetAllFromUser(this.user.id)).subscribe(async ans3 => {
+          for (let notification of ans3) {
+            notification.icon = GetIconForNotification(notification.from)
+          }
+          this.numOfnotifications = ans3.length;
+          this.notifications = ans3;
+        });
+      }
+      AppResources.PushUserInfo(this.user);
+    });
+  }
+
+  async UserNotActive() {
+    await this.userService.auth.signOut().then(() => {//only stop subscription if signOut was successful
+      if (this.subscription2 && !this.subscription2.closed)
+        this.subscription2.unsubscribe();
+      if (this.subscription5 && !this.subscription5.closed)
+        this.subscription5.unsubscribe();
+    });
+    this.user = null;
+    this.firebaseAns = false;
+    if (this.alertId.length < 1) {
+      await this.alertService.presentAlert("Aviso", "Esta conta foi desativada, entre em contato com nosso suporte para saber mais").then(alertAns => this.alertId.push(alertAns));
+      await this.router.navigate(["/login"]);
+    }
+    if (this.subscription2 && !this.subscription2.closed)
+      this.subscription2.unsubscribe();
+  }
+
   calculateCartItens() {
     this.cartItens = 0;
-    for (var item of this.user.cart)
+    for (let item of this.user.cart)
       this.cartItens += item.amount;
   }
 
@@ -198,6 +211,19 @@ export class AppComponent {
     });
     AppResources.modals.push(modal);
     await modal.present();
+  }
+
+  async ShowNotifications(event) {
+    AppResources.popovers = [];
+    var popover = await this.popoverController.create({
+      component: NotificationComponent,
+      event: event,
+      mode: 'md',
+      cssClass: "notificationPopover",
+      componentProps: { notifications: this.notifications }
+    });
+    popover.present();
+    AppResources.popovers.push(popover);
   }
 
   async InputEnter() {

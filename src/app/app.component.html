@@ -116,75 +116,75 @@
             <ion-icon slot="icon-only" name="search-sharp"></ion-icon>
           </ion-button>
         </ion-item>
-        </ion-col>
-        <ion-col (mouseleave)="dropdown = false">
-          <!-- item que chama dropdown de user -->
-          <ion-item button #userbtn (mouseenter)="dropdown = true" 
-          class="dropdown-btn" routerdirection="root" routerLinkActive="active-item" *ngIf="!user">
+      </ion-col>
+      <ion-item style="margin: 6px 5px 0 5px;" *ngIf="firebaseAns" button (click)="ShowNotifications($event)">
+        <ion-badge color="warning" class="notificationBadge" mode="ios" *ngIf="numOfnotifications && numOfnotifications > 0">{{numOfnotifications}}</ion-badge>
+        <ion-icon ios="notifications-outline" md="notifications-sharp"></ion-icon>
+      </ion-item>
+      <ion-col (mouseleave)="dropdown = false">
+        <!-- item que chama dropdown de user -->
+        <ion-item button #userbtn (mouseenter)="dropdown = true" 
+        class="dropdown-btn" routerdirection="root" routerLinkActive="active-item" *ngIf="!user">
+        <ion-icon slot="end" [name]="dropdown ? 'chevron-down' : 'chevron-up'"></ion-icon>
+          <ion-label>Novo Aqui?</ion-label>
+        </ion-item>
+          <ion-item button #userbtn (mouseenter)="dropdown = true"
+        class="dropdown-btn" routerdirection="root" routerLinkActive="active-item" *ngIf="user">
           <ion-icon slot="end" [name]="dropdown ? 'chevron-down' : 'chevron-up'"></ion-icon>
-            <ion-label>Novo Aqui?</ion-label>
-          </ion-item>
-           <ion-item button #userbtn (mouseenter)="dropdown = true"
-          class="dropdown-btn" routerdirection="root" routerLinkActive="active-item" *ngIf="user">
-            <ion-icon slot="end" [name]="dropdown ? 'chevron-down' : 'chevron-up'"></ion-icon>
-            <img id="userimage" *ngIf="user && !user.photo" src="assets/perfil.png">
-            <img id="userimage" *ngIf="user && user.photo" [src]="user.photo">
-            <ion-list-header>{{ user.name }}</ion-list-header>
-            <ion-badge color="warning" class="cartBadge" mode="ios" *ngIf="!dropdown && cartItens && cartItens > 0">{{cartItens}}</ion-badge>
-          </ion-item>
+          <img id="userimage" *ngIf="user && !user.photo" src="assets/perfil.png">
+          <img id="userimage" *ngIf="user && user.photo" [src]="user.photo">
+          <ion-list-header>{{ user.name }}</ion-list-header>
+          <ion-badge color="warning" class="cartBadge" mode="ios" *ngIf="!dropdown && cartItens && cartItens > 0">{{cartItens}}</ion-badge>
+        </ion-item>
           <!-- dropdown do user -->
-           <div *ngIf="dropdown" class="dropdown" #dropdownbox>
-            <ion-item button lines="none" routerLink="/profile" *ngIf="firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="person-circle-outline" md="person-circle-sharp"></ion-icon>
-              <ion-label>Meu Perfil</ion-label>
-            </ion-item>
-            <ion-item button lines="none" routerLink="/cart" *ngIf="firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="cart-outline" md="cart-sharp"></ion-icon>
-              <ion-label>Carrinho<ion-badge color="warning" class="cartBadge" mode="ios" *ngIf="cartItens && cartItens > 0">{{cartItens}}</ion-badge></ion-label>
-            </ion-item>
-            <ion-item button lines="none" routerLink="/purchases/purchases" *ngIf="firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="bag-handle-outline" md="bag-handle-sharp"></ion-icon>
-              <ion-label>Minhas Compras</ion-label>
-            </ion-item>
-            <ion-item button lines="none" routerLink="/productForm" *ngIf="firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="create-outline" md="create-sharp"></ion-icon>
-              <ion-label>Anunciar</ion-label>
-            </ion-item>
-            <ion-item button lines="none" routerLink="/adverts" *ngIf="firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="pricetag-outline" md="pricetag-sharp"></ion-icon>
-              <ion-label>Meus Anúncios</ion-label>
-            </ion-item>
-            <ion-item button lines="none" routerLink="/purchases/sales" *ngIf="firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="pricetags-outline" md="pricetags-sharp"></ion-icon>
-              <ion-label>Minhas Vendas</ion-label>
-            </ion-item>
-            <ion-item button lines="none" routerLink="/ADMproducts" *ngIf="firebaseAns && isAdmin" (click)="dropdown = false">
-              <ion-icon slot="start" ios="briefcase-outline" md="briefcase-sharp"></ion-icon>
-              <ion-label>ADM - Produtos</ion-label>
-            </ion-item>
-            <ion-item button lines="none" routerLink="/ADMusers" *ngIf="firebaseAns && isAdmin" (click)="dropdown = false">
-              <ion-icon slot="start" ios="people-outline" md="people-sharp"></ion-icon>
-              <ion-label>ADM - Usuários</ion-label>
-            </ion-item>
-            <ion-item button (click)="logout()" lines="none" *ngIf="firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>
-              <ion-label>Logout</ion-label>
-            </ion-item>
-            <ion-item routerLink="/login" lines="none" *ngIf="!firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>
-              <ion-label>Log In</ion-label>
-            </ion-item>
-            <ion-item routerLink="/account" lines="none" *ngIf="!firebaseAns" (click)="dropdown = false">
-              <ion-icon slot="start" ios="person-add-outline" md="person-add-sharp"></ion-icon>
-              <ion-label>Registre-se</ion-label>
-            </ion-item>
-          </div>
-        </ion-col>
-        <ion-item style="margin-top: 6px;" *ngIf="firebaseAns">
-          <ion-badge color="warning" class="notificationBadge" mode="ios" *ngIf="numOfnotifications && numOfnotifications > 0">{{numOfnotifications}}</ion-badge>
-          <ion-icon ios="notifications-outline" md="notifications-sharp"></ion-icon>
-        </ion-item>  
-      </ion-row>
+        <div *ngIf="dropdown" class="dropdown" #dropdownbox>
+        <ion-item button lines="none" routerLink="/profile" *ngIf="firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="person-circle-outline" md="person-circle-sharp"></ion-icon>
+          <ion-label>Meu Perfil</ion-label>
+        </ion-item>
+        <ion-item button lines="none" routerLink="/cart" *ngIf="firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="cart-outline" md="cart-sharp"></ion-icon>
+          <ion-label>Carrinho<ion-badge color="warning" class="cartBadge" mode="ios" *ngIf="cartItens && cartItens > 0">{{cartItens}}</ion-badge></ion-label>
+        </ion-item>
+        <ion-item button lines="none" routerLink="/purchases/purchases" *ngIf="firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="bag-handle-outline" md="bag-handle-sharp"></ion-icon>
+          <ion-label>Minhas Compras</ion-label>
+        </ion-item>
+        <ion-item button lines="none" routerLink="/productForm" *ngIf="firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="create-outline" md="create-sharp"></ion-icon>
+          <ion-label>Anunciar</ion-label>
+        </ion-item>
+        <ion-item button lines="none" routerLink="/adverts" *ngIf="firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="pricetag-outline" md="pricetag-sharp"></ion-icon>
+          <ion-label>Meus Anúncios</ion-label>
+        </ion-item>
+        <ion-item button lines="none" routerLink="/purchases/sales" *ngIf="firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="pricetags-outline" md="pricetags-sharp"></ion-icon>
+          <ion-label>Minhas Vendas</ion-label>
+        </ion-item>
+        <ion-item button lines="none" routerLink="/ADMproducts" *ngIf="firebaseAns && isAdmin" (click)="dropdown = false">
+          <ion-icon slot="start" ios="briefcase-outline" md="briefcase-sharp"></ion-icon>
+          <ion-label>ADM - Produtos</ion-label>
+        </ion-item>
+        <ion-item button lines="none" routerLink="/ADMusers" *ngIf="firebaseAns && isAdmin" (click)="dropdown = false">
+          <ion-icon slot="start" ios="people-outline" md="people-sharp"></ion-icon>
+          <ion-label>ADM - Usuários</ion-label>
+        </ion-item>
+        <ion-item button (click)="logout()" lines="none" *ngIf="firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>
+          <ion-label>Logout</ion-label>
+        </ion-item>
+        <ion-item routerLink="/login" lines="none" *ngIf="!firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="log-in-outline" md="log-in-sharp"></ion-icon>
+          <ion-label>Log In</ion-label>
+        </ion-item>
+        <ion-item routerLink="/account" lines="none" *ngIf="!firebaseAns" (click)="dropdown = false">
+          <ion-icon slot="start" ios="person-add-outline" md="person-add-sharp"></ion-icon>
+          <ion-label>Registre-se</ion-label>
+        </ion-item>
+      </div>
+      </ion-col>
+    </ion-row>
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </div>
 

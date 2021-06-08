@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
-import { AppNotification, GetIconForNotification } from '../structure/notification';
+import { AppNotification, GetIconForNotification, NewAppNotification, NotificationType } from '../structure/notification';
 
 @Injectable({
   providedIn: 'root'
@@ -67,5 +67,19 @@ export class NotificationService {
    */
   async Delete(id: string) {
     return await this.fireDatabase.collection(this.collection).doc(id).delete();
+  }
+
+  async SentNotificationToFirebase(text: string, url: string, notificationForId: string, from: NotificationType) {
+    var subscription = (await this.GetAllFromUser(notificationForId)).subscribe(async ans => {
+      var equals: boolean = false;
+      for (let item of ans)
+        if (item.urlEquals(url))
+          equals = true;
+      if (!equals) {
+        var notification: AppNotification = NewAppNotification(text, url, notificationForId, from);
+        this.Add(notification);
+      }
+      subscription.unsubscribe();
+    });
   }
 }

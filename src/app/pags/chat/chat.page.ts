@@ -196,6 +196,7 @@ export class ChatPage implements OnInit {
       this.subscription6.unsubscribe();
     this.subscription6 = (await this.userService.Get(toBeRetrivedUserId)).subscribe(ans => {
       this.otherUser = ans;
+      this.otherUser.id = toBeRetrivedUserId;
       this.title = `Conversa: ${this.otherUser.name}`
       shouldWait = false;
     }, err => {
@@ -228,36 +229,23 @@ export class ChatPage implements OnInit {
   async SendMessage() {
     if (!this.inputedText || this.inputedText.trim().length < 1)
       return;
-    var chat: PurchaseChat = this.CreateMessageObject(this.inputedText);
+    var tempInputedText = this.inputedText;
+    this.inputedText = "";
+    var chat: PurchaseChat = this.CreateMessageObject(tempInputedText);
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
     this.messageSent = true;
     await this.chatService.Add(chat).then(async ans => {
-      this.inputedText = "";
       this.interruptWhile = true;
       chat.date = new Date();
       this.messages.push(chat);
       this.scrollToBotton();
       this.PostMessagesSubscription();
-      this.SendNotification();
+      this.notificationService.SentNotificationToFirebase(`Nova Mensagem de ${this.loggedUser.name}`, `/chat/${this.id}`, this.otherUser.id, NotificationType.chat);
     }).catch(err => {
+      this.inputedText = tempInputedText + this.inputedText;
       this.PostMessagesSubscription();
       this.alertService.presentAlert("Erro", "Não foi possivel enviar sua mensagem. Tente novamente.");
-    });
-  }
-
-  async SendNotification() {
-    var subscription = (await this.notificationService.GetAllFromUser(this.otherUser.id)).subscribe(async ans2 => {
-      var url = `chat/${this.id}`;
-      var equals: boolean = false;
-      for (let item of ans2)
-        if (item.urlEquals(url))
-          equals = true;
-      if (!equals) {
-        var notification: AppNotification = NewAppNotification(`Nova Mensagem de ${this.loggedUser.name}`, url, this.otherUser.id, NotificationType.chat);
-        this.notificationService.Add(notification);
-      }
-      subscription.unsubscribe();
     });
   }
 
