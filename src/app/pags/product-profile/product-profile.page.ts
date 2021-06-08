@@ -13,6 +13,8 @@ import { Review } from 'src/app/structure/review';
 import { User } from 'src/app/structure/user';
 import { Question } from 'src/app/structure/question'
 import { QuestionService } from 'src/app/services/question.service'
+import { NotificationService } from 'src/app/services/notification.service';
+import { NotificationType } from 'src/app/structure/notification';
 
 @Component({
   selector: 'app-product-profile',
@@ -66,7 +68,8 @@ export class ProductProfilePage implements OnInit {
     private reviewService: ReviewService,
     private cartService: CartService,
     private navController: NavController,
-    private questionService: QuestionService
+    private questionService: QuestionService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -76,7 +79,6 @@ export class ProductProfilePage implements OnInit {
     this.GetPlataformInfo();
     this.getProduct();
     this.getLoggedUser();
-    this.getQuestions();
   }
 
   ionViewWillLeave() {
@@ -138,10 +140,11 @@ export class ProductProfilePage implements OnInit {
       this.product = { ...ans, fillSubCategory: this.product.fillSubCategory, calculateAvgRating: this.product.calculateAvgRating };
       this.product.id = this.id;
       this.title = this.product.name;
-      var awaits = { seller: true, reviews: true }
+      var awaits = { seller: true, reviews: true, questions: true }
       this.GetSeller(awaits);
+      this.getQuestions(awaits);
       this.GetReviews(awaits);
-      while (awaits.reviews || awaits.seller)
+      while (awaits.reviews || awaits.seller || awaits.questions)
         await new Promise(resolve => setTimeout(resolve, 10));
       this.product.calculateAvgRating();
       await this.alertService.dismissLoading(this.loadingAlert);
@@ -150,7 +153,7 @@ export class ProductProfilePage implements OnInit {
     });
   }
 
-  async getQuestions() {
+  async getQuestions(awaits) {
     if (this.subscription6 && !this.subscription6.closed)
       this.subscription6.unsubscribe();
     this.id = this.activatedRoute.snapshot.paramMap.get("id");
@@ -159,6 +162,7 @@ export class ProductProfilePage implements OnInit {
         var shouldWait: boolean = true;
         var subscription = (await this.userService.Get(question.idUser)).subscribe(ans2 => {
           question.user = ans2;
+          question.user.id = question.idUser;
           subscription.unsubscribe();
           shouldWait = false;
         }, err => {
@@ -170,64 +174,10 @@ export class ProductProfilePage implements OnInit {
       this.questions = ans;
       this.hasQuestions = this.questions.length > 0;
       this.numberQuestions = this.questions.length;
+      awaits.questions = false;
+    }, err => {
+      awaits.questions = false;
     });
-  }
-
-  async submitButton() {
-    if (!this.question || this.question.trim().length < 1) {
-      await this.alertService.presentAlert("Ops", "Mensagem não pode estar vazia.");
-      this.question = "";
-      return;
-    }
-    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
-    this.newQuestion.text = this.question;
-    this.newQuestion.idUser = this.loggedUser.id;
-    await this.questionService.add(this.newQuestion, this.id).then(async ans => {
-      this.newQuestion = new Question();
-      this.question = "";
-      await this.alertService.dismissLoading(this.loadingAlert);
-      await this.alertService.ShowToast("Sucesso. Comentario Enviado.");
-    }, async err => {
-      console.log(err)
-      await this.alertService.ShowToast("Erro. Não foi possível enviar seu comentario");
-    });
-  }
-
-  cancelButton() {
-    this.question = "";
-  }
-
-  async submitReply(id: string, text: string) {
-    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
-    this.newQuestion = new Question();
-    this.newQuestion.id = id;
-    this.newQuestion.vendorText = text;
-    await this.questionService.update(this.newQuestion).then(async ans => {
-      this.newQuestion = new Question();
-      await this.alertService.dismissLoading(this.loadingAlert);
-      await this.alertService.ShowToast("Sucesso. Comentario respondido");
-    }, async erro => {
-      console.log(erro)
-      await this.alertService.ShowToast("Erro. Não foi possível responder");
-    }
-    )
-
-  }
-
-  async loadingMoreQuestions() {
-    this.loadQuestions += 2;
-  }
-
-  async hideQuestions() {
-    this.loadQuestions = 2;
-  }
-
-  async loadingMoreReviews() {
-    this.loadReviews += 2;
-  }
-
-  async hideReviews() {
-    this.loadReviews = 2;
   }
 
   async GetSeller(awaits) {
@@ -237,6 +187,7 @@ export class ProductProfilePage implements OnInit {
       this.SellerUser = ans;
       awaits.seller = false;
     }, async err => {
+      awaits.seller = false;
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das informações, tente denovo daqui a pouco.")
     });
   }
@@ -246,7 +197,6 @@ export class ProductProfilePage implements OnInit {
       this.subscription4.unsubscribe();
     this.subscription4 = (await this.reviewService.GetAllFromProduct(this.product.id)).subscribe(async ans => {
       this.product.reviews = ans;
-      awaits.reviews = false;
       this.hasReviews = this.product.reviews.length > 0;
       this.numberReviews = this.product.reviews.length;
       this.positivos = 0;
@@ -255,7 +205,9 @@ export class ProductProfilePage implements OnInit {
         this.positivos = (vote.recommend) ? ++this.positivos : this.positivos;
         this.negativos = (!vote.recommend) ? ++this.negativos : this.negativos;
       }
+      awaits.reviews = false;
     }, async err => {
+      awaits.reviews = false;
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das avaliações, tente denovo daqui a pouco.")
     });
 
@@ -291,6 +243,68 @@ export class ProductProfilePage implements OnInit {
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.presentAlert("Oops", "There was a problem adding the item to the cart");
     });
+  }
+
+  async submitButton() {
+    if (!this.question || this.question.trim().length < 1) {
+      await this.alertService.presentAlert("Ops", "Mensagem não pode estar vazia.");
+      this.question = "";
+      return;
+    }
+    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
+    this.newQuestion.text = this.question;
+    this.newQuestion.idUser = this.loggedUser.id;
+    await this.questionService.add(this.newQuestion, this.id).then(async ans => {
+      this.newQuestion = new Question();
+      this.question = "";
+      await this.alertService.dismissLoading(this.loadingAlert);
+      await this.alertService.ShowToast("Sucesso. Comentario Enviado.");
+      await this.notificationService.SentNotificationToFirebase(`${this.loggedUser.name} fez uma pergunta sobre ${this.product.name}`, `/product/${this.product.id}`, this.product.sellerID, NotificationType.advertNewQuestion);
+    }, async err => {
+      console.log(err)
+      await this.alertService.ShowToast("Erro. Não foi possível enviar seu comentario");
+    });
+  }
+
+  cancelButton() {
+    this.question = "";
+  }
+
+  async submitReply(id: string, text: string, user: User) {
+    if (!text || text.trim().length < 1) {
+      await this.alertService.presentAlert("Ops", "Mensagem não pode estar vazia.");
+      text = "";
+      return;
+    }
+    await this.alertService.presentLoading().then(ans => this.loadingAlert = ans);
+    this.newQuestion = new Question();
+    this.newQuestion.id = id;
+    this.newQuestion.vendorText = text;
+    await this.questionService.update(this.newQuestion).then(async ans => {
+      this.newQuestion = new Question();
+      await this.alertService.dismissLoading(this.loadingAlert);
+      await this.alertService.ShowToast("Sucesso. Comentario respondido");
+      await this.notificationService.SentNotificationToFirebase(`${this.loggedUser.name} respondeu a sua pergunta sobre o produto ${this.product.name}`, `/product/${this.product.id}`, user.id, NotificationType.advertNewAnwser);
+    }, async erro => {
+      console.log(erro);
+      await this.alertService.ShowToast("Erro. Não foi possível responder");
+    });
+  }
+
+  async loadingMoreQuestions() {
+    this.loadQuestions += 2;
+  }
+
+  async hideQuestions() {
+    this.loadQuestions = 2;
+  }
+
+  async loadingMoreReviews() {
+    this.loadReviews += 2;
+  }
+
+  async hideReviews() {
+    this.loadReviews = 2;
   }
 
   scrollTo(id: string) {

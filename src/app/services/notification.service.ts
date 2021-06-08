@@ -33,7 +33,7 @@ export class NotificationService {
   async GetAllFromUser(id: string) {
     var notification = new AppNotification();
     return this.fireDatabase.collection<AppNotification>(this.collection, ref => ref.where('userId', '==', id).orderBy('date', 'desc')).snapshotChanges().pipe(map(
-      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date), icon: GetIconForNotification(d.payload.doc.data().from), equals: notification.equals, urlEquals: notification.urlEquals }))));
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date), icon: GetIconForNotification(d.payload.doc.data().from), equals: notification.equals, equalsSmallParams: notification.equalsSmallParams }))));
   }
 
   /**
@@ -79,7 +79,7 @@ export class NotificationService {
     var subscription = (await this.GetAllFromUser(notificationForId)).subscribe(async ans => {
       var equals: boolean = false;
       for (let item of ans)
-        if (item.urlEquals(url))
+        if (item.equalsSmallParams(url, from))
           equals = true;
       if (!equals) {
         var notification: AppNotification = NewAppNotification(text, url, notificationForId, from);

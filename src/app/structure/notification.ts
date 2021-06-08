@@ -8,11 +8,11 @@ export class AppNotification {
     icon: string;
 
     equals(notification: AppNotification) {
-        return this.url == notification.url;
+        return this.url == notification.url && this.from == notification.from;
     }
 
-    urlEquals(url: string) {
-        return this.url == url;
+    equalsSmallParams(url: string, from: NotificationType) {
+        return this.url == url && this.from == from;
     }
 }
 
