@@ -1,0 +1,23 @@
+<ion-header translucent *ngIf="isMobile">
+  <ion-toolbar>
+    <ion-title>Notificações</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-list>
+  <div *ngIf="1 > notifications.length" style="text-align: center;" class="ion-margin">Nenhuma notificação nova</div>
+  <div style="text-align: center;">
+    <ion-button *ngIf="notifications.length > 0" fill="outline" color="medium" (click)="MarkAllAsRead()" style="font-size: .7rem;">Deletar todos</ion-button>
+  </div>
+  <ion-item lines="inset" *ngFor="let notification of notifications;" button (click)="GoTo(notification.url, notification.id)">
+    <ion-icon md="{{notification.icon}}-sharp" ios="{{notification.icon}}-outline"></ion-icon>
+    <ion-label class="ion-margin">
+      <h2 style="word-wrap: break-word; white-space: normal;">{{notification.text}}</h2>
+      <ion-note>{{notification.date.toLocaleString()}}<ion-button fill="outline" color="medium" (click)="MarkAsRead(notification.id); $event.stopPropagation();" style="font-size: .65rem;" class="ion-float-right">deletar</ion-button></ion-note>
+    </ion-label>
+  </ion-item>
+</ion-list>

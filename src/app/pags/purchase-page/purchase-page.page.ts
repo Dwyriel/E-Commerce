@@ -14,6 +14,8 @@ import { Review } from 'src/app/structure/review';
 import { Rating } from 'src/app/structure/rating';
 import { ReviewService } from 'src/app/services/review.service';
 import { RatingService } from 'src/app/services/rating.service';
+import { NotificationService } from 'src/app/services/notification.service';
+import { NotificationType } from 'src/app/structure/notification';
 
 @Component({
   selector: 'app-purchase-page',
@@ -65,7 +67,7 @@ export class PurchasePagePage implements OnInit {
 
   @ViewChild(IonContent) content: IonContent;
 
-  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private productService: ProductService, private userService: UserService, private alertService: AlertService, private reviewService: ReviewService, private ratingService: RatingService, private router: Router) { }
+  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private productService: ProductService, private userService: UserService, private alertService: AlertService, private reviewService: ReviewService, private ratingService: RatingService, private router: Router, private notificationService: NotificationService) { }
 
   ngOnInit() { }
 
@@ -254,6 +256,7 @@ export class PurchasePagePage implements OnInit {
       await this.alertService.dismissLoading(this.loadingAlertID);
       await this.alertService.ShowToast("Status foi modificado");
       this.showChangeState = !this.showChangeState;
+      this.notificationService.SentNotificationToFirebase(`Status da sua compra foi modificado para ${StateString(this.stateValue)}`, `/purchase/${this.id}`, this.purchase.userId, NotificationType.boughtItemChanged);
     }).catch(async () => {
       await this.alertService.dismissLoading(this.loadingAlertID);
       await this.alertService.ShowToast("Ocorreu um erro ao modificar status");

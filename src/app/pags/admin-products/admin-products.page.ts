@@ -5,8 +5,10 @@ import { Subscription } from 'rxjs';
 import { ProductComponent } from 'src/app/components/product/product.component';
 import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { ProductService } from 'src/app/services/product.service';
 import { ReviewService } from 'src/app/services/review.service';
+import { NotificationType } from 'src/app/structure/notification';
 import { Product } from 'src/app/structure/product';
 import { User, UserType } from 'src/app/structure/user';
 
@@ -28,7 +30,7 @@ export class AdminProductsPage implements OnInit {
   private subscription2: Subscription;
   private subscription3: Subscription;
 
-  constructor(private alertService: AlertService, private router: Router, private productService: ProductService, private reviewService: ReviewService, private popoverController: PopoverController) { }
+  constructor(private alertService: AlertService, private router: Router, private productService: ProductService, private reviewService: ReviewService, private popoverController: PopoverController, private notificationService: NotificationService) { }
 
   ngOnInit() { }
 
@@ -99,6 +101,7 @@ export class AdminProductsPage implements OnInit {
       return;
     await this.alertService.presentLoading().then(ans => this.loadingAlertID = ans);
     await this.productService.UpdateVerified(product.id, !product.verified).then(async () => {
+      this.notificationService.SentNotificationToFirebase(`Seu anuncio ${product.name} foi verificado`, `/product/${product.id}`, product.sellerID, NotificationType.advertVerified);
       await this.alertService.ShowToast("Produto modificado com sucesso!");
     }).catch(async () => {
       await this.alertService.ShowToast("Ocorreu um erro, tente novamente mais tarde");

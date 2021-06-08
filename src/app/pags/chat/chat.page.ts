@@ -5,8 +5,10 @@ import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { AppResources, PlatformType } from 'src/app/services/app-info.service';
 import { ChatService } from 'src/app/services/chat.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { PurchasesService } from 'src/app/services/purchases.service';
 import { UserService } from 'src/app/services/user.service';
+import { AppNotification, NewAppNotification, NotificationType } from 'src/app/structure/notification';
 import { PurchaseChat } from 'src/app/structure/purchase-chat';
 import { Purchase } from 'src/app/structure/purchases';
 import { User } from 'src/app/structure/user';
@@ -42,7 +44,7 @@ export class ChatPage implements OnInit {
 
   @ViewChild(IonContent) content: IonContent;
 
-  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private chatService: ChatService, private userService: UserService, private alertService: AlertService, private router: Router, private navController: NavController) { }
+  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private chatService: ChatService, private userService: UserService, private alertService: AlertService, private router: Router, private navController: NavController, private notificationService: NotificationService) { }
 
   ngOnInit() {
   }
@@ -194,6 +196,7 @@ export class ChatPage implements OnInit {
       this.subscription6.unsubscribe();
     this.subscription6 = (await this.userService.Get(toBeRetrivedUserId)).subscribe(ans => {
       this.otherUser = ans;
+      this.otherUser.id = toBeRetrivedUserId;
       this.title = `Conversa: ${this.otherUser.name}`
       shouldWait = false;
     }, err => {
@@ -224,20 +227,23 @@ export class ChatPage implements OnInit {
   }
 
   async SendMessage() {
-    if (this.inputedText == "" || this.inputedText == null)
+    if (!this.inputedText || this.inputedText.trim().length < 1)
       return;
-    var chat: PurchaseChat = this.CreateMessageObject(this.inputedText);
+    var tempInputedText = this.inputedText;
+    this.inputedText = "";
+    var chat: PurchaseChat = this.CreateMessageObject(tempInputedText);
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
     this.messageSent = true;
-    await this.chatService.Add(chat).then(ans => {
-      this.inputedText = "";
+    await this.chatService.Add(chat).then(async ans => {
       this.interruptWhile = true;
       chat.date = new Date();
       this.messages.push(chat);
       this.scrollToBotton();
       this.PostMessagesSubscription();
+      this.notificationService.SentNotificationToFirebase(`Nova Mensagem de ${this.loggedUser.name}`, `/chat/${this.id}`, this.otherUser.id, NotificationType.chat);
     }).catch(err => {
+      this.inputedText = tempInputedText + this.inputedText;
       this.PostMessagesSubscription();
       this.alertService.presentAlert("Erro", "Não foi possivel enviar sua mensagem. Tente novamente.");
     });

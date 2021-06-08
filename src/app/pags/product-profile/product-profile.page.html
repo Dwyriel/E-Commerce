@@ -78,7 +78,7 @@
             <ion-item *ngIf="!asked.hasReply">
               <ion-input name="reply" [(ngModel)]=asked.vendorText required autoGrow=true></ion-input>
               <ion-row class="ion-justify-content-end commentButtons">
-                <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply(asked.id, asked.vendorText)"
+                <ion-button class="leftCommentButton" expand=full size="small" (click)="submitReply(asked.id, asked.vendorText, asked.user)"
                   >Responder</ion-button>
                 <ion-button class="rightCommentButton" expand=full size="small">Cancelar</ion-button>
               </ion-row>
@@ -86,7 +86,7 @@
           </ng-container>
         </ion-card>
       </ng-container>
-      <ion-button expand=full size="small" (click)="loadingMoreQuestions()" *ngIf="numberQuestions >= loadQuestions">Carregar mais perguntas.</ion-button>
+      <ion-button expand=full size="small" (click)="loadingMoreQuestions()" *ngIf="numberQuestions > loadQuestions">Carregar mais perguntas.</ion-button>
       <ion-button expand=full size="small" *ngIf="loadQuestions > 2" (click)="hideQuestions()">Esconder Perguntas.</ion-button>
     </div>
 
@@ -109,7 +109,7 @@
           <ion-text>{{review.text}}</ion-text>
         </div>
       </div>
-      <ion-button expand=full size="small" (click)="loadingMoreReviews()" *ngIf="numberReviews >= loadReviews">Carregar mais Reviews de usuários.</ion-button>
+      <ion-button expand=full size="small" (click)="loadingMoreReviews()" *ngIf="numberReviews > loadReviews">Carregar mais Reviews de usuários.</ion-button>
       <ion-button expand=full size="small" *ngIf="loadReviews > 2" (click)="hideReviews()">Esconder reviews.</ion-button>
     </div>
   </div>

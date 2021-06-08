@@ -4,9 +4,11 @@ import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { AppResources } from 'src/app/services/app-info.service';
 import { CartService } from 'src/app/services/cart.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { ProductService } from 'src/app/services/product.service';
 import { PurchasesService } from 'src/app/services/purchases.service';
 import { UserService } from 'src/app/services/user.service';
+import { NotificationType } from 'src/app/structure/notification';
 import { Product } from 'src/app/structure/product';
 import { NewPurchase, Purchase } from 'src/app/structure/purchases';
 import { User } from 'src/app/structure/user';
@@ -31,7 +33,7 @@ export class CartPage implements OnInit {
   private subscription2: Subscription;
 
   constructor(private userService: UserService, private alertService: AlertService, private router: Router, private prodServ: ProductService, private cartServ: CartService,
-    private purchaseService: PurchasesService) { }
+    private purchaseService: PurchasesService, private notificationService: NotificationService) { }
 
   ngOnInit() {
   }
@@ -126,9 +128,7 @@ export class CartPage implements OnInit {
     }
     while (shouldWait)
       await new Promise(resolve => setTimeout(resolve, 10));
-    //if this bugs and duplicates appear uncomment the code below: 
-    //this.products = this.products.filter((item, index, array) => index === array.findIndex(item2 => (item2.product.id === item.product.id)));
-    this.products = products;
+    this.products = products.filter((item, index, array) => index === array.findIndex(item2 => (item2.product.id === item.product.id)));
     if (this.loading) {
       await this.alertService.dismissLoading(this.loadingAlert);
       this.loading = false;
@@ -143,7 +143,7 @@ export class CartPage implements OnInit {
   }
 
   async IncreaseAmount(id: string, stock: number, currentAmount: number) {
-    if(currentAmount >= stock){
+    if (currentAmount >= stock) {
       this.alertService.presentAlert("Ops", "O produto não possui mais estoque.");
       return;
     }
@@ -176,8 +176,9 @@ export class CartPage implements OnInit {
     for (var item of this.products) {
       var shouldWait = true;
       var purchase: Purchase = NewPurchase(this.user.id, item.product.sellerID, { productID: item.product.id, amount: item.amount });
-      await this.purchaseService.Add(purchase).then(async () => {
+      await this.purchaseService.Add(purchase).then(async ans => {
         await this.prodServ.UpdateStock(item.product.id, item.product.stock - item.amount);
+        await this.notificationService.SentNotificationToFirebase(`Voce acabou de vender ${item.amount} ${item.product.name}`, `/purchase/${ans.id}`, item.product.sellerID, NotificationType.newSoldItem);
       }).catch(err => {
         this.alertService.presentAlert("Ocorreu um erro", `Produto ${item.product.name} não pode ser comprado, tente novamente mais tarde.`);
       }).finally(() => { shouldWait = false; });
