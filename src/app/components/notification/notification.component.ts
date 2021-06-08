@@ -12,6 +12,7 @@ import { AppNotification } from 'src/app/structure/notification';
 export class NotificationComponent implements OnInit {
 
   @Input('notifications') public notifications: AppNotification[];
+  @Input('isMobile') public isMobile: boolean = false;
 
   constructor(private router: Router, private notificationService: NotificationService) { }
 
@@ -35,7 +36,15 @@ export class NotificationComponent implements OnInit {
     AppResources.popovers.forEach(popover => {
       popover.dismiss();
     });
+    AppResources.modals.forEach(modal => {
+      modal.dismiss();
+    });
     //this.notificationService.Delete(id);
   }
 
+  async dismissModal() {
+    await AppResources.modals[AppResources.modals.length - 1].dismiss().then(() => {
+      AppResources.modals.pop();
+    });
+  }
 }

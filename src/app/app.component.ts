@@ -226,6 +226,17 @@ export class AppComponent {
     AppResources.popovers.push(popover);
   }
 
+  async ShowNotificationsModal() {
+    AppResources.modals = [];
+    var modal = await this.modalController.create({
+      component: NotificationComponent,
+      mode: 'md',
+      componentProps: { notifications: this.notifications, isMobile: this.isMobile }
+    });
+    modal.present();
+    AppResources.modals.push(modal);
+  }
+
   async InputEnter() {
     document.getElementById('btnSearch').click();
   }

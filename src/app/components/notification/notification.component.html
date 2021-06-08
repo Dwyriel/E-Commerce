@@ -1,3 +1,13 @@
+<ion-header translucent *ngIf="isMobile">
+  <ion-toolbar>
+    <ion-title>Notificações</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 <ion-list>
   <div *ngIf="1 > notifications.length" style="text-align: center;" class="ion-margin">Nenhuma notificação nova</div>
   <div style="text-align: center;">
