@@ -32,7 +32,7 @@ export class NotificationService {
    */
   async GetAllFromUser(id: string) {
     var notification = new AppNotification();
-    return this.fireDatabase.collection<AppNotification>(this.collection, ref => ref.where('userId', '==', id)).snapshotChanges().pipe(map(
+    return this.fireDatabase.collection<AppNotification>(this.collection, ref => ref.where('userId', '==', id).orderBy('date', 'desc')).snapshotChanges().pipe(map(
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date), icon: GetIconForNotification(d.payload.doc.data().from), equals: notification.equals, urlEquals: notification.urlEquals }))));
   }
 
@@ -69,6 +69,12 @@ export class NotificationService {
     return await this.fireDatabase.collection(this.collection).doc(id).delete();
   }
 
+  /** A method that takes all the required params, creates a new notification and sends it to the DB.
+   * @param text the text, or description, of the notification.
+   * @param url the url the notification should send the user to.
+   * @param notificationForId the id of the user that should be notificated.
+   * @param from the type of notification, or more precisely, where the notification comes from.
+   */
   async SentNotificationToFirebase(text: string, url: string, notificationForId: string, from: NotificationType) {
     var subscription = (await this.GetAllFromUser(notificationForId)).subscribe(async ans => {
       var equals: boolean = false;

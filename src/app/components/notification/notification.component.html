@@ -1,5 +1,8 @@
 <ion-list>
   <div *ngIf="1 > notifications.length" style="text-align: center;" class="ion-margin">Nenhuma notificação nova</div>
+  <div style="text-align: center;">
+    <ion-button *ngIf="notifications.length > 0" fill="outline" color="medium" (click)="MarkAllAsRead()" style="font-size: .7rem;">Deletar todos</ion-button>
+  </div>
   <ion-item lines="inset" *ngFor="let notification of notifications;" button (click)="GoTo(notification.url, notification.id)">
     <ion-icon md="{{notification.icon}}-sharp" ios="{{notification.icon}}-outline"></ion-icon>
     <ion-label class="ion-margin">

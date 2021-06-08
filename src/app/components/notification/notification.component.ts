@@ -17,6 +17,13 @@ export class NotificationComponent implements OnInit {
 
   ngOnInit() { }
 
+  MarkAllAsRead() {
+    for (let notification of this.notifications) {
+      this.notificationService.Delete(notification.id);
+    }
+    this.notifications = [];
+  }
+
   MarkAsRead(id: string) {
     this.notificationService.Delete(id);
     var index = this.notifications.findIndex(item => item.id === id);
@@ -28,7 +35,7 @@ export class NotificationComponent implements OnInit {
     AppResources.popovers.forEach(popover => {
       popover.dismiss();
     });
-    this.notificationService.Delete(id);
+    //this.notificationService.Delete(id);
   }
 
 }
