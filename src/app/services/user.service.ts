@@ -107,10 +107,14 @@ export class UserService {
   async UpdateCart(id: string, cart: { productID: string, amount: number }[]) {
     return await this.fireDatabase.collection(this.collection).doc(id).update({ cart: [...cart] });
   }
-  async UpdateProdList(id: string, user: User) {
-    return await this.fireDatabase.collection(this.collection).doc(id).update({
-        viewList: user.viewList
 
+  /** Adds or updates the user's previously visited array (viewList).
+   * @param id the user's id.
+   * @param arrayList the viewList array.
+   */
+  async UpdateViewList(id: string, arrayList: any) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({
+      viewList: arrayList
     });
   }
 

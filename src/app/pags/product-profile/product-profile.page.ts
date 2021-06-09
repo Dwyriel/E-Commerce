@@ -25,6 +25,7 @@ export class ProductProfilePage implements OnInit {
   private id: string;
   private loadingAlert: string;
   private newQuestion: Question = new Question();
+  private gotProduct: boolean = false;
 
   public isMobile: boolean;
   public product: Product = new Product();
@@ -76,10 +77,10 @@ export class ProductProfilePage implements OnInit {
   }
 
   ionViewWillEnter() {
+    this.gotProduct = false;
     this.GetPlataformInfo();
     this.getProduct();
     this.getLoggedUser();
-    this.AddRecentView();
   }
 
   ionViewWillLeave() {
@@ -95,6 +96,7 @@ export class ProductProfilePage implements OnInit {
     this.newQuestion = new Question();
     this.loadQuestions = 2;
     this.loadReviews = 2;
+    this.gotProduct = false;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -141,6 +143,7 @@ export class ProductProfilePage implements OnInit {
       this.product = { ...ans, fillSubCategory: this.product.fillSubCategory, calculateAvgRating: this.product.calculateAvgRating };
       this.product.id = this.id;
       this.title = this.product.name;
+      this.gotProduct = true;
       var awaits = { seller: true, reviews: true, questions: true }
       this.GetSeller(awaits);
       this.getQuestions(awaits);
@@ -219,7 +222,44 @@ export class ProductProfilePage implements OnInit {
       this.subscription5.unsubscribe();
     this.subscription5 = AppResources.GetUserInfo().subscribe(async ans => {
       this.loggedUser = ans;
+      this.AddRecentView();
     });
+  }
+
+  async AddRecentView() {
+    if (!this.loggedUser) {
+      await this.router.navigate(["/login"]);
+      return;
+    }
+    if (!this.loggedUser.viewList)
+      this.loggedUser.viewList = [];
+    await this.alertService.presentLoading();
+    if (this.loggedUser.viewList.length == 0) {
+      this.loggedUser.viewList[0] = '1';
+      this.loggedUser.viewList[1] = this.id;
+      this.loggedUser.viewList[2] = '3';
+      this.loggedUser.viewList[3] = '4';
+      await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser).then(async ans => {
+      })
+    } else if (this.loggedUser.viewList[0] == '1') {
+      this.loggedUser.viewList[0] = '2';
+      this.loggedUser.viewList[2] = this.id;
+      await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser).then(async ans => {
+      })
+    }
+    else if (this.loggedUser.viewList[0] == '2') {
+      this.loggedUser.viewList[0] = '3';
+      this.loggedUser.viewList[3] = this.id;
+      await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser).then(async ans => {
+      })
+    }
+    else if (this.loggedUser.viewList[0] == '3') {
+      this.loggedUser.viewList[0] = '1';
+      this.loggedUser.viewList[1] = this.id;
+      await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser).then(async ans => {
+      })
+    }
+    await this.alertService.dismissLoading();
   }
 
   async ErrorLoading(title: string, description: string) {
@@ -244,41 +284,6 @@ export class ProductProfilePage implements OnInit {
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.presentAlert("Oops", "There was a problem adding the item to the cart");
     });
-  }
-  async AddRecentView(){
-    if (!this.loggedUser) {
-      await this.router.navigate(["/login"]);
-      return;
-    }
-    if (!this.loggedUser.viewList)
-    this.loggedUser.viewList = [];
-    await this.alertService.presentLoading();
-      if (this.loggedUser.viewList.length == 0){
-        this.loggedUser.viewList[0] = '1';
-        this.loggedUser.viewList[1] = this.id;
-        this.loggedUser.viewList[2] = '3';
-        this.loggedUser.viewList[3] = '4';
-    await this.userService.UpdateProdList(this.loggedUser.id, this.loggedUser).then(async ans => {
-    })
-    } else if (this.loggedUser.viewList[0] == '1'){
-        this.loggedUser.viewList[0] = '2';
-        this.loggedUser.viewList[2] = this.id;
-        await this.userService.UpdateProdList(this.loggedUser.id, this.loggedUser).then(async ans => {
-        })
-      }
-      else if (this.loggedUser.viewList[0] == '2'){
-        this.loggedUser.viewList[0] = '3';
-        this.loggedUser.viewList[3] = this.id;
-        await this.userService.UpdateProdList(this.loggedUser.id, this.loggedUser).then(async ans => {
-        })
-      }
-      else if (this.loggedUser.viewList[0] == '3'){
-        this.loggedUser.viewList[0] = '1';
-        this.loggedUser.viewList[1] = this.id;
-        await this.userService.UpdateProdList(this.loggedUser.id, this.loggedUser).then(async ans => {
-        })
-      } 
-      await this.alertService.dismissLoading();
   }
 
   async submitButton() {
