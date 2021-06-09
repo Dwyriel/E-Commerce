@@ -76,11 +76,15 @@ export class ProductProfilePage implements OnInit {
   ngOnInit() {
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     this.gotProduct = false;
     this.GetPlataformInfo();
-    this.getProduct();
-    this.getLoggedUser();
+    await this.getProduct();
+    await this.getLoggedUser();
+  }
+
+  ionViewDidEnter() {
+    this.AddRecentView();
   }
 
   ionViewWillLeave() {
@@ -219,20 +223,18 @@ export class ProductProfilePage implements OnInit {
   }
 
   async getLoggedUser() {
-    var shouldWait = true;
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
     this.subscription5 = AppResources.GetUserInfo().subscribe(async ans => {
       this.loggedUser = ans;
-      shouldWait = (ans) ? false : true;
-      setTimeout(() => shouldWait = false, 5000);
     });
-    while (shouldWait)
-      await new Promise(resolve => setTimeout(resolve, 10));
-    this.AddRecentView();
   }
 
   async AddRecentView() {
+    var shouldWait = (this.loggedUser) ? false : true;
+    setTimeout(() => shouldWait = false, 3000);
+    while (shouldWait && !this.loggedUser)
+      await new Promise(resolve => setTimeout(resolve, 10));
     if (!this.loggedUser)
       return;
     if (!this.loggedUser.viewList)
