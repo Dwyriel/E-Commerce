@@ -39,7 +39,7 @@ export class NotificationComponent implements OnInit {
     AppResources.modals.forEach(modal => {
       modal.dismiss();
     });
-    //this.notificationService.Delete(id);
+    this.notificationService.Delete(id);
   }
 
   async dismissModal() {
