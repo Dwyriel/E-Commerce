@@ -107,6 +107,12 @@ export class UserService {
   async UpdateCart(id: string, cart: { productID: string, amount: number }[]) {
     return await this.fireDatabase.collection(this.collection).doc(id).update({ cart: [...cart] });
   }
+  async UpdateProdList(id: string, user: User) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({
+        viewList: user.viewList
+
+    });
+  }
 
   /** WARNING: DANGEROUS. 
    * deletes the user's information on the database. should be used with a lot of caution. 

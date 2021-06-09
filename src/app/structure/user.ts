@@ -15,6 +15,7 @@ export class User {
     avgRating: number;
     ratings: Rating[];
     cart: { productID: string, amount: number }[] = [];
+    viewList: string [] = [];
 
     /**
      * Calculates and attributes the percentage of good/bad ratings to avgRating.

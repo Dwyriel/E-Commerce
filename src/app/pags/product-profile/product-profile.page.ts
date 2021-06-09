@@ -79,6 +79,7 @@ export class ProductProfilePage implements OnInit {
     this.GetPlataformInfo();
     this.getProduct();
     this.getLoggedUser();
+    this.AddRecentView();
   }
 
   ionViewWillLeave() {
@@ -243,6 +244,41 @@ export class ProductProfilePage implements OnInit {
       await this.alertService.dismissLoading(this.loadingAlert);
       await this.alertService.presentAlert("Oops", "There was a problem adding the item to the cart");
     });
+  }
+  async AddRecentView(){
+    if (!this.loggedUser) {
+      await this.router.navigate(["/login"]);
+      return;
+    }
+    if (!this.loggedUser.viewList)
+    this.loggedUser.viewList = [];
+    await this.alertService.presentLoading();
+      if (this.loggedUser.viewList.length == 0){
+        this.loggedUser.viewList[0] = '1';
+        this.loggedUser.viewList[1] = this.id;
+        this.loggedUser.viewList[2] = '3';
+        this.loggedUser.viewList[3] = '4';
+    await this.userService.UpdateProdList(this.loggedUser.id, this.loggedUser).then(async ans => {
+    })
+    } else if (this.loggedUser.viewList[0] == '1'){
+        this.loggedUser.viewList[0] = '2';
+        this.loggedUser.viewList[2] = this.id;
+        await this.userService.UpdateProdList(this.loggedUser.id, this.loggedUser).then(async ans => {
+        })
+      }
+      else if (this.loggedUser.viewList[0] == '2'){
+        this.loggedUser.viewList[0] = '3';
+        this.loggedUser.viewList[3] = this.id;
+        await this.userService.UpdateProdList(this.loggedUser.id, this.loggedUser).then(async ans => {
+        })
+      }
+      else if (this.loggedUser.viewList[0] == '3'){
+        this.loggedUser.viewList[0] = '1';
+        this.loggedUser.viewList[1] = this.id;
+        await this.userService.UpdateProdList(this.loggedUser.id, this.loggedUser).then(async ans => {
+        })
+      } 
+      await this.alertService.dismissLoading();
   }
 
   async submitButton() {
