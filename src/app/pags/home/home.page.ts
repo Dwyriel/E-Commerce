@@ -5,6 +5,8 @@ import { GetViewListInOrder, User } from 'src/app/structure/user';
 import { ProductService } from 'src/app/services/product.service';
 import { Product } from 'src/app/structure/product';
 import { AppResources } from 'src/app/services/app-info.service';
+import { PurchasesService } from 'src/app/services/purchases.service';
+import { Purchase } from 'src/app/structure/purchases';
 
 @Component({
   selector: 'app-home',
@@ -15,25 +17,37 @@ export class HomePage {
   public loggedUser: User = null;
   public isMobile: boolean;
   public prevViewedProducts: Product[] = [];
+  public sales: Purchase[] = [];
+  public purchases: Purchase[] = [];
+
+  private alreadyLoaded: boolean = false;
 
   //Subscriptions
   private subscription1: Subscription;
   private subscription2: Subscription;
   private subscription3: Subscription;
+  private subscription4: Subscription;
+  private subscription5: Subscription;
+  private subscription6: Subscription;
 
   constructor(
     private productService: ProductService,
+    private purchaseService: PurchasesService,
   ) { }
 
   ngOnInit() {
   }
 
   ionViewWillEnter() {
-    this.GetPlataformInfo();
-    this.getLoggedUser();
+    if (!this.alreadyLoaded) {
+      this.GetPlataformInfo();
+      this.getLoggedUser();
+      this.alreadyLoaded = true;
+    }
   }
 
   ionViewWillLeave() {
+    return;
     this.loggedUser = null;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
@@ -41,6 +55,8 @@ export class HomePage {
       this.subscription2.unsubscribe();
     if (this.subscription3 && !this.subscription3.closed)
       this.subscription3.unsubscribe();
+    if (this.subscription4 && !this.subscription4.closed)
+      this.subscription4.unsubscribe();
   }
 
   GetPlataformInfo() {
@@ -58,7 +74,11 @@ export class HomePage {
       this.subscription2.unsubscribe();
     this.subscription2 = AppResources.GetUserInfo().subscribe(async ans => {
       this.loggedUser = ans;
-      this.GetPreviouslyViewedProducts((ans && ans.viewList && ans.viewList.length > 0) ? ans.viewList : []);
+      if (!ans)
+        return;
+      this.GetPreviouslyViewedProducts((ans.viewList && ans.viewList.length > 0) ? ans.viewList : []);
+      this.GetRecentSales();
+      this.GetRecentPuchases();
     });
   }
 
@@ -69,7 +89,7 @@ export class HomePage {
     var subs: Subscription[] = [];
     var i = 0;
     var shouldWait = true;
-    var tempProducts: Product[] = []
+    var tempProducts: Product[] = [];
     for (let id of previouslyViewedProductIds) {
       var shouldWait2 = true;
       subs.push((await this.productService.Get(id)).subscribe(ans => {
@@ -94,5 +114,21 @@ export class HomePage {
       prod.fillSubCategory();
     }
     this.prevViewedProducts = tempProducts.filter((product, index, array) => index === array.findIndex(prod => (prod.id === product.id)));
+  }
+
+  async GetRecentSales() {
+    if (this.subscription4 && !this.subscription4.closed)
+      this.subscription4.unsubscribe();
+    this.subscription4 = (await this.purchaseService.GetAllFromSellerWithLimit(this.loggedUser.id, 3)).subscribe(ans => {
+      this.sales = ans;
+    })
+  }
+
+  async GetRecentPuchases() {
+    if (this.subscription4 && !this.subscription4.closed)
+      this.subscription4.unsubscribe();
+    this.subscription4 = (await this.purchaseService.GetAllFromUserWithLimit(this.loggedUser.id, 3)).subscribe(ans => {
+      this.purchases = ans;
+    })
   }
 }
