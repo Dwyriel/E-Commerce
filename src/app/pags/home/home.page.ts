@@ -17,8 +17,8 @@ export class HomePage {
   public loggedUser: User = null;
   public isMobile: boolean;
   public prevViewedProducts: Product[] = [];
-  public sales: Purchase[] = [];
-  public purchases: Purchase[] = [];
+  public salesObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
+  public purchasesObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
 
   private alreadyLoaded: boolean = false;
 
@@ -86,13 +86,13 @@ export class HomePage {
     var previouslyViewedProductIds = GetViewListInOrder(viewList);
     if (previouslyViewedProductIds.length < 1)
       return;
-    var subs: Subscription[] = [];
+    var subscriptions: Subscription[] = [];
     var i = 0;
     var shouldWait = true;
     var tempProducts: Product[] = [];
     for (let id of previouslyViewedProductIds) {
       var shouldWait2 = true;
-      subs.push((await this.productService.Get(id)).subscribe(ans => {
+      subscriptions.push((await this.productService.Get(id)).subscribe(ans => {
         tempProducts.push({ ...ans, id: id, fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating })
         i++;
         if (i >= previouslyViewedProductIds.length)
@@ -107,7 +107,7 @@ export class HomePage {
     }
     while (shouldWait)
       await new Promise(resolve => setTimeout(resolve, 10));
-    for (let sub of subs)
+    for (let sub of subscriptions)
       sub.unsubscribe();
     for (let prod of tempProducts) {
       prod.calculateAvgRating();
@@ -119,16 +119,72 @@ export class HomePage {
   async GetRecentSales() {
     if (this.subscription4 && !this.subscription4.closed)
       this.subscription4.unsubscribe();
-    this.subscription4 = (await this.purchaseService.GetAllFromSellerWithLimit(this.loggedUser.id, 3)).subscribe(ans => {
-      this.sales = ans;
-    })
+    this.subscription4 = (await this.purchaseService.GetAllFromSellerWithLimit(this.loggedUser.id, 3)).subscribe(async ans => {
+      if (!ans || ans.length < 1) {
+        this.salesObjs = [];
+        return;
+      }
+      var subscriptions: Subscription[] = [];
+      var shouldWait: boolean = true;
+      var index: number = 0;
+      var arrayLength = ans.length;
+      var tempObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
+      for (let purchase of ans) {
+        let shouldWait2: boolean = true;
+        subscriptions.push((await this.productService.Get(purchase.item.productID)).subscribe(ans2 => {
+          tempObjs.push({ exemploProduct: ans2, purchase: purchase })
+          index++;
+          if (index >= arrayLength)
+            shouldWait = false;
+          shouldWait2 = false;
+        }, err => {
+          shouldWait = false;
+          shouldWait2 = false;
+        }));
+        while (shouldWait2)
+          await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      while (shouldWait)
+        await new Promise(resolve => setTimeout(resolve, 10));
+      this.salesObjs = tempObjs;
+      for (let sub of subscriptions)
+        sub.unsubscribe();
+    });
   }
 
   async GetRecentPuchases() {
     if (this.subscription4 && !this.subscription4.closed)
       this.subscription4.unsubscribe();
-    this.subscription4 = (await this.purchaseService.GetAllFromUserWithLimit(this.loggedUser.id, 3)).subscribe(ans => {
-      this.purchases = ans;
-    })
+    this.subscription4 = (await this.purchaseService.GetAllFromUserWithLimit(this.loggedUser.id, 3)).subscribe(async ans => {
+      if (!ans || ans.length < 1) {
+        this.purchasesObjs = [];
+        return;
+      }
+      var subscriptions: Subscription[] = [];
+      var shouldWait: boolean = true;
+      var index: number = 0;
+      var arrayLength = ans.length;
+      var tempObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
+      for (let purchase of ans) {
+        let shouldWait2: boolean = true;
+        subscriptions.push((await this.productService.Get(purchase.item.productID)).subscribe(ans2 => {
+          tempObjs.push({ exemploProduct: ans2, purchase: purchase })
+          index++;
+          if (index >= arrayLength)
+            shouldWait = false;
+          shouldWait2 = false;
+        }, err => {
+          shouldWait = false;
+          shouldWait2 = false;
+        }));
+        while (shouldWait2)
+          await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      while (shouldWait)
+        await new Promise(resolve => setTimeout(resolve, 10));
+      this.purchasesObjs = tempObjs;
+      for (let sub of subscriptions)
+        sub.unsubscribe();
+    });
   }
 }
