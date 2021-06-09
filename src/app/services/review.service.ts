@@ -47,6 +47,16 @@ export class ReviewService {
       ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
   }
 
+  /**
+   * Retrieves some of the latest reviews.
+   * @param limit the amount of reviews to get.
+   * @returns an observable containing some of the latest review.
+   */
+  async GetRecentReviews(limit: number) {
+    return this.fireDatabase.collection<Review>(this.collection, ref => ref.orderBy('date', 'desc').limit(limit)).snapshotChanges().pipe(map(
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+  }
+
   /** Updates the review of a product.
    * @param id the id of the review.
    * @param others the attributes of the review

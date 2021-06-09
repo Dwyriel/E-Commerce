@@ -7,6 +7,7 @@ import { Product } from 'src/app/structure/product';
 import { AppResources } from 'src/app/services/app-info.service';
 import { PurchasesService } from 'src/app/services/purchases.service';
 import { Purchase } from 'src/app/structure/purchases';
+import { ReviewService } from 'src/app/services/review.service';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +18,7 @@ export class HomePage {
   public loggedUser: User = null;
   public isMobile: boolean;
   public prevViewedProducts: Product[] = [];
+  public recentlyReviewedProducts: Product[] = [];
   public salesObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
   public purchasesObjs: { exemploProduct: Product, purchase: Purchase }[] = [];
 
@@ -33,6 +35,7 @@ export class HomePage {
   constructor(
     private productService: ProductService,
     private purchaseService: PurchasesService,
+    private reviewService: ReviewService,
   ) { }
 
   ngOnInit() {
@@ -41,6 +44,7 @@ export class HomePage {
   ionViewWillEnter() {
     if (!this.alreadyLoaded) {
       this.GetPlataformInfo();
+      this.GetRecentlyReviewed();
       this.getLoggedUser();
       this.alreadyLoaded = true;
     }
@@ -183,6 +187,42 @@ export class HomePage {
       while (shouldWait)
         await new Promise(resolve => setTimeout(resolve, 10));
       this.purchasesObjs = tempObjs;
+      for (let sub of subscriptions)
+        sub.unsubscribe();
+    });
+  }
+
+  async GetRecentlyReviewed() {
+    if (this.subscription5 && !this.subscription5.closed)
+      this.subscription5.unsubscribe();
+    this.subscription5 = (await this.reviewService.GetRecentReviews(9)).subscribe(async ans => {
+      if (!ans || ans.length < 1) {
+        this.recentlyReviewedProducts = [];
+        return;
+      }
+      var subscriptions: Subscription[] = [];
+      var shouldWait: boolean = true;
+      var index: number = 0;
+      var arrayLength = ans.length;
+      var tempProducts: Product[] = [];
+      for (let review of ans) {
+        let shouldWait2 = true;
+        subscriptions.push((await this.productService.Get(review.productID)).subscribe(ans2 => {
+          tempProducts.push(ans2);
+          index++;
+          if (index >= arrayLength)
+            shouldWait = false;
+          shouldWait2 = false;
+        }, err => {
+          shouldWait = false;
+          shouldWait2 = false;
+        }));
+        while (shouldWait2)
+          await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      while (shouldWait)
+        await new Promise(resolve => setTimeout(resolve, 10));
+      this.recentlyReviewedProducts = tempProducts;
       for (let sub of subscriptions)
         sub.unsubscribe();
     });
