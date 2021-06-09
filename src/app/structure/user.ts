@@ -40,6 +40,8 @@ export enum UserType {
 }
 
 export function GetViewListInOrder(viewList: any[]) {
+    if (isNaN(viewList[0]))
+        return [];
     var tempIndex = viewList[0];
     var arrayLength = viewList.length;
     var tempIndexes: Array<any> = [];

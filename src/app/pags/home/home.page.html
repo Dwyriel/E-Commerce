@@ -1,14 +1,11 @@
 <app-header title="Início" segment=0></app-header>
 
 <ion-content [fullscreen]="true">
-<app-header title="Início" segment=1></app-header>
+  <app-header title="Início" segment=1></app-header>
 
   <div id="container">
-    {{test}}
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-    <ion-button routerLink="/ADMproducts">ADMproducts</ion-button>
-    <ion-button routerLink="/productForm">test new product</ion-button>
-    <ion-button routerLink="/profile/qWDqyK5uCcMSYomy9aA0J1U7Rel2">other profile</ion-button>
+    <div *ngFor="let product of prevViewedProducts">
+      <p>{{product.name}}</p>
+    </div>
   </div>
 </ion-content>
