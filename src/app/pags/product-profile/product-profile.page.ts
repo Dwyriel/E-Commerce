@@ -153,6 +153,7 @@ export class ProductProfilePage implements OnInit {
       this.product.calculateAvgRating();
       await this.alertService.dismissLoading(this.loadingAlert);
     }, async err => {
+      this.gotProduct = true;
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das informações, tente denovo daqui a pouco.")
     });
   }
@@ -218,48 +219,63 @@ export class ProductProfilePage implements OnInit {
   }
 
   async getLoggedUser() {
+    var shouldWait = true;
     if (this.subscription5 && !this.subscription5.closed)
       this.subscription5.unsubscribe();
     this.subscription5 = AppResources.GetUserInfo().subscribe(async ans => {
       this.loggedUser = ans;
-      this.AddRecentView();
+      shouldWait = (ans) ? false : true;
+      setTimeout(() => shouldWait = false, 5000);
     });
+    while (shouldWait)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    this.AddRecentView();
   }
 
   async AddRecentView() {
-    if (!this.loggedUser) {
-      await this.router.navigate(["/login"]);
+    if (!this.loggedUser)
       return;
-    }
     if (!this.loggedUser.viewList)
       this.loggedUser.viewList = [];
-    await this.alertService.presentLoading();
-    if (this.loggedUser.viewList.length == 0) {
-      this.loggedUser.viewList[0] = '1';
-      this.loggedUser.viewList[1] = this.id;
-      this.loggedUser.viewList[2] = '3';
-      this.loggedUser.viewList[3] = '4';
-      await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser).then(async ans => {
-      })
-    } else if (this.loggedUser.viewList[0] == '1') {
-      this.loggedUser.viewList[0] = '2';
-      this.loggedUser.viewList[2] = this.id;
-      await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser).then(async ans => {
-      })
+    if (!this.loggedUser.viewList[0] || this.loggedUser.viewList[0] >= 3) {
+      this.PutOnViewList(1);
+      return;
     }
-    else if (this.loggedUser.viewList[0] == '2') {
-      this.loggedUser.viewList[0] = '3';
-      this.loggedUser.viewList[3] = this.id;
-      await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser).then(async ans => {
-      })
+    this.PutOnViewList(this.loggedUser.viewList[0] + 1);
+  }
+
+  async PutOnViewList(nextIndex: number) {
+    while (!this.gotProduct)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    if (!this.product || !this.product.id)
+      return;
+    this.PutIdInArray(nextIndex);
+    await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser.viewList).catch(err => {
+      console.log(err);
+    });
+  }
+
+  PutIdInArray(nextIndex: number) {
+    var indexOfRepeated: number = null;
+    for (let i = 1; i < 4; i++) {
+      if (this.loggedUser.viewList[i] == this.product.id)
+        indexOfRepeated = i;
     }
-    else if (this.loggedUser.viewList[0] == '3') {
-      this.loggedUser.viewList[0] = '1';
-      this.loggedUser.viewList[1] = this.id;
-      await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser).then(async ans => {
-      })
+    if (!indexOfRepeated) {
+      this.loggedUser.viewList[0] = nextIndex;
+      this.loggedUser.viewList[nextIndex] = this.product.id;
+      return;
     }
-    await this.alertService.dismissLoading();
+    if (indexOfRepeated == this.loggedUser.viewList[0])
+      return;
+    if (indexOfRepeated == nextIndex) {
+      this.loggedUser.viewList[0] = nextIndex;
+      return;
+    }
+    var currentIndex = this.loggedUser.viewList[0];
+    var tempValue = this.loggedUser.viewList[currentIndex];
+    this.loggedUser.viewList[currentIndex] = this.loggedUser.viewList[indexOfRepeated];
+    this.loggedUser.viewList[indexOfRepeated] = tempValue;
   }
 
   async ErrorLoading(title: string, description: string) {

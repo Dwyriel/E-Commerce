@@ -110,11 +110,11 @@ export class UserService {
 
   /** Adds or updates the user's previously visited array (viewList).
    * @param id the user's id.
-   * @param arrayList the viewList array.
+   * @param viewList the viewList array.
    */
-  async UpdateViewList(id: string, arrayList: any) {
+  async UpdateViewList(id: string, viewList: any[]) {
     return await this.fireDatabase.collection(this.collection).doc(id).update({
-      viewList: arrayList
+      viewList: viewList
     });
   }
 
