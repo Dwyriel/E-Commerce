@@ -150,7 +150,7 @@ export class HomePage {
       }
       while (shouldWait)
         await new Promise(resolve => setTimeout(resolve, 10));
-      this.salesObjs = tempObjs;
+      this.salesObjs = tempObjs.filter((item, index, array) => index === array.findIndex(item2 => (item2.purchase.id === item.purchase.id)));
       for (let sub of subscriptions)
         sub.unsubscribe();
     });
@@ -186,7 +186,7 @@ export class HomePage {
       }
       while (shouldWait)
         await new Promise(resolve => setTimeout(resolve, 10));
-      this.purchasesObjs = tempObjs;
+      this.purchasesObjs = tempObjs.filter((item, index, array) => index === array.findIndex(item2 => (item2.purchase.id === item.purchase.id)));
       for (let sub of subscriptions)
         sub.unsubscribe();
     });
@@ -222,7 +222,7 @@ export class HomePage {
       }
       while (shouldWait)
         await new Promise(resolve => setTimeout(resolve, 10));
-      this.recentlyReviewedProducts = tempProducts;
+      this.recentlyReviewedProducts = tempProducts.filter((product, index, array) => index === array.findIndex(prod => (prod.id === product.id)));
       for (let sub of subscriptions)
         sub.unsubscribe();
     });

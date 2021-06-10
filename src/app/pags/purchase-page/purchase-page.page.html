@@ -8,6 +8,7 @@
         <ion-slide *ngFor="let photo of product.gallery; let i = index">
           <ion-img [src]="photo"></ion-img>
         </ion-slide>
+        <img *ngIf="1 > product.gallery?.length" [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'">
       </ion-slides>
       <ion-item *ngIf="productLoaded">
         <ion-label>Produto</ion-label>

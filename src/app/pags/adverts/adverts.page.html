@@ -9,7 +9,7 @@
       <div style="text-align: center;" *ngIf="!adverts || (adverts && 1 > adverts.length)">Nenhum item encontrado.</div>
       <ion-item-sliding *ngFor="let product of adverts;">
         <ion-item lines="inset" routerLink="/productForm/{{product.id}}">
-          <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
+          <img [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'" [alt]="product.name">
           <ion-label>
             <h2>{{product.name}}<span style="font-size: .75rem;" class="ion-float-right">Stock: {{product.stock}}</span></h2>
             <h3>{{product.price | currency:'BRL' }}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span></h3>

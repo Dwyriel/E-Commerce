@@ -9,7 +9,7 @@
       <div style="text-align: center;" *ngIf="!products || (products && 1 > products.length)">Nenhum item encontrado.</div>
       <ion-item-sliding *ngFor="let product of products;">
         <ion-item lines="inset" button (click)="ShowProduct(product)">
-          <img *ngIf="product.gallery?.length > 0" [src]="product.gallery[0]" [alt]="product.name">
+          <img [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'" [alt]="product.name">
           <ion-label>
             <h2>{{product.name}}</h2>
             <h3>{{product.price | currency:'BRL' }}</h3>
