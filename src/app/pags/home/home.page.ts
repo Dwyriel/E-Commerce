@@ -208,7 +208,7 @@ export class HomePage {
       for (let review of ans) {
         let shouldWait2 = true;
         subscriptions.push((await this.productService.Get(review.productID)).subscribe(ans2 => {
-          tempProducts.push(ans2);
+          tempProducts.push({ ...ans2, id: review.productID, fillSubCategory: new Product().fillSubCategory, calculateAvgRating: new Product().calculateAvgRating });
           index++;
           if (index >= arrayLength)
             shouldWait = false;
