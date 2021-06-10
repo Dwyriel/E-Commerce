@@ -17,6 +17,10 @@
         <ion-label>Quantidade</ion-label>
         <ion-text>{{purchase.item.amount}}</ion-text>
       </ion-item>
+      <ion-item *ngIf="purchaseLoaded && productLoaded">
+        <ion-label>Valor</ion-label>
+        <ion-text>{{purchase.item.amount * product.price}}</ion-text>
+      </ion-item>
       <ion-item *ngIf="purchaseLoaded">
         <ion-label>Status</ion-label>
         <ion-text>{{StateToString(purchase.state)}}</ion-text>

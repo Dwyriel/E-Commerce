@@ -6,7 +6,7 @@ import { ProductService } from 'src/app/services/product.service';
 import { Product } from 'src/app/structure/product';
 import { AppResources } from 'src/app/services/app-info.service';
 import { PurchasesService } from 'src/app/services/purchases.service';
-import { Purchase } from 'src/app/structure/purchases';
+import { Purchase, State, StateString } from 'src/app/structure/purchases';
 import { ReviewService } from 'src/app/services/review.service';
 
 @Component({
@@ -226,5 +226,9 @@ export class HomePage {
       for (let sub of subscriptions)
         sub.unsubscribe();
     });
+  }
+
+  StateToString(state: State) {
+    return StateString(state);
   }
 }

@@ -4,10 +4,11 @@
       <ion-slide *ngFor="let photo of product.gallery; let i = index">
         <ion-img [src]="photo"></ion-img>
       </ion-slide>
+      <ion-img *ngIf="1 > product.gallery" src="assets/sem-foto.png"></ion-img>
     </ion-slides>
     <h2>{{product.name}}</h2>
     <p>{{product.price | currency:'BRL'}}</p>
-    <h3 >Descrição:</h3>
+    <h3>Descrição:</h3>
     <p>
       <ion-text>{{product.description}}</ion-text>
     </p>
