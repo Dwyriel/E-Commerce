@@ -54,6 +54,27 @@ export class PurchasesService {
   }
 
   /**
+   * Retrieves all the purchases of an user.
+   * @param id the id of the user.
+   * @param limit the number of documents to get.
+   * @returns an observable containing all the user's purchases.
+   */
+  async GetAllFromUserWithLimit(id: string, limit: number) {
+    return this.fireDatabase.collection<Purchase>(this.collection, ref => ref.where('userId', '==', id).orderBy('date', "desc").limit(limit)).snapshotChanges().pipe(map(ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date), finishDate: (d.payload.doc.data().finishDate) ? new Date(d.payload.doc.data().finishDate) : undefined }))));
+  }
+
+  /**
+   * Retrieves all the sales of a seller.
+   * @param id the id of the seller.
+   * @param limit the number of documents to get.
+   * @returns an observable containing all the seller's sales.
+   */
+  async GetAllFromSellerWithLimit(id: string, limit: number) {
+    return this.fireDatabase.collection<Purchase>(this.collection, ref => ref.where('sellerId', '==', id).orderBy('date', "desc").limit(limit)).snapshotChanges().pipe(map(
+      ans => ans.map(d => ({ id: d.payload.doc.id, ...d.payload.doc.data(), date: new Date(d.payload.doc.data().date) }))));
+  }
+
+  /**
    * Updates the state of a purchase
    * @param id the id of the purchase.
    * @param state the new state that the purchase will receive.

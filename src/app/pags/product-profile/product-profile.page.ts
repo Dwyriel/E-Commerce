@@ -25,6 +25,7 @@ export class ProductProfilePage implements OnInit {
   private id: string;
   private loadingAlert: string;
   private newQuestion: Question = new Question();
+  private gotProduct: boolean = false;
 
   public isMobile: boolean;
   public product: Product = new Product();
@@ -75,10 +76,15 @@ export class ProductProfilePage implements OnInit {
   ngOnInit() {
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
+    this.gotProduct = false;
     this.GetPlataformInfo();
-    this.getProduct();
-    this.getLoggedUser();
+    await this.getProduct();
+    await this.getLoggedUser();
+  }
+
+  ionViewDidEnter() {
+    this.AddRecentView();
   }
 
   ionViewWillLeave() {
@@ -94,6 +100,7 @@ export class ProductProfilePage implements OnInit {
     this.newQuestion = new Question();
     this.loadQuestions = 2;
     this.loadReviews = 2;
+    this.gotProduct = false;
     if (this.subscription1 && !this.subscription1.closed)
       this.subscription1.unsubscribe();
     if (this.subscription2 && !this.subscription2.closed)
@@ -140,6 +147,7 @@ export class ProductProfilePage implements OnInit {
       this.product = { ...ans, fillSubCategory: this.product.fillSubCategory, calculateAvgRating: this.product.calculateAvgRating };
       this.product.id = this.id;
       this.title = this.product.name;
+      this.gotProduct = true;
       var awaits = { seller: true, reviews: true, questions: true }
       this.GetSeller(awaits);
       this.getQuestions(awaits);
@@ -149,6 +157,7 @@ export class ProductProfilePage implements OnInit {
       this.product.calculateAvgRating();
       await this.alertService.dismissLoading(this.loadingAlert);
     }, async err => {
+      this.gotProduct = true;
       this.ErrorLoading("Ops", "Ocorreu um erro durante o carregamento das informações, tente denovo daqui a pouco.")
     });
   }
@@ -219,6 +228,56 @@ export class ProductProfilePage implements OnInit {
     this.subscription5 = AppResources.GetUserInfo().subscribe(async ans => {
       this.loggedUser = ans;
     });
+  }
+
+  async AddRecentView() {
+    var shouldWait = (this.loggedUser) ? false : true;
+    setTimeout(() => shouldWait = false, 3000);
+    while (shouldWait && !this.loggedUser)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    if (!this.loggedUser)
+      return;
+    if (!this.loggedUser.viewList)
+      this.loggedUser.viewList = [];
+    if (!this.loggedUser.viewList[0] || this.loggedUser.viewList[0] >= 3) {
+      this.PutOnViewList(1);
+      return;
+    }
+    this.PutOnViewList(this.loggedUser.viewList[0] + 1);
+  }
+
+  async PutOnViewList(nextIndex: number) {
+    while (!this.gotProduct)
+      await new Promise(resolve => setTimeout(resolve, 10));
+    if (!this.product || !this.product.id)
+      return;
+    this.PutIdInArray(nextIndex);
+    await this.userService.UpdateViewList(this.loggedUser.id, this.loggedUser.viewList).catch(err => {
+      console.log(err);
+    });
+  }
+
+  PutIdInArray(nextIndex: number) {
+    var indexOfRepeated: number = null;
+    for (let i = 1; i < 4; i++) {
+      if (this.loggedUser.viewList[i] == this.product.id)
+        indexOfRepeated = i;
+    }
+    if (!indexOfRepeated) {
+      this.loggedUser.viewList[0] = nextIndex;
+      this.loggedUser.viewList[nextIndex] = this.product.id;
+      return;
+    }
+    if (indexOfRepeated == this.loggedUser.viewList[0])
+      return;
+    if (indexOfRepeated == nextIndex) {
+      this.loggedUser.viewList[0] = nextIndex;
+      return;
+    }
+    var currentIndex = this.loggedUser.viewList[0];
+    var tempValue = this.loggedUser.viewList[currentIndex];
+    this.loggedUser.viewList[currentIndex] = this.loggedUser.viewList[indexOfRepeated];
+    this.loggedUser.viewList[indexOfRepeated] = tempValue;
   }
 
   async ErrorLoading(title: string, description: string) {

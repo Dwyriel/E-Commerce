@@ -108,6 +108,16 @@ export class UserService {
     return await this.fireDatabase.collection(this.collection).doc(id).update({ cart: [...cart] });
   }
 
+  /** Adds or updates the user's previously visited array (viewList).
+   * @param id the user's id.
+   * @param viewList the viewList array.
+   */
+  async UpdateViewList(id: string, viewList: any[]) {
+    return await this.fireDatabase.collection(this.collection).doc(id).update({
+      viewList: viewList
+    });
+  }
+
   /** WARNING: DANGEROUS. 
    * deletes the user's information on the database. should be used with a lot of caution. 
    * @param id the user's id.

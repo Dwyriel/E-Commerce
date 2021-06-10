@@ -1,13 +1,125 @@
 <app-header title="Início" segment=0></app-header>
 
 <ion-content [fullscreen]="true">
-<app-header title="Início" segment=1></app-header>
+  <app-header title="Início" segment=1></app-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-    <ion-button routerLink="/ADMproducts">ADMproducts</ion-button>
-    <ion-button routerLink="/productForm">test new product</ion-button>
-    <ion-button routerLink="/profile/qWDqyK5uCcMSYomy9aA0J1U7Rel2">other profile</ion-button>
+  <div [ngClass]="{'webrowser':!isMobile}">
+    
+    <!-- Recentes -->
+    <div *ngIf="prevViewedProducts.length > 0">
+      <h1 class="ion-margin">Ultimos Vistos:</h1>
+      <ion-row *ngIf="!isMobile">
+        <ion-col *ngFor="let product of prevViewedProducts">
+          <ion-card routerLink="/product/{{product.id}}">
+            <img [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'" [alt]="product.name"/>
+            <ion-card-header>
+              <ion-card-title style="font-size: 1.2rem;">{{product.name}}</ion-card-title>
+              <ion-card-subtitle><del>{{product.price | currency:'BRL'}}</del></ion-card-subtitle>
+              <ion-card-subtitle>{{product.price *.8 | currency:'BRL' }} à vista</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <span *ngIf="product.price * .8 >= 50">Frete grátis</span><br>
+              <span>Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-list *ngIf="isMobile">
+        <ion-item lines="inset" *ngFor="let product of prevViewedProducts;" routerLink="/product/{{product.id}}">
+          <img class="mobileImgList" [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'" [alt]="product.name">
+          <ion-label>
+            <h2>{{product.name}}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span></h2>
+            <h3><s>{{product.price | currency:'BRL' }}</s><span *ngIf="product.price*.8 >= 50" style="font-size: .75rem;" class="ion-float-right">Frete grátis</span></h3>
+            <h3>{{product.price *.8 | currency:'BRL' }} à vista</h3>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  
+    <!-- Vendas -->
+    <div *ngIf="salesObjs.length > 0">
+      <h1 class="ion-margin">Vendas Recentes:</h1>
+      <ion-row *ngIf="!isMobile">
+        <ion-col *ngFor="let sale of salesObjs">
+          <ion-card routerLink="/purchase/{{sale.purchase.id}}">
+            <img [src]="(sale.exemploProduct.gallery?.length > 0) ? sale.exemploProduct.gallery[0] : 'assets/sem-foto.png'" [alt]="sale.exemploProduct.name"/>
+            <ion-card-header>
+              <ion-card-title style="font-size: 1.2rem;">Data: {{sale.purchase.date.toLocaleString()}}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <span>Status: {{StateToString(sale.purchase.state)}}</span>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-list *ngIf="isMobile">
+        <ion-item lines="inset" *ngFor="let sale of salesObjs;" routerLink="/purchase/{{sale.purchase.id}}">
+          <img class="mobileImgList" [src]="(sale.exemploProduct.gallery?.length > 0) ? sale.exemploProduct.gallery[0] : 'assets/sem-foto.png'" [alt]="sale.exemploProduct.name">
+          <ion-label>
+            <h2>Status: {{StateToString(sale.purchase.state)}} </h2>
+            <h3>Data: {{sale.purchase.date.toLocaleString()}}</h3>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Compras -->
+    <div *ngIf="purchasesObjs.length > 0">
+      <h1 class="ion-margin">Compras Recentes:</h1>
+      <ion-row *ngIf="!isMobile">
+        <ion-col *ngFor="let purchase of purchasesObjs">
+          <ion-card routerLink="/purchase/{{purchase.purchase.id}}">
+            <img [src]="(purchase.exemploProduct.gallery?.length > 0) ? purchase.exemploProduct.gallery[0] : 'assets/sem-foto.png'" [alt]="purchase.exemploProduct.name"/>
+            <ion-card-header>
+              <ion-card-title style="font-size: 1.2rem;">Data: {{purchase.purchase.date.toLocaleString()}}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <span>Status: {{StateToString(purchase.purchase.state)}}</span>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-list *ngIf="isMobile">
+        <ion-item lines="inset" *ngFor="let purchase of purchasesObjs;" routerLink="/purchase/{{purchase.purchase.id}}">
+          <img class="mobileImgList" [src]="(purchase.exemploProduct.gallery?.length > 0) ? purchase.exemploProduct.gallery[0] : 'assets/sem-foto.png'" [alt]="purchase.exemploProduct.name">
+          <ion-label>
+            <h2>Status: {{StateToString(purchase.purchase.state)}} </h2>
+            <h3>Data: {{purchase.purchase.date.toLocaleString()}}</h3>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Avaliados recentemente -->
+    <div *ngIf="recentlyReviewedProducts.length > 0">
+      <h1 class="ion-margin">Produtos Recentemente Avaliados:</h1>
+      <ion-row *ngIf="!isMobile">
+        <ion-col size="4" *ngFor="let product of recentlyReviewedProducts">
+          <ion-card routerLink="/product/{{product.id}}">
+            <img [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'" [alt]="product.name"/>
+            <ion-card-header>
+              <ion-card-title style="font-size: 1.2rem;">{{product.name}}</ion-card-title>
+              <ion-card-subtitle><del>{{product.price | currency:'BRL'}}</del></ion-card-subtitle>
+              <ion-card-subtitle>{{product.price *.8 | currency:'BRL' }} à vista</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <span *ngIf="product.price * .8 >= 50">Frete grátis</span><br>
+              <span>Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-list *ngIf="isMobile">
+        <ion-item lines="inset" *ngFor="let product of recentlyReviewedProducts;" routerLink="/product/{{product.id}}">
+          <img class="mobileImgList" [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'" [alt]="product.name">
+          <ion-label>
+            <h2>{{product.name}}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span></h2>
+            <h3><s>{{product.price | currency:'BRL' }}</s><span *ngIf="product.price*.8 >= 50" style="font-size: .75rem;" class="ion-float-right">Frete grátis</span></h3>
+            <h3>{{product.price *.8 | currency:'BRL' }} à vista</h3>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+    
   </div>
 </ion-content>

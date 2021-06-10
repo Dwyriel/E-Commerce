@@ -15,6 +15,7 @@ export class User {
     avgRating: number;
     ratings: Rating[];
     cart: { productID: string, amount: number }[] = [];
+    viewList: any[] = [];
 
     /**
      * Calculates and attributes the percentage of good/bad ratings to avgRating.
@@ -36,4 +37,23 @@ export class User {
 export enum UserType {
     Admin,
     User
+}
+
+export function GetViewListInOrder(viewList: any[]) {
+    if (isNaN(viewList[0]))
+        return [];
+    var tempIndex = viewList[0];
+    var arrayLength = viewList.length;
+    var tempIndexes: Array<any> = [];
+    var tempArray: Array<string> = [];
+    for (let i = tempIndex; i > 0; i--) {
+        tempIndexes.push(i);
+    }
+    for (let i = arrayLength - 1; i > tempIndex; i--) {
+        tempIndexes.push(i)
+    }
+    for (let index of tempIndexes) {
+        tempArray.push(viewList[index]);
+    }
+    return tempArray;
 }
