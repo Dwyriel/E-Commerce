@@ -79,7 +79,7 @@ export class NotificationService {
     var subscription = (await this.GetAllFromUser(notificationForId)).subscribe(async ans => {
       var equals: boolean = false;
       for (let item of ans)
-        if (item.equalsSmallParams(url, from))
+        if (item.equalsSmallParams(url, from, text))
           equals = true;
       if (!equals) {
         var notification: AppNotification = NewAppNotification(text, url, notificationForId, from);

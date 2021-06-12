@@ -127,4 +127,12 @@ export class AdvertsPage implements OnInit {
       await this.alertService.dismissLoading(this.loadingAlertID);
     });
   }
+
+  async GoTo(product: Product) {
+    if (!product.verified) {
+      this.alertService.presentAlert("Produto não Verificado", "Esse produto ainda não foi verificado e então ainda não possui uma pagina.");
+      return;
+    }
+    await this.router.navigate([`/product/${product.id}`]);
+  }
 }
