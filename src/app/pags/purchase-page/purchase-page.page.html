@@ -75,6 +75,7 @@
     <div *ngIf="allLoaded">
       <ion-button type="button" color="primary" expand="block" routerLink="/chat/{{purchase.id}}" class="ion-margin">Conversar com o {{(isSeller) ? "comprador" : "vendedor"}}</ion-button>
       <ion-button type="button" color="primary" expand="block" *ngIf="isSeller" (click)="showChangeState = !showChangeState; scrollToBotton()" class="ion-margin">Mudar status da venda</ion-button>
+      <ion-button type="button" color="primary" expand="block" *ngIf="isSeller" (click)="ShowUserPopover()" class="ion-margin">Mostrar Informações do Comprador</ion-button>
       <ion-button type="button" color="primary" expand="block" *ngIf="!isSeller && finished" (click)="showReviewDiv = !showReviewDiv; scrollToBotton()" class="ion-margin">{{(reviewExists) ? "Atualizar avaliação" : "Avaliar compra" }}</ion-button>
     </div>
   </div>

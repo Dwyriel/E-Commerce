@@ -9,7 +9,7 @@
     <div *ngIf="prevViewedProducts.length > 0">
       <h1 class="ion-margin">Ultimos Vistos:</h1>
       <ion-row *ngIf="!isMobile">
-        <ion-col *ngFor="let product of prevViewedProducts">
+        <ion-col size="4" *ngFor="let product of prevViewedProducts">
           <ion-card routerLink="/product/{{product.id}}">
             <img [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'" [alt]="product.name"/>
             <ion-card-header>
@@ -40,7 +40,7 @@
     <div *ngIf="salesObjs.length > 0">
       <h1 class="ion-margin">Vendas Recentes:</h1>
       <ion-row *ngIf="!isMobile">
-        <ion-col *ngFor="let sale of salesObjs">
+        <ion-col size="4" *ngFor="let sale of salesObjs">
           <ion-card routerLink="/purchase/{{sale.purchase.id}}">
             <img [src]="(sale.exemploProduct.gallery?.length > 0) ? sale.exemploProduct.gallery[0] : 'assets/sem-foto.png'" [alt]="sale.exemploProduct.name"/>
             <ion-card-header>
@@ -67,7 +67,7 @@
     <div *ngIf="purchasesObjs.length > 0">
       <h1 class="ion-margin">Compras Recentes:</h1>
       <ion-row *ngIf="!isMobile">
-        <ion-col *ngFor="let purchase of purchasesObjs">
+        <ion-col size="4" *ngFor="let purchase of purchasesObjs">
           <ion-card routerLink="/purchase/{{purchase.purchase.id}}">
             <img [src]="(purchase.exemploProduct.gallery?.length > 0) ? purchase.exemploProduct.gallery[0] : 'assets/sem-foto.png'" [alt]="purchase.exemploProduct.name"/>
             <ion-card-header>
