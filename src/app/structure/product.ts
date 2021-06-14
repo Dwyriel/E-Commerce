@@ -20,7 +20,7 @@ export class Product {
      * Uses the attribute subCatValue to retrieve and fill the attribute subCategory.
      */
     public fillSubCategory() {
-        if (!this.subCatValue) {
+        if (!this.subCatValue && this.subCatValue != 0) {
             console.error('fillSubCategory called on a object with subCatValue null or undefined');
             return;
         }

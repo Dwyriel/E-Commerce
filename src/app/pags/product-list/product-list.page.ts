@@ -141,24 +141,27 @@ export class ProductListPage implements OnInit {
     var subscriptions: Subscription[] = [];
     var index = 0;
     var arrayLength = this.products.length;
-    if (this.products && this.products.length > 0)
-      for (var product of this.products) {
-        product.fillSubCategory();
-        subscriptions.push((await this.reviewService.GetAllFromProduct(product.id)).subscribe(ans => {
-          product.reviews = ans;
-          if (product.reviews)
-            product.calculateAvgRating();
-          index++;
-          if (index >= arrayLength)
-            shouldWait = false;
-        }, async err => {
+    shouldWait = (this.products && this.products.length > 0)
+    for (var product of this.products) {
+      var shouldWait2 = true;
+      product.fillSubCategory();
+      subscriptions.push((await this.reviewService.GetAllFromProduct(product.id)).subscribe(ans => {
+        product.reviews = ans;
+        if (product.reviews)
+          product.calculateAvgRating();
+        index++;
+        if (index >= arrayLength)
           shouldWait = false;
-        }));
-      }
-    else
-      shouldWait = false;
+        shouldWait2 = false;
+      }, async err => {
+        shouldWait2 = false;
+        shouldWait = false;
+      }));
+      while (shouldWait2)
+        await new Promise(resolve => setTimeout(resolve, 10));
+    }
     while (shouldWait)
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => {console.log("here"); setTimeout(resolve, 10)});
     for (var sub of subscriptions)
       sub.unsubscribe();
     if (event)
@@ -173,13 +176,13 @@ export class ProductListPage implements OnInit {
   sortListing() {
     switch (this.sorting) {
       case 0:
-        this.products.sort((prodA, prodB) => prodB.price - prodA.price)
-        break
+        this.products.sort((prodA, prodB) => prodB.price - prodA.price);
+        break;
       case 1:
-        this.products.sort((prodA, prodB) => prodA.price - prodB.price)
+        this.products.sort((prodA, prodB) => prodA.price - prodB.price);
         break;
       case 2:
-        this.products.sort((prodA, prodB) => prodB.avgReview - prodA.avgReview)
+        this.products.sort((prodA, prodB) => prodB.avgReview - prodA.avgReview);
         break;
     }
   }

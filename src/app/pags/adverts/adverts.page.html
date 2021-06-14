@@ -8,17 +8,21 @@
     <ion-list>
       <div style="text-align: center;" *ngIf="!adverts || (adverts && 1 > adverts.length)">Nenhum item encontrado.</div>
       <ion-item-sliding *ngFor="let product of adverts;">
-        <ion-item lines="inset" routerLink="/productForm/{{product.id}}">
+        <ion-item-options side="start" *ngIf="isMobile">
+          <ion-item-option color="danger" (click)="DeleteAdvert(product.id)"><span id="optionRight">Deletar</span></ion-item-option>
+        </ion-item-options>
+        <ion-item lines="inset" button (click)="GoTo(product)">
           <img [src]="(product.gallery?.length > 0) ? product.gallery[0] : 'assets/sem-foto.png'" [alt]="product.name">
           <ion-label>
             <h2>{{product.name}}<span style="font-size: .75rem;" class="ion-float-right">Stock: {{product.stock}}</span></h2>
             <h3>{{product.price | currency:'BRL' }}<span style="font-size: .75rem;" class="ion-float-right">Avaliação: {{(product.avgReview || product.avgReview == 0 )? (product.avgReview + "%") : "Nenhum"}}</span></h3>
             <h4>{{(product.verified) ? "Verificado" : "Não Verificado"}}</h4>
           </ion-label>
-          <ion-item class="ion-margin" color="danger" (click)="DeleteAdvert(product.id)" *ngIf="!isMobile">Deletar</ion-item>
+          <ion-item class="ion-margin-start" color="warning" routerLink="/productForm/{{product.id}}" (click)="$event.stopPropagation();" *ngIf="!isMobile">Editar</ion-item>
+          <ion-item class="ion-margin" color="danger" button (click)="$event.stopPropagation(); DeleteAdvert(product.id);" *ngIf="!isMobile">Deletar</ion-item>
         </ion-item>
         <ion-item-options side="end" *ngIf="isMobile">
-          <ion-item-option color="danger" (click)="DeleteAdvert(product.id)"><span id="optionRight">Deletar</span></ion-item-option>
+          <ion-item-option color="warning" routerLink="/productForm/{{product.id}}"><span id="optionRight">Editar</span></ion-item-option>
         </ion-item-options>
       </ion-item-sliding>
     </ion-list>

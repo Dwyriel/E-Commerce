@@ -1,4 +1,4 @@
-import { IonContent } from '@ionic/angular';
+import { IonContent, PopoverController } from '@ionic/angular';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -16,6 +16,7 @@ import { ReviewService } from 'src/app/services/review.service';
 import { RatingService } from 'src/app/services/rating.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { NotificationType } from 'src/app/structure/notification';
+import { UserComponent } from 'src/app/components/user/user.component';
 
 @Component({
   selector: 'app-purchase-page',
@@ -29,10 +30,12 @@ export class PurchasePagePage implements OnInit {
   public purchase: Purchase = new Purchase();
   public product: Product = new Product();
   public seller: User = new User();
+  public buyer: User = new User();
   public reviewExists: boolean;
   public purchaseLoaded: boolean = false;
   public productLoaded: boolean = false;
   public sellerLoaded: boolean = false;
+  public buyerLoaded: boolean = false;
   public allLoaded: boolean = false;
   public isSeller: boolean;
   public finished: boolean;
@@ -64,10 +67,11 @@ export class PurchasePagePage implements OnInit {
   private subscription5: Subscription;
   private subscription6: Subscription;
   private subscription7: Subscription;
+  private subscription8: Subscription;
 
   @ViewChild(IonContent) content: IonContent;
 
-  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private productService: ProductService, private userService: UserService, private alertService: AlertService, private reviewService: ReviewService, private ratingService: RatingService, private router: Router, private notificationService: NotificationService) { }
+  constructor(private activatedRoute: ActivatedRoute, private purchaseService: PurchasesService, private productService: ProductService, private userService: UserService, private alertService: AlertService, private reviewService: ReviewService, private ratingService: RatingService, private router: Router, private notificationService: NotificationService, private popoverController: PopoverController) { }
 
   ngOnInit() { }
 
@@ -102,6 +106,8 @@ export class PurchasePagePage implements OnInit {
       this.subscription6.unsubscribe();
     if (this.subscription7 && !this.subscription7.closed)
       this.subscription7.unsubscribe();
+    if (this.subscription8 && !this.subscription8.closed)
+      this.subscription8.unsubscribe();
   }
 
   async GetRequiredAttributes() {
@@ -169,10 +175,11 @@ export class PurchasePagePage implements OnInit {
       this.finished = this.purchase.state == State.Entregue;
       this.stateValue = this.purchase.state;
       this.purchaseLoaded = true;
-      var shouldWait = { shouldWait1: true, shouldWait2: true }
+      var shouldWait = { shouldWait1: true, shouldWait2: true, shouldWait3: true }
       this.GetProduct(shouldWait);
       this.GetSeller(shouldWait);
-      while (shouldWait.shouldWait1 && shouldWait.shouldWait2)
+      this.GetBuyer(shouldWait)
+      while (shouldWait.shouldWait1 && shouldWait.shouldWait2 && shouldWait.shouldWait3)
         await new Promise(resolve => setTimeout(resolve, 10));
       this.title = `Status da compra`;
       this.allLoaded = true;
@@ -243,6 +250,20 @@ export class PurchasePagePage implements OnInit {
       this.sellerLoaded = true;
     }, async err => {
       shouldWait.shouldWait2 = false;
+      await this.alertService.dismissLoading(this.loadingAlertID);
+      await this.alertService.presentAlert("Ops", "Ocorreu um erro ao carregar o produto, tente novamente mais tarde.");
+    })
+  }
+
+  async GetBuyer(shouldWait) {
+    if (this.subscription8 && !this.subscription8.closed)
+      this.subscription8.unsubscribe();
+    this.subscription8 = (await this.userService.Get(this.purchase.userId)).subscribe(ans => {
+      this.buyer = { ...ans, calculateAvgRating: new User().calculateAvgRating, id: this.purchase.userId };
+      shouldWait.shouldWait3 = false;
+      this.buyerLoaded = true;
+    }, async err => {
+      shouldWait.shouldWait3 = false;
       await this.alertService.dismissLoading(this.loadingAlertID);
       await this.alertService.presentAlert("Ops", "Ocorreu um erro ao carregar o produto, tente novamente mais tarde.");
     })
@@ -361,6 +382,16 @@ export class PurchasePagePage implements OnInit {
     review.text = this.review.content;
     review.recommend = this.review.recommend == "true";
     return review;
+  }
+
+  async ShowUserPopover() {
+    var popover = await this.popoverController.create({
+      component: UserComponent,
+      mode: 'md',
+      componentProps: { user: this.buyer },
+      animated: true
+    });
+    await popover.present();
   }
 
   async SendAway(sendTo: string) {
