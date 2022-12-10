@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-//search input works
+
 import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
